@@ -3,6 +3,9 @@ require "active_support/core_ext/integer/time"
 Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb.
 
+  config.force_ssl = true
+  config.hosts << "box.heimdall"
+
   # Make code changes take effect immediately without server restart.
   config.enable_reloading = true
 
@@ -37,8 +40,16 @@ Rails.application.configure do
   # Make template changes take effect immediately.
   config.action_mailer.perform_caching = false
 
+  config.active_job.verbose_enqueue_logs = true
+
+  config.action_cable.url = "ws://localhost:3000/cable"
+  config.action_cable.allowed_request_origins = [ %r{http://*}, %r{https://*} ]
+  # config.hotwire_livereload.listen_paths << Rails.root.join("app/assets/builds")
+
+  config.action_controller.default_url_options = { protocol: "https", host: "localhost", port: 3000 }
+
   # Set localhost to be used by links generated in mailer templates.
-  config.action_mailer.default_url_options = { host: "localhost", port: 3000 }
+  config.action_mailer.default_url_options = { protocol: "https", host: "localhost", port: 3000 }
 
   # Print deprecation notices to the Rails logger.
   config.active_support.deprecation = :log
