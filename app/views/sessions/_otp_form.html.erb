@@ -1,0 +1,33 @@
+<turbo-frame id="otp_input">
+  <div class="p-4 rounded bg-white shadow" data-controller="otp">
+    <h2 class="text-lg font-semibold mb-2">Indtast koden vi har sendt til dig</h2>
+
+    <%= form_with url: session_path, method: :patch, data: { turbo_frame: "otp_input" } do |form| %>
+      <div class="mb-4">
+        <%= form.label :otp, "OTP adgangskode", class: "block font-medium text-gray-700" %>
+        <%= form.text_field :otp,
+              class: "text-lg p-2 mt-1 block w-full border-gray-300 rounded-md shadow-sm",
+              autocomplete: "one-time-code",
+              type: "tel",
+              maxlength: 6,
+              inputmode: "numeric",
+              data: {
+                otp_target: "input",
+                action: "input->otp#submitIfComplete paste->otp#handlePaste"
+              } %>
+      </div>
+
+      <%= form.submit "Godkend", class: "bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded" %>
+    <% end %>
+  </div>
+  <div data-controller="resend" data-resend-seconds-value="30" class="mt-4 text-sm text-gray-600" >
+    <span data-resend-target="countdown"></span>
+
+    <%= button_to "Send ny kode",
+        resend_otp_path,
+        method: :post,
+        remote: true,
+        data: { resend_target: "button" },
+        class: "hidden text-blue-600 hover:underline" %>
+  </div>
+</turbo-frame>

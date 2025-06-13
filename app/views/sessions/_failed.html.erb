@@ -1,0 +1,13 @@
+<turbo-frame id="otp_input">
+  <div class="p-4 border rounded bg-red-100 text-red-800">
+    ❌ Koden er forkert eller udløbet. Prøv igen.
+  </div>
+
+  <%= button_to "Send ny kode",
+      resend_otp_path,
+      method: :post,
+      remote: true,
+      data: { resend_target: "button" },
+      class: " text-blue-600 hover:underline" %>
+  </div>
+</turbo-frame>

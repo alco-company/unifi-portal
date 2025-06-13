@@ -1,0 +1,24 @@
+require "test_helper"
+
+class OtpMailerTest < ActionMailer::TestCase
+  test "send_otp delivers the OTP to the user" do
+    user_email = "user@example.com"
+    otp_code = "123456"
+
+    email = OtpMailer.send_otp(user_email, otp_code)
+
+    # Verify email was queued for delivery
+    assert_emails 1 do
+      email.deliver_now
+    end
+
+    # Check the basic headers
+    assert_equal ["no-reply@example.com"], email.from
+    assert_equal [user_email], email.to
+    assert_equal "Your One-Time Password (OTP)", email.subject
+
+    # Check the body content
+    assert_includes email.html_part.body.to_s, otp_code
+    assert_includes email.text_part.body.to_s, otp_code
+  end
+end

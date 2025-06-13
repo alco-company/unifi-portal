@@ -25,6 +25,15 @@
 # Any libraries that use a connection pool or another resource pool should
 # be configured to provide at least as many connections as the number of
 # threads. This includes Active Record's `pool` parameter in `database.yml`.
+# config/puma.rb
+
+# if Rails.env.development? #or Rails.env.test?
+#   ssl_bind '127.0.0.1', '3000', {
+#     key: "config/cert/key.pem",
+#     cert: "config/cert/cert.pem"
+#   }
+# end
+
 threads_count = ENV.fetch("RAILS_MAX_THREADS", 3)
 threads threads_count, threads_count
 
