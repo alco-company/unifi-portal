@@ -1,8 +1,9 @@
 class SessionsController < ApplicationController
   before_action :load_site, only: [:new, :create, :update]
-  before_action :load_client_info, only: [:new]
+  before_action :load_client_info, only: [:new, :update]
 
   def new
+    Rails.logger.warn request.query_parameters.inspect
     if @client
       render :new
     else
@@ -77,13 +78,23 @@ class SessionsController < ApplicationController
   private
 
   def load_site
+    @client = nil
     @site = Site.where(url: params[:url]).or(Site.where(ssid: params[:ssid])).first
   end
 
   def load_client_info
+    return if @site.nil?
     site_info = External::Unifi.get_sites(@site&.controller_url, key: @site&.api_key)
     @site_id = site_info["data"].first["id"]
     @client = External::Unifi.get_client(@site.controller_url, @site_id, params[:id], key: @site&.api_key)
+    unless @client.nil? ||
+      @client.dig("count").zero? ||
+      @client.dig("data").nil? ||
+      @client.dig("data").empty? ||
+      @client.dig("count") > 1
+      
+      @client = @client["data"].first
+    end
   end
 
   def valid_user_input?(data)
@@ -99,11 +110,13 @@ class SessionsController < ApplicationController
   end
 
   def authorize_guest!
-    # External::Unifi.authorize_guest(
-    #   url: @site.url,
-    #   site_id: @site_id,
-    #   client_id: session[:client_id],
-    #   api_key: @site.api_key
-    # )
+    return false unless @site && @client
+    result = External::Unifi.authorize_guest(
+      url: @site.url,
+      site_id: @site_id,
+      client_id: @client["id"],
+      api_key: @site.api_key
+    )
+    !result.nil? && result.dig("action").present? && result["action"] == "AUTHORIZE_GUEST_ACCESS"
   end
 end

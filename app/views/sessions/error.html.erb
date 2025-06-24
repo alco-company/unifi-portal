@@ -1,0 +1,46 @@
+<turbo-frame id="error">
+  <div class="w-full bg-amber-800 max-w-md mx-auto p-6  shadow rounded">
+    <h1 class="text-xl text-yellow-100 font-semibold mb-4">Log ind for at få adgang til netværket</h1>
+    <p class="text-sm text-yellow-100">For at få udleveret en engangskode (OTP) skal dit netværk viderestille din browser og vedhæfte følgende oplysninger:</p>
+    <p class="text-sm text-yellow-100">
+    <div class="mt-6 border-t border-gray-100">
+      <dl class="divide-y divide-gray-100">
+        <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
+          <dt class="text-sm/6 font-medium text-yellow-600">ap</dt>
+          <dd class="mt-1 text-sm/6 text-yellow-200 sm:col-span-2 sm:mt-0">det Access Point, din computer/mobil er forbundet til
+            <br>
+            <span class="font-medium text-yellow-100">[ <%= params[:ap] %> ]</span>
+          </dd>
+          </div>
+        <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
+          <dt class="text-sm/6 font-medium text-yellow-600">id</dt>
+          <dd class="mt-1 text-sm/6 text-yellow-200 sm:col-span-2 sm:mt-0">din unikke bruger-id (typisk din MAC-adresse)
+            <br>
+            <span class="font-medium text-yellow-100">[ <%= params[:id] %> ]</span>
+          </dd>
+        </div>
+        <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
+          <dt class="text-sm/6 font-medium text-yellow-600">url</dt>
+          <dd class="mt-1 text-sm/6 text-yellow-200 sm:col-span-2 sm:mt-0">domænenavnet på den organisation, der har indgået aftalen med os - fx thisted-gymnasium.dk
+            <br>
+            <span class="font-medium text-yellow-100">[ <%= params[:url] %> ]</span>
+          </dd>
+        </div>
+        <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
+          <dt class="text-sm/6 font-medium text-yellow-600">ssid</dt>
+          <dd class="mt-1 text-sm/6 text-yellow-200 sm:col-span-2 sm:mt-0">det trådløse netværksnavn, du er forbundet til - brugbart hvis ikke URL kan vedhæftes
+            <br>
+            <span class="font-medium text-yellow-100">[ <%= params[:ssid] %> ]</span>
+          </dd>
+        </div>
+        <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
+          <dt class="text-sm/6 font-medium text-yellow-600">t</dt>
+          <dd class="mt-1 text-sm/6 text-yellow-200 sm:col-span-2 sm:mt-0">et tidsstempel, der angiver, hvornår anmodningen blev sendt
+            <br>
+            <span class="font-medium text-yellow-100">[ <%= params[:t] %> ]</span>
+          </dd>
+        </div>
+      </dl>
+    </p>
+  </div>
+</turbo-frame>

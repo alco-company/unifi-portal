@@ -26,14 +26,12 @@ module External
         "Accept" => "application/json",
         "Content-Type" => "application/json"
       }
-      url = "#{base_url.chomp("/")}/proxy/network/integration/v1/sites/#{site_id}/clients"
-      filter = "macAddress.eq('#{mac_address}')"
-      response = get_json("#{url}?filter=#{CGI.escape(filter)}", headers: headers)
-      response.first # assuming only one match
+      url = "#{base_url.chomp("/")}/proxy/network/integration/v1/sites/#{site_id}/clients?filter=macAddress.eq('#{CGI.escape(mac_address)}')"
+      get_json(url, headers: headers)
     end
 
-    def self.authorize_guest(site_id:, client_id:, api_key:)
-      post_url = "/sites/#{site_id}/clients/#{client_id}/actions"
+    def self.authorize_guest(url:, site_id:, client_id:, api_key:)
+      post_url = "#{url.chomp("/")}/proxy/network/integration/v1/sites/#{site_id}/clients/#{client_id}/actions"
 
       body = {
         action: "AUTHORIZE_GUEST_ACCESS",
@@ -48,11 +46,7 @@ module External
         "Accept" => "application/json",
         "Content-Type" => "application/json"
       }
-
-      response = HTTParty.post(post_url, body: body.to_json, headers: headers)
-      raise "Authorization failed: #{response.body}" unless response.success?
-
-      response.parsed_response
+      post_json(post_url, body: body, headers: headers)
     end
 
     def self.get_json(url, headers: {})
@@ -64,6 +58,17 @@ module External
       response = HTTParty.get(url, headers: headers, verify: false)
       raise "API error: #{response.code} #{response.body}" unless response.success?
       
+      response.parsed_response
+    end
+
+    def self.post_json(url, body: {}, headers: {})
+      # Ensure the URL is properly formatted
+      url = url.chomp("/") if url.end_with?("/")
+
+      # Make the POST request
+      response = HTTParty.post(url, body: body.to_json, headers: headers, verify: false)
+      raise "API error: #{response.code} #{response.body}" unless response.success?
+
       response.parsed_response
     end
   end

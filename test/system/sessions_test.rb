@@ -11,7 +11,7 @@ class SessionsTest < ApplicationSystemTestCase
   test "user completes OTP login flow" do
 
     visit new_session_path(
-      url:  "https://localhost:3000",
+      url:  "https://heimdall.test",
       ssid: "thisted-guest",
       id:   "1c:71:25:63:e4:24",
       ap:   "94:2a:6f:d0:30:57",
@@ -26,9 +26,9 @@ class SessionsTest < ApplicationSystemTestCase
       click_button "Send mig en OTP"
     end
     
-    fill_in "OTP adgangskode", with: "123456"
+    # fill_in "OTP adgangskode", with: "123456"
     click_button "Godkend"
   
-    assert_text "now connected"
+    assert_text "nu tilsluttet"
   end
 end

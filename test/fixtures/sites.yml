@@ -1,13 +1,13 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
-  url: "https://localhost:3000/"
+  url: "https://heimdall.test/"
   ssid: "thisted-guest"
   controller_id: "test-controller-id"
-  controller_url: "https://localhost:3000/"
+  controller_url: "https://heimdall.test/"
 
 two:
-  url: "https://localhost:3000/"
+  url: "https://heimdall.test/"
   ssid: "another-guest"
   controller_id: "another-controller-id"
-  controller_url: "https://localhost:3000/"
+  controller_url: "https://heimdall.test/"

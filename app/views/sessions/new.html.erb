@@ -5,23 +5,23 @@
     <%= form_with url: session_path, method: :post, data: { turbo_frame: "otp_input" } do |form| %>
       <div class="mb-4">
         <%= form.label :name, "For- og efternavn", class: "block text-sm font-medium text-gray-700" %>
-        <%= form.text_field :name, autofocus: true, class: "text-lg p-2 mt-1 block w-full bg-white rounded border-gray-300 shadow-sm" %>
+        <%= form.text_field :name, autofocus: true, class: "text-lg font-mono p-2 mt-1 block w-full bg-white rounded border-gray-300 shadow-sm" %>
       </div>
 
       <div class="mb-4">
         <%= form.label :pnr, "Dit P-nr", class: "block text-sm font-medium text-gray-700" %>
-        <%= form.text_field :pnr, class: "text-lg p-2 mt-1 block w-full rounded border-gray-300 shadow-sm" %>
+        <%= form.text_field :pnr, class: "text-lg font-mono p-2 mt-1 block w-full rounded border-gray-300 shadow-sm" %>
         <p class="text-xs mt-2 text-gray-400">Har du ikke et P-nr får du kun 24 timers adgang, før du skal godkendes igen. Med et P-nr får du permanent adgang (indtil din translokation).</p>
       </div>
 
       <div class="mb-4">
         <%= form.label :email, "Din email adresse", class: "block text-sm font-medium text-gray-700" %>
-        <%= form.email_field :email, class: "text-lg p-2 mt-1 block w-full rounded border-gray-300 shadow-sm" %>
+        <%= form.email_field :email, class: "text-lg font-mono p-2 mt-1 block w-full rounded border-gray-300 shadow-sm" %>
       </div>
 
       <div class="mb-4">
         <%= form.label :phone, "Dit telefonnummer", class: "block text-sm font-medium text-gray-700" %>
-        <%= form.telephone_field :phone, class: "text-lg p-2 mt-1 block w-full rounded border-gray-300 shadow-sm" %>
+        <%= form.telephone_field :phone, class: "text-lg font-mono p-2 mt-1 block w-full rounded border-gray-300 shadow-sm" %>
       </div>
 
       <%# Hidden fields to preserve flow context %>
