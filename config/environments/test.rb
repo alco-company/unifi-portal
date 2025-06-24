@@ -3,11 +3,25 @@
 # your test database is "scratch space" for the test suite and is wiped
 # and recreated between test runs. Don't rely on the data there!
 
+# class TestRequestLogger
+#   def initialize(app)
+#     @app = app
+#   end
+
+#   def call(env)
+#     puts "✅ REQUEST REACHED MIDDLEWARE: #{env["REQUEST_METHOD"]} #{env["PATH_INFO"]}"
+#     @app.call(env)
+#   end
+# end
+
+# Rails.application.config.middleware.insert_before 0, TestRequestLogger
 Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb.
 
   # While tests run files are not watched, reloading is not necessary.
   config.enable_reloading = false
+  # config.hosts << "heimdall.test"
+  # config.hosts.clear
 
   # Eager loading loads your entire application. When running a single test locally,
   # this is usually not necessary, and can slow down your test suite. However, it's
@@ -38,7 +52,7 @@ Rails.application.configure do
 
   # Set host to be used by links generated in mailer templates.
   # config.action_mailer.default_url_options = { host: "example.com" }
-  config.action_mailer.default_url_options = { protocol: "http", host: "localhost", port: 3000 }
+  config.action_mailer.default_url_options = { protocol: "https", host: "heimdall.test" }
   # Print deprecation notices to the stderr.
   config.active_support.deprecation = :stderr
 

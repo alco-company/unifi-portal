@@ -2,6 +2,7 @@
 
 ## 0.0.1
 
+- make testing work for outside
 - creating the basic flow - sessions_controller
 - add https to environments/development.rb
 - use Cuprite for system tests
