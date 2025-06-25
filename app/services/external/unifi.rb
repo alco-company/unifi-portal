@@ -35,10 +35,10 @@ module External
 
       body = {
         action: "AUTHORIZE_GUEST_ACCESS",
-        timeLimitMinutes: 2,
+        timeLimitMinutes: 2000,
         dataUsageLimitMBytes: 10_000,
-        rxRateLimitKbps: 20,
-        txRateLimitKbps: 20
+        rxRateLimitKbps: 20000,
+        txRateLimitKbps: 20000
       }
 
       headers = {
@@ -47,6 +47,10 @@ module External
         "Content-Type" => "application/json"
       }
       post_json(post_url, body: body, headers: headers)
+    end
+
+    def self.success_redirect(base_url, mac, token)
+      "#{base_url}/guest/s/default?mac=#{mac}&token=#{token}"
     end
 
     def self.get_json(url, headers: {})

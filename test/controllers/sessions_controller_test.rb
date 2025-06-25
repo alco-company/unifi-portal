@@ -69,6 +69,31 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
     assert_match "nu tilsluttet", @response.body
   end
 
+  test "POST #create redirects to OTP path with HTML format" do
+    post session_path, params: {
+      ap: "94:2a:6f:d0:30:57",
+      id: "1c:71:25:63:e4:24",
+      url: "https://heimdall.test",
+      ssid: "thisted-guest",
+      t: Time.current.to_i,
+      name: "Freelancer",
+      pnr: "123456-7890",
+      email: "test@example.com",
+      phone: "+4512345678"
+    }, headers: { "Accept" => "text/html" } # 👈 forces HTML
+
+    assert_response :redirect
+    follow_redirect!
+    patch session_path, params: {
+      otp:  session[:otp]
+    }, 
+    headers: {  "Accept" => "text/html" }
+    assert_response :redirect
+    follow_redirect!
+    assert_response :success
+
+  end  
+
   test "PATCH #update fails with incorrect OTP" do
     stub_guest_authorization_api
 

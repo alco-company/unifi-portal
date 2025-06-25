@@ -2,8 +2,14 @@ class SessionsController < ApplicationController
   before_action :load_site, only: [:new, :create, :update]
   before_action :load_client_info, only: [:new, :update]
 
+  # ap=74:83:c2:29:5f:f6
+  # id=b6:b8:cb:76:a8:1f
+  # t=1750764123
+  # url=http://netcts.cdn-apple.com%2F
+  # ssid=alco-free" 
+  # for 188.228.84.87 
+  # at 2025-06-24 13:22:10 +0200
   def new
-    Rails.logger.warn request.query_parameters.inspect
     if @client
       render :new
     else
@@ -30,6 +36,11 @@ class SessionsController < ApplicationController
     else
       render :new, status: :unprocessable_entity
     end
+  end
+
+  def otp
+    @user = session[:user_data]
+    @otp = session[:otp]
   end
 
   def resend
@@ -61,6 +72,7 @@ class SessionsController < ApplicationController
   def update
     if params[:otp] == session[:otp] && otp_valid?
       authorize_guest!
+      # @redirect_url = External::Unifi.success_redirect(@site.dig("controller_url"), session[:user_data]["id"])
       session.delete(:otp)
 
       respond_to do |format|

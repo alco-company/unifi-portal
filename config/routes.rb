@@ -1,7 +1,10 @@
 Rails.application.routes.draw do
   
-  resource :session, only: [:new, :create, :update]
+  resource :session, only: [:create, :update]
+  get "/guest/s/default/", to: "sessions#new", as: :new_session, constraints: { format: "html" }
   resolve("Session") { [:session] }
+  get "otp", to: "sessions#otp", as: :otp
+  get "success", to: "sessions#success", as: :success
   post "resend_otp", to: "sessions#resend", as: :resend_otp
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
@@ -15,4 +18,5 @@ Rails.application.routes.draw do
 
   # Defines the root path route ("/")
   root "home#index"
+
 end

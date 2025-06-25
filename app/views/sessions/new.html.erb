@@ -2,7 +2,7 @@
   <div class="w-full max-w-md mx-auto p-6 bg-white shadow rounded">
     <h1 class="text-xl font-semibold mb-4">Log ind for at få adgang til netværket</h1>
 
-    <%= form_with url: session_path, method: :post, data: { turbo_frame: "otp_input" } do |form| %>
+    <%= form_with url: session_path, method: :post, data: { turbo: false, turbo_frame: "otp_input" } do |form| %>
       <div class="mb-4">
         <%= form.label :name, "For- og efternavn", class: "block text-sm font-medium text-gray-700" %>
         <%= form.text_field :name, autofocus: true, class: "text-lg font-mono p-2 mt-1 block w-full bg-white rounded border-gray-300 shadow-sm" %>
