@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 0.1.0
+
+- test send email to new user
+
 ## 0.0.1
 
 - user test with basic happy path completed

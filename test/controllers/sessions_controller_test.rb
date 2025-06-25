@@ -2,6 +2,8 @@
 require "test_helper"
 
 class SessionsControllerTest < ActionDispatch::IntegrationTest
+  include ActiveJob::TestHelper
+
   setup do
     @site = Site.create!(controller_url: "https://heimdall.test", url: "https://heimdall.test", ssid: "thisted-guest", api_key: "test-key")
     @client_mac = "1c:71:25:63:e4:24"
@@ -46,16 +48,28 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "PATCH #update authenticates and renders success with correct OTP" do
-    post session_path, params: {
-      name: "Alice",
-      pnr: "123456-7890",
-      email: "alice@example.com",
-      phone: "+4511223344",
-      url: @site.url,
-      ssid: @site.ssid,
-      id: @client_mac,
-      ap: "94:2a:6f:d0:30:57",
-    }, headers: { "Accept" => "text/vnd.turbo-stream.html" }
+    ActionMailer::Base.deliveries.clear
+
+    perform_enqueued_jobs do
+      post session_path, params: {
+        name: "Alice",
+        pnr: "123456-7890",
+        email: "alice@example.com",
+        phone: "+4511223344",
+        url: @site.url,
+        ssid: @site.ssid,
+        id: @client_mac,
+        ap: "94:2a:6f:d0:30:57",
+      }, headers: { "Accept" => "text/vnd.turbo-stream.html" }
+    end
+
+    assert_equal 1, ActionMailer::Base.deliveries.size
+
+    email = ActionMailer::Base.deliveries.last
+    plain_body = email.text_part.body.to_s
+    html_body = email.html_part.body.to_s
+    assert_equal ["alice@example.com"], email.to
+    assert_match /\d{6}/, plain_body || html_body
 
     patch session_path, 
       params: {
