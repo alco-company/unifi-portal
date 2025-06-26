@@ -19,6 +19,8 @@ export default class extends Controller {
         .then(data => {
           console.log(data)
           pnrInput.classList.add("border", "border-green-500");
+          document.querySelector("#name").disabled = true;
+          document.querySelector("#email").disabled = true;
         })
         .catch(error => {
           console.error('Error checking PNR:', error);
@@ -41,6 +43,10 @@ export default class extends Controller {
         .then(data => {
           console.log(data)
           phoneInput.classList.add("border", "border-green-500");
+          if (document.querySelector("#pnr").value != "") {
+            document.querySelector("#name").disabled = true;
+            document.querySelector("#email").disabled = true;
+          }
         })
         .catch(error => {
           console.error('Error checking phone number:', error);

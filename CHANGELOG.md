@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 0.1.1
+
+- validate pnr & phone and disable name/email
+
 ## 0.1.0
 
 - rearrange form inputs and validate pnr and phone (locally only)
