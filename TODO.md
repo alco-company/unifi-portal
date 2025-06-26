@@ -1,4 +1,6 @@
 # TODO
 
-• Tests for toasts
-• Mailer and SMS delivery specs
+* Tests for toasts
+* SMS delivery specs
+* Kamal deployment tool
+* admin namespace for tenants, users, devices

@@ -2,6 +2,7 @@
 
 ## 0.1.0
 
+- test sending SMS
 - setup .env.development for actually sending emails
 - test send email to new user
 

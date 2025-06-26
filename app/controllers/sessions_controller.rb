@@ -27,7 +27,7 @@ class SessionsController < ApplicationController
       session[:otp_sent_at] = Time.current
 
       OtpMailer.send_otp(@user[:email], otp).deliver_later
-      # SmsSender.send_code(@user[:phone], otp)
+      SmsSender.send_code(@user[:phone], otp)
 
       respond_to do |format|
         format.turbo_stream { render turbo_stream: turbo_stream.replace("otp_input", partial: "sessions/otp_form") }
@@ -45,13 +45,13 @@ class SessionsController < ApplicationController
 
   def resend
     user = session[:user_data]
-    otp = OtpGeneratorgenerate_otp
+    otp = OtpGenerator.generate_otp
     session[:otp] = otp
     session[:otp_sent_at] = Time.current
   
     begin
       OtpMailer.send_otp(user["email"], otp).deliver_later
-      # SmsSender.send_code(user["phone"], otp)
+      SmsSender.send_code(user["phone"], otp)
   
       respond_to do |format|
         format.turbo_stream {
