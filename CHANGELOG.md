@@ -2,6 +2,7 @@
 
 ## 0.1.0
 
+- setup .env.development for actually sending emails
 - test send email to new user
 
 ## 0.0.1

@@ -1,3 +1,3 @@
 # web: bin/rails server -u puma -b 'ssl://0.0.0.0:3000?key=config/certs/key.pem&cert=config/certs/cert.pem&verify_mode=peer&ca=config/certs/cert.pem'
-# web: bin/rails server -u puma -b 'ssl://0.0.0.0:3000?key=config/certs/key.pem&cert=config/certs/cert.pem&verify_mode=peer&ca=config/certs/cert.pem'
+web: bin/rails server -u puma -b 'ssl://0.0.0.0:3000?key=config/certs/key.pem&cert=config/certs/cert.pem&verify_mode=peer&ca=config/certs/cert.pem'
 css: bin/rails tailwindcss:watch

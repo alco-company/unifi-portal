@@ -33,7 +33,7 @@
         resend_otp_path,
         method: :post,
         remote: true,
-        data: { resend_target: "button" },
+        data: { turbo: true, resend_target: "button" },
         class: "hidden text-blue-600 hover:underline" %>
   </div>
 </turbo-frame>

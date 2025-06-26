@@ -42,8 +42,6 @@ Rails.application.configure do
   # Make template changes take effect immediately.
   config.action_mailer.perform_caching = false
 
-  config.active_job.verbose_enqueue_logs = true
-
   config.action_cable.url = "ws://localhost:3000/cable"
   config.action_cable.allowed_request_origins = [ %r{http://*}, %r{https://*} ]
   # config.hotwire_livereload.listen_paths << Rails.root.join("app/assets/builds")
@@ -67,7 +65,8 @@ Rails.application.configure do
 
   # Highlight code that enqueued background job in logs.
   config.active_job.verbose_enqueue_logs = true
-
+  config.active_job.queue_adapter = :solid_queue
+  config.solid_queue.connects_to = { database: { writing: :queue } }
   # Suppress logger output for asset requests.
   config.assets.quiet = true
 

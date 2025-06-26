@@ -22,7 +22,7 @@ class SessionsController < ApplicationController
     session[:user_data] = @user.to_h
 
     if valid_user_input?(@user)
-      otp = generate_otp
+      otp = OtpGenerator.generate_otp
       session[:otp] = otp
       session[:otp_sent_at] = Time.current
 
@@ -45,7 +45,7 @@ class SessionsController < ApplicationController
 
   def resend
     user = session[:user_data]
-    otp = generate_otp
+    otp = OtpGeneratorgenerate_otp
     session[:otp] = otp
     session[:otp_sent_at] = Time.current
   
@@ -53,13 +53,19 @@ class SessionsController < ApplicationController
       OtpMailer.send_otp(user["email"], otp).deliver_later
       # SmsSender.send_code(user["phone"], otp)
   
-      render turbo_stream: [
-        turbo_stream.replace("otp_input", partial: "sessions/otp_form"),
-        turbo_stream.append("flash_toasts", partial: "shared/toast", locals: {
-          message: "Code sent successfully",
-          type: :success
-        })
-      ]
+      respond_to do |format|
+        format.turbo_stream {
+          render turbo_stream: [
+            turbo_stream.replace("otp_input", partial: "sessions/otp_form"),
+            turbo_stream.append("flash_toasts", partial: "shared/toast", locals: {
+              message: "Code sent successfully",
+              type: :success
+            })
+          ]    
+        }
+        format.html { render partial: "sessions/otp_form" }
+      end
+
     rescue => e
       logger.error("OTP resend failed: #{e.message}")
       render turbo_stream: turbo_stream.append("flash_toasts", partial: "shared/toast", locals: {
@@ -70,9 +76,7 @@ class SessionsController < ApplicationController
   end
 
   def update
-    if params[:otp] == session[:otp] && otp_valid?
-      authorize_guest!
-      # @redirect_url = External::Unifi.success_redirect(@site.dig("controller_url"), session[:user_data]["id"])
+    if params[:otp] == session[:otp] && otp_valid? && authorize_guest!
       session.delete(:otp)
 
       respond_to do |format|
@@ -113,10 +117,6 @@ class SessionsController < ApplicationController
     data[:name].present? && data[:email] =~ URI::MailTo::EMAIL_REGEXP && data[:phone].present?
   end
 
-  def generate_otp
-    rand(100_000..999_999).to_s
-  end
-
   def otp_valid?
     session[:otp_sent_at] && session[:otp_sent_at] > 10.minutes.ago
   end
@@ -129,6 +129,8 @@ class SessionsController < ApplicationController
       client_id: @client["id"],
       api_key: @site.api_key
     )
-    !result.nil? && result.dig("action").present? && result["action"] == "AUTHORIZE_GUEST_ACCESS"
+    !result.nil? && result.dig("action").present? && result["action"] == "AUTHORIZE_GUEST_ACCESS" ?
+      { success: true } :
+      { success: false, error: result["error"] || "Failed to authorize guest access" }
   end
 end

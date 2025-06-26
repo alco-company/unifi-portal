@@ -10,14 +10,14 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 1) do
-  create_table "solid_cable_messages", force: :cascade do |t|
-    t.binary "channel", limit: 1024, null: false
-    t.integer "channel_hash", limit: 8, null: false
+ActiveRecord::Schema[8.1].define(version: 2025_06_12_081028) do
+  create_table "sites", force: :cascade do |t|
+    t.string "api_key"
+    t.string "controller_id"
+    t.string "controller_url"
     t.datetime "created_at", null: false
-    t.binary "payload", limit: 536870912, null: false
-    t.index ["channel"], name: "index_solid_cable_messages_on_channel"
-    t.index ["channel_hash"], name: "index_solid_cable_messages_on_channel_hash"
-    t.index ["created_at"], name: "index_solid_cable_messages_on_created_at"
+    t.string "ssid"
+    t.datetime "updated_at", null: false
+    t.string "url"
   end
 end

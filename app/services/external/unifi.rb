@@ -47,6 +47,9 @@ module External
         "Content-Type" => "application/json"
       }
       post_json(post_url, body: body, headers: headers)
+    rescue => e
+      Rails.logger.error("ERROR: Failed to authorize guest access: #{e.message}")
+      { error: e.message }
     end
 
     def self.success_redirect(base_url, mac, token)

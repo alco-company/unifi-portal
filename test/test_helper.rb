@@ -1,8 +1,10 @@
 ENV["RAILS_ENV"] ||= "test"
 require_relative "../config/environment"
 require_relative "support/unifi_api_stubs"
+require_relative "support/mailersend_api_stubs"
 require "rails/test_help"
 require "webmock/minitest"
+require "minitest/mock"
 WebMock.disable_net_connect!(allow_localhost: true)
 
 module ActiveSupport
@@ -15,5 +17,6 @@ module ActiveSupport
 
     # Add more helper methods to be used by all tests here...
     include UnifiApiStubs
+    include MailersendApiStubs
   end
 end
