@@ -1,4 +1,7 @@
 Rails.application.routes.draw do
+
+  get "/check_pnr", to: "pnumber#check_pnr", as: :check_pnr
+  get "/check_phone", to: "pnumber#check_phone", as: :check_phone
   
   resource :session, only: [:create, :update]
   get "/guest/s/default/", to: "sessions#new", as: :new_session, constraints: { format: "html" }

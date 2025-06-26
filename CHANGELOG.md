@@ -2,6 +2,7 @@
 
 ## 0.1.0
 
+- rearrange form inputs and validate pnr and phone (locally only)
 - test sending SMS
 - setup .env.development for actually sending emails
 - test send email to new user
