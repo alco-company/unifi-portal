@@ -14,7 +14,7 @@ Rails.application.configure do
 
   # Turn on fragment caching in view templates.
   config.action_controller.perform_caching = true
-
+  config.action_controller.default_url_options = { host: ENV["WEB_HOST"] }
   # Cache assets for far-future expiry since they are all digest stamped.
   config.public_file_server.headers = { "cache-control" => "public, max-age=#{1.year.to_i}" }
 
@@ -51,14 +51,15 @@ Rails.application.configure do
 
   # Replace the default in-process and non-durable queuing backend for Active Job.
   config.active_job.queue_adapter = :solid_queue
-  config.solid_queue.connects_to = { database: { writing: :queue } }
+  config.solid_queue.connects_to = { database: { writing: :queue, reading: :queue } }
 
   # Ignore bad email addresses and do not raise email delivery errors.
   # Set this to true and configure the email server for immediate delivery to raise delivery errors.
   # config.action_mailer.raise_delivery_errors = false
 
   # Set host to be used by links generated in mailer templates.
-  config.action_mailer.default_url_options = { protocol: "https", host: "heimdall.test" }
+  config.action_cable.allowed_request_origins = [ %r{http://*}, %r{https://*} ]
+  config.action_mailer.default_url_options = { host: ENV["WEB_HOST"] }
   config.action_mailer.delivery_method = :mailersend
   
   # Specify outgoing SMTP server. Remember to add smtp/* credentials via bin/rails credentials:edit.

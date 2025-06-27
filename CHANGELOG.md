@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 0.1.2
+
+- add Kamal deployment tooling
+
 ## 0.1.1
 
 - make all tests green on email and sms 
