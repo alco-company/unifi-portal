@@ -42,7 +42,7 @@ env:
   clear:
     SOLID_QUEUE_IN_PUMA: true
     WEB_HOST: staging.unifi-portal.site
-    PORT: 3000
+    PORT: 3001
     RAILS_ENV: production
     SSL_DOMAIN: staging.unifi-portal.site
 
