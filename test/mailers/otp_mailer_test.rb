@@ -4,6 +4,7 @@ class OtpMailerTest < ActionMailer::TestCase
   test "send_otp delivers the OTP to the user" do
     user_email = "user@example.com"
     otp_code = "123456"
+    stub_mailersend_api()
 
     email = OtpMailer.send_otp(user_email, otp_code)
 

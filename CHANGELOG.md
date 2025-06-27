@@ -2,6 +2,7 @@
 
 ## 0.1.1
 
+- make all tests green on email and sms 
 - validate pnr & phone and disable name/email
 
 ## 0.1.0

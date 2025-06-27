@@ -11,6 +11,7 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
     stub_unifi_sites_api()
     stub_guest_authorization_api()
     stub_mailersend_api()
+
   end
 
   test "GET #new shows login form when site and client are found" do
@@ -32,17 +33,21 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "POST #create sends OTP and renders OTP form" do
-    post session_path, params: {
-      name: "Alice",
-      pnr: "123456-7890",
-      email: "alice@example.com",
-      phone: "+4511223344",
-      url: @site.url,
-      ssid: @site.ssid,
-      id: @client_mac,
-      ap: "94:2a:6f:d0:30:57",
-    }, headers: { "Accept" => "text/vnd.turbo-stream.html" }
-
+    otp_code = "123456"
+    stub_smsapi(otp_code)
+    OtpGenerator.stub(:generate_otp, otp_code) do
+      post session_path, params: {
+        name: "Alice",
+        pnr: "123456-7890",
+        email: "alice@example.com",
+        phone: "+4512345678",
+        url: @site.url,
+        ssid: @site.ssid,
+        id: @client_mac,
+        ap: "94:2a:6f:d0:30:57",
+      }, headers: { "Accept" => "text/vnd.turbo-stream.html" }
+    end
+  
     assert_response :success
     assert_match "Indtast koden vi har sendt til dig", @response.body
     assert session[:otp].present?
@@ -51,14 +56,14 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
   test "PATCH #update authenticates and renders success with correct OTP" do
     ActionMailer::Base.deliveries.clear
     otp_code = "123456"
-
+    stub_smsapi(otp_code)
     OtpGenerator.stub(:generate_otp, otp_code) do
       perform_enqueued_jobs do
         post session_path, params: {
           name: "Alice",
           pnr: "123456-7890",
           email: "alice@example.com",
-          phone: "+4511223344",
+          phone: "+4512345678",
           url: @site.url,
           ssid: @site.ssid,
           id: @client_mac,
@@ -92,18 +97,20 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
 
   test "POST #create redirects to OTP path with HTML format" do
     otp_code = "123456"
-
-    post session_path, params: {
-      ap: "94:2a:6f:d0:30:57",
-      id: "1c:71:25:63:e4:24",
-      url: "https://heimdall.test",
-      ssid: "thisted-guest",
-      t: Time.current.to_i,
-      name: "Freelancer",
-      pnr: "123456-7890",
-      email: "test@example.com",
-      phone: "+4512345678"
-    }, headers: { "Accept" => "text/html" } # 👈 forces HTML
+    stub_smsapi(otp_code)
+    OtpGenerator.stub(:generate_otp, otp_code) do
+      post session_path, params: {
+        ap: "94:2a:6f:d0:30:57",
+        id: "1c:71:25:63:e4:24",
+        url: "https://heimdall.test",
+        ssid: "thisted-guest",
+        t: Time.current.to_i,
+        name: "Freelancer",
+        pnr: "123456-7890",
+        email: "test@example.com",
+        phone: "+4512345678"
+      }, headers: { "Accept" => "text/html" } # 👈 forces HTML
+    end
 
     assert_response :redirect
     follow_redirect!
@@ -119,18 +126,20 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
 
   test "PATCH #update fails with incorrect OTP" do
     # stub_guest_authorization_api
-
-    post session_path, params: {
-      name: "Alice",
-      pnr: "123456-7890",
-      email: "alice@example.com",
-      phone: "+4511223344",
-      url: @site.url,
-      ssid: @site.ssid,
-      id: @client_mac,
-      ap: "94:2a:6f:d0:30:57",
-    }, headers: { "Accept" => "text/vnd.turbo-stream.html" }
-
+    otp_code = "123456"
+    stub_smsapi(otp_code)
+    OtpGenerator.stub(:generate_otp, otp_code) do
+      post session_path, params: {
+        name: "Alice",
+        pnr: "123456-7890",
+        email: "alice@example.com",
+        phone: "+4512345678",
+        url: @site.url,
+        ssid: @site.ssid,
+        id: @client_mac,
+        ap: "94:2a:6f:d0:30:57",
+      }, headers: { "Accept" => "text/vnd.turbo-stream.html" }
+    end
 
     patch session_path, params: {
       otp: "111111"
