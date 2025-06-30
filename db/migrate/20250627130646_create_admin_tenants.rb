@@ -1,6 +1,6 @@
 class CreateAdminTenants < ActiveRecord::Migration[8.1]
   def change
-    create_table :admin_tenants do |t|
+    create_table :tenants do |t|
       t.string :name
       t.string :url
       t.string :login

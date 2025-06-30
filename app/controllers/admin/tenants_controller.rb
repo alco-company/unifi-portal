@@ -3,7 +3,7 @@ class Admin::TenantsController < ApplicationController
 
   # GET /admin/tenants or /admin/tenants.json
   def index
-    @admin_tenants = Admin::Tenant.all
+    @admin_tenants = Tenant.all
   end
 
   # GET /admin/tenants/1 or /admin/tenants/1.json
@@ -12,7 +12,7 @@ class Admin::TenantsController < ApplicationController
 
   # GET /admin/tenants/new
   def new
-    @admin_tenant = Admin::Tenant.new
+    @admin_tenant = Tenant.new
   end
 
   # GET /admin/tenants/1/edit
@@ -21,12 +21,12 @@ class Admin::TenantsController < ApplicationController
 
   # POST /admin/tenants or /admin/tenants.json
   def create
-    @admin_tenant = Admin::Tenant.new(admin_tenant_params)
+    @admin_tenant = Tenant.new(admin_tenant_params)
 
     respond_to do |format|
       if @admin_tenant.save
-        format.html { redirect_to @admin_tenant, notice: "Tenant was successfully created." }
-        format.json { render :show, status: :created, location: @admin_tenant }
+        format.html { redirect_to admin_tenants_path, notice: "Tenant was successfully created." }
+        format.json { render :show, status: :created, location: admin_tenants_path }
       else
         format.html { render :new, status: :unprocessable_entity }
         format.json { render json: @admin_tenant.errors, status: :unprocessable_entity }
@@ -38,8 +38,8 @@ class Admin::TenantsController < ApplicationController
   def update
     respond_to do |format|
       if @admin_tenant.update(admin_tenant_params)
-        format.html { redirect_to @admin_tenant, notice: "Tenant was successfully updated." }
-        format.json { render :show, status: :ok, location: @admin_tenant }
+        format.html { redirect_to admin_tenants_path, notice: "Tenant was successfully updated." }
+        format.json { render :show, status: :ok, location: admin_tenants_path }
       else
         format.html { render :edit, status: :unprocessable_entity }
         format.json { render json: @admin_tenant.errors, status: :unprocessable_entity }
@@ -60,11 +60,11 @@ class Admin::TenantsController < ApplicationController
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_admin_tenant
-      @admin_tenant = Admin::Tenant.find(params.expect(:id))
+      @admin_tenant = Tenant.find(params.expect(:id))
     end
 
     # Only allow a list of trusted parameters through.
     def admin_tenant_params
-      params.expect(admin_tenant: [ :name, :url, :login, :password, :guest_max, :guest_rx, :guest_tx, :active ])
+      params.expect(tenant: [ :name, :url, :login, :password, :guest_max, :guest_rx, :guest_tx, :active ])
     end
 end

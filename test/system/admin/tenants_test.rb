@@ -2,7 +2,7 @@ require "application_system_test_case"
 
 class Admin::TenantsTest < ApplicationSystemTestCase
   setup do
-    @admin_tenant = admin_tenants(:one)
+    @admin_tenant = tenants(:one)
   end
 
   test "visiting the index" do

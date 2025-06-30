@@ -1,0 +1,5 @@
+newdir=/Volumes/Data/Heimdall/Backups/development/$(date +%Y-%m-%d)
+mkdir -p $newdir
+pushd $newdir
+scp docker5:'/var/lib/docker/volumes/heimdall_storage/_data/prod*' ./
+popd
