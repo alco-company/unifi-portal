@@ -1,0 +1,19 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  client: one
+  last_ap: MyString
+  mac_address: MyString
+  site: one
+  last_authenticated_at: 2025-06-30 20:45:19
+  last_otp: MyString
+  authentication_expire_at: 2025-06-30 20:45:19
+
+two:
+  client: two
+  last_ap: MyString
+  mac_address: MyString
+  site: two
+  last_authenticated_at: 2025-06-30 20:45:19
+  last_otp: MyString
+  authentication_expire_at: 2025-06-30 20:45:19

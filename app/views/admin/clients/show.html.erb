@@ -6,10 +6,45 @@
   <% end %>
 
   <h1 class="font-bold text-4xl">Showing client</h1>
+  <div id="clients" class="min-w-full divide-y divide-gray-200 space-y-5">
+    <div class="hidden md:grid md:grid-cols-11 w-full sm:w-auto my-5 gap-2 space-y-5">
+      <div class="col-span-2">
+        <strong class="block font-medium mb-1">Name:</strong>
+      </div>
+      <div class="col-span-2">
+        <strong class="block font-medium mb-1">Email:</strong>
+      </div>
+      <div class="col-span-2">
+        <strong class="block font-medium mb-1">Phone:</strong>
+      </div>
+      <div class="col-span-1 md:hidden xl:block">
+        <strong class="block font-medium mb-1">Guest max:</strong>
+      </div>
+      <div class="col-span-1 md:hidden xl:block">
+        <strong class="block font-medium mb-1">Guest rx:</strong>
+      </div>
+      <div class="col-span-1 md:hidden xl:block">
+        <strong class="block font-medium mb-1">Guest tx:</strong>
+      </div>
+      <div class="col-span-1">
+        <strong class="block font-medium mb-1">Active:</strong>
+      </div>
+      <div class="col-span-1">
+        &nbsp;
+      </div>
+    </div>
+    <%= render @client %>
+  </div>
 
-  <%= render @client %>
+  <%#= link_to "Edit this client", edit_admin_tenant_client_path(@client.tenant, @client), class: "w-full sm:w-auto text-center rounded-md px-3.5 py-2.5 bg-gray-100 hover:bg-gray-50 inline-block font-medium" %>
+  <%= link_to "Back to clients", admin_tenant_clients_url(@client.tenant), class: "w-full sm:w-auto text-center mt-2 sm:mt-0 rounded-md px-3.5 py-2.5 bg-gray-100 hover:bg-gray-50 inline-block font-medium" %>
+  <%#= button_to "Destroy this client", admin_tenant_client_path(@client.tenant, @client), method: :delete, form_class: "sm:inline-block mt-2 sm:mt-0 sm:ml-2", class: "w-full rounded-md px-3.5 py-2.5 text-white bg-red-600 hover:bg-red-500 font-medium cursor-pointer", data: { turbo_confirm: "Are you sure?" } %>
+  <%#= button_to "Delete", "#", method: :delete, data: {
 
-  <%= link_to "Edit this client", edit_admin_tenant_client_path(@client.tenant, @client), class: "w-full sm:w-auto text-center rounded-md px-3.5 py-2.5 bg-gray-100 hover:bg-gray-50 inline-block font-medium" %>
-  <%= link_to "Back to clients", admin_tenant_clients_url(@client.tenant), class: "w-full sm:w-auto text-center mt-2 sm:mt-0 sm:ml-2 rounded-md px-3.5 py-2.5 bg-gray-100 hover:bg-gray-50 inline-block font-medium" %>
-  <%= button_to "Destroy this client", admin_tenant_client_path(@client.tenant, @client), method: :delete, form_class: "sm:inline-block mt-2 sm:mt-0 sm:ml-2", class: "w-full rounded-md px-3.5 py-2.5 text-white bg-red-600 hover:bg-red-500 font-medium cursor-pointer", data: { turbo_confirm: "Are you sure?" } %>
+        action: "click->modal#show",
+        action_url: admin_tenant_client_path(@client.tenant, @client)
+      },
+      form: { data: { turbo: false } }, # prevent button_to from wrapping a real form
+      class: "w-full sm:w-auto text-center rounded-md px-3.5 py-2.5 text-white bg-red-600 hover:bg-red-500 inline-block font-medium" %>
+
 </div>

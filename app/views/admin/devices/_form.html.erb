@@ -1,0 +1,52 @@
+<%= form_with(model: device, url: device.persisted? ? admin_client_device_path(device.client, device) : admin_client_devices_path(device.client), class: "contents") do |form| %>
+  <% if device.errors.any? %>
+    <div id="error_explanation" class="bg-red-50 text-red-500 px-3 py-2 font-medium rounded-md mt-3">
+      <h2><%= pluralize(device.errors.count, "error") %> prohibited this device from being saved:</h2>
+
+      <ul class="list-disc ml-6">
+        <% device.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="my-5">
+    <%= form.label :client_id, "Client: #{device.client.name}" %>
+    <%= form.hidden_field :client_id, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": device.errors[:client_id].none?, "border-red-400 focus:outline-red-600": device.errors[:client_id].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :last_ap %>
+    <%= form.text_field :last_ap, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": device.errors[:last_ap].none?, "border-red-400 focus:outline-red-600": device.errors[:last_ap].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :mac_address %>
+    <%= form.text_field :mac_address, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": device.errors[:mac_address].none?, "border-red-400 focus:outline-red-600": device.errors[:mac_address].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :site_id %>
+    <%= form.text_field :site_id, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": device.errors[:site_id].none?, "border-red-400 focus:outline-red-600": device.errors[:site_id].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :last_authenticated_at %>
+    <%= form.datetime_field :last_authenticated_at, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": device.errors[:last_authenticated_at].none?, "border-red-400 focus:outline-red-600": device.errors[:last_authenticated_at].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :last_otp %>
+    <%= form.text_field :last_otp, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": device.errors[:last_otp].none?, "border-red-400 focus:outline-red-600": device.errors[:last_otp].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :authentication_expire_at %>
+    <%= form.datetime_field :authentication_expire_at, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": device.errors[:authentication_expire_at].none?, "border-red-400 focus:outline-red-600": device.errors[:authentication_expire_at].any?}] %>
+  </div>
+
+  <div class="inline">
+    <%= form.submit class: "w-full sm:w-auto rounded-md px-3.5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white inline-block font-medium cursor-pointer" %>
+  </div>
+<% end %>

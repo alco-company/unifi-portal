@@ -5,6 +5,9 @@ Rails.application.routes.draw do
       end
       resources :clients
     end
+    resources :clients do
+      resources :devices
+    end
   end
 
   get "/check_pnr", to: "pnumber#check_pnr", as: :check_pnr

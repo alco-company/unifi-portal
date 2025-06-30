@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_06_30_121914) do
+ActiveRecord::Schema[8.1].define(version: 2025_06_30_184519) do
   create_table "clients", force: :cascade do |t|
     t.boolean "active"
     t.datetime "created_at", null: false
@@ -23,6 +23,20 @@ ActiveRecord::Schema[8.1].define(version: 2025_06_30_121914) do
     t.integer "tenant_id", null: false
     t.datetime "updated_at", null: false
     t.index ["tenant_id"], name: "index_clients_on_tenant_id"
+  end
+
+  create_table "devices", force: :cascade do |t|
+    t.datetime "authentication_expire_at"
+    t.integer "client_id", null: false
+    t.datetime "created_at", null: false
+    t.string "last_ap"
+    t.datetime "last_authenticated_at"
+    t.string "last_otp"
+    t.string "mac_address"
+    t.integer "site_id"
+    t.datetime "updated_at", null: false
+    t.index ["client_id"], name: "index_devices_on_client_id"
+    t.index ["site_id"], name: "index_devices_on_site_id"
   end
 
   create_table "sites", force: :cascade do |t|
@@ -51,5 +65,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_06_30_121914) do
   end
 
   add_foreign_key "clients", "tenants"
+  add_foreign_key "devices", "clients"
+  add_foreign_key "devices", "sites"
   add_foreign_key "sites", "tenants"
 end

@@ -1,0 +1,57 @@
+<% content_for :title, "Devices" %>
+
+<div class="w-full">
+  <% if notice.present? %>
+    <p class="py-2 px-3 bg-green-50 mb-5 text-green-500 font-medium rounded-md inline-block" id="notice"><%= notice %></p>
+  <% end %>
+
+  <div class="flex justify-between items-center">
+    <h1 class="font-bold text-4xl">Devices</h1>
+    <span class="flex space-x-2">
+      <%= link_to @client.name, admin_tenant_client_path(@client.tenant, @client), class: "rounded-md px-3.5 py-2.5 bg-slate-400 hover:bg-slate-500 text-white block font-medium" %>
+      <%= link_to "New device", new_admin_client_device_path(@client), class: "rounded-md px-3.5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white block font-medium" %>
+    </span>
+
+  </div>
+
+  <div id="devices" class="min-w-full divide-y divide-gray-200 space-y-5">
+    <% if @devices.any? %>
+
+      <div class="hidden md:grid md:grid-cols-8 w-full sm:w-auto my-5 gap-2 space-y-5">
+
+        <div class="col-span-1">
+          <strong class="block md:hidden font-medium mb-1">authentication_expire_at:</strong>
+        </div>
+        <div class="col-span-1">
+          <strong class="block md:hidden font-medium mb-1">client_id:</strong>
+        </div>
+        <div class="col-span-1">
+          <strong class="block md:hidden font-medium mb-1">last_ap:</strong>
+        </div>
+        <div class="col-span-1">
+          <strong class="block md:hidden font-medium mb-1">last_authenticated_at:</strong>
+        </div>
+        <div class="col-span-1">
+          <strong class="block md:hidden font-medium mb-1">last_otp:</strong>
+        </div>
+        <div class="col-span-1">
+          <strong class="block md:hidden font-medium mb-1">mac_address:</strong>
+        </div>
+        <div class="col-span-1">
+          <strong class="block md:hidden font-medium mb-1">site_id:</strong>
+        </div>
+        <div class="col-span-1">
+          &nbsp;
+        </div>
+      </div>
+
+      <% @devices.each do |device| %>
+        <div class="flex flex-col sm:flex-row justify-between items-center pb-5 sm:pb-0">
+          <%= render device %>
+        </div>
+      <% end %>
+    <% else %>
+      <p class="text-center my-10">No devices found.</p>
+    <% end %>
+  </div>
+</div>

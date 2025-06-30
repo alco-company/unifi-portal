@@ -1,25 +1,25 @@
 <div id="<%= dom_id client %>" class="md:grid md:grid-cols-11 w-full sm:w-auto my-5 gap-2 space-y-5">
-  <div class="md:col-span-2">
+  <div class="md:col-span-2 truncate">
     <strong class="block md:hidden font-medium mb-1">Name:</strong>
     <%= client.name %>
   </div>
-  <div class="md:col-span-2">
+  <div class="md:col-span-2 truncate">
     <strong class="block md:hidden font-medium mb-1">Email:</strong>
     <%= client.email %>
   </div>
-  <div class="md:col-span-2">
+  <div class="md:col-span-2 truncate">
     <strong class="block md:hidden font-medium mb-1">Phone:</strong>
     <%= client.phone %>
   </div>
-  <div class="md:col-span-1">
+  <div class="md:col-span-1 md:hidden xl:block">
     <strong class="block md:hidden font-medium mb-1">Guest max:</strong>
     <%= client.guest_max %>
   </div>
-  <div class="md:col-span-1">
+  <div class="md:col-span-1 md:hidden xl:block">
     <strong class="block md:hidden font-medium mb-1">Guest rx:</strong>
     <%= client.guest_rx %>
   </div>
-  <div class="md:col-span-1">
+  <div class="md:col-span-1 md:hidden xl:block">
     <strong class="block md:hidden font-medium mb-1">Guest tx:</strong>
     <%= client.guest_tx %>
   </div>
@@ -28,7 +28,7 @@
     <%= client.active? ? "Yes" : "No" %>
   </div>
   <div class="col-span-6 xl:col-span-1 w-full flex flex-col sm:flex-row space-x-2 space-y-2">
-    <%#= link_to "Clients", admin_tenant_clients_path(client.tenant), class: "w-full sm:w-auto text-center rounded-md px-3.5 py-2.5 bg-gray-100 hover:bg-gray-50 inline-block font-medium" %>
+    <%= link_to "Devices", admin_client_devices_path(client), class: "w-full sm:w-auto text-center rounded-md px-3.5 py-2.5 bg-gray-100 hover:bg-gray-50 inline-block font-medium" %>
     <%= link_to "Edit", edit_admin_tenant_client_path(client.tenant, client), class: "w-full sm:w-auto text-center rounded-md px-3.5 py-2.5 bg-gray-100 hover:bg-gray-50 inline-block font-medium" %>
     <%= button_to "Delete", "#", method: :delete, data: {
 

@@ -2,6 +2,7 @@
 
 ## 0.2.1
 
+- add device resource
 - add clients resource
 
 ## 0.1.2
