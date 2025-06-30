@@ -1,0 +1,30 @@
+<div id="<%= dom_id site %>" class="w-full sm:w-auto my-5 space-y-5">
+  <div>
+    <strong class="block font-medium mb-1">Tenant:</strong>
+    <%= site.tenant_id %>
+  </div>
+  <div>
+    <strong class="block font-medium mb-1">Name:</strong>
+    <%= site.name %>
+  </div>
+  <div>
+    <strong class="block font-medium mb-1">Url:</strong>
+    <%= site.url %>
+  </div>
+  <div>
+    <strong class="block font-medium mb-1">Ssid:</strong>
+    <%= site.ssid %>
+  </div>
+  <div>
+    <strong class="block font-medium mb-1">Api key:</strong>
+    <%= site.api_key %>
+  </div>
+  <div>
+    <strong class="block font-medium mb-1">Controller url:</strong>
+    <%= site.controller_url %>
+  </div>
+  <div>
+    <strong class="block font-medium mb-1">Active:</strong>
+    <%= site.active? ? "Yes" : "No" %>
+  </div>
+</div>

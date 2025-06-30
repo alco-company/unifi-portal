@@ -1,0 +1,55 @@
+<% content_for :title, "Sites" %>
+
+<div class="w-full">
+  <% if notice.present? %>
+    <p class="py-2 px-3 bg-green-50 mb-5 text-green-500 font-medium rounded-md inline-block" id="notice"><%= notice %></p>
+  <% end %>
+
+  <div class="flex justify-between items-center">
+    <h1 class="font-bold text-4xl">Sites</h1>
+    <%= link_to "New site", new_admin_tenant_site_path(@tenant), class: "rounded-md px-3.5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white block font-medium" %>
+  </div>
+
+  <div id="sites" class="min-w-full divide-y divide-gray-200 space-y-5">
+    <% if @sites.any? %>
+
+      <div class="hidden md:grid md:grid-cols-9 w-full sm:w-auto my-5 gap-2 space-y-5">
+        <div class="col-span-2">
+          <strong class="block font-medium mb-1">Name:</strong>
+        </div>
+        <div class="col-span-2">
+          <strong class="block font-medium mb-1">Url:</strong>
+        </div>
+        <div class="col-span-2">
+          <strong class="block font-medium mb-1">Controller Url:</strong>
+        </div>
+        <div class="col-span-1">
+          <strong class="block font-medium mb-1">SSID:</strong>
+        </div>
+        <div class="col-span-1">
+          <strong class="block font-medium mb-1">Guest max:</strong>
+        </div>
+        <div class="col-span-1">
+          <strong class="block font-medium mb-1">Guest rx:</strong>
+        </div>
+        <div class="col-span-1">
+          <strong class="block font-medium mb-1">Guest tx:</strong>
+        </div>
+        <div class="col-span-1">
+          <strong class="block font-medium mb-1">Active:</strong>
+        </div>
+        <div class="col-span-1">
+          &nbsp;
+        </div>
+      </div>
+
+      <% @sites.each do |site| %>
+        <div class="flex flex-col sm:flex-row justify-between items-center pb-5 sm:pb-0">
+          <%= render site %>
+        </div>
+      <% end %>
+    <% else %>
+      <p class="text-center my-10">No sites found.</p>
+    <% end %>
+  </div>
+</div>

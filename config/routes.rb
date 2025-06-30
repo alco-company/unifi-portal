@@ -1,6 +1,8 @@
 Rails.application.routes.draw do
   namespace :admin do
-    resources :tenants
+    resources :tenants do
+      resources :sites
+    end
   end
 
   get "/check_pnr", to: "pnumber#check_pnr", as: :check_pnr

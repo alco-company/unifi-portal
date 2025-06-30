@@ -12,21 +12,9 @@
 
   <div id="admin_tenants" class="min-w-full divide-y divide-gray-200 space-y-5">
     <% if @admin_tenants.any? %>
-      <div class="hidden md:grid md:grid-cols-9 w-full sm:w-auto my-5 gap-2 space-y-5">
-        <div class="col-span-2">
+      <div class="hidden md:grid md:grid-cols-6 w-full sm:w-auto my-5 gap-2 space-y-5">
+        <div class="col-span-4">
           <strong class="block font-medium mb-1">Name:</strong>
-        </div>
-        <div class="col-span-2">
-          <strong class="block font-medium mb-1">Url:</strong>
-        </div>
-        <div class="col-span-1">
-          <strong class="block font-medium mb-1">Guest max:</strong>
-        </div>
-        <div class="col-span-1">
-          <strong class="block font-medium mb-1">Guest rx:</strong>
-        </div>
-        <div class="col-span-1">
-          <strong class="block font-medium mb-1">Guest tx:</strong>
         </div>
         <div class="col-span-1">
           <strong class="block font-medium mb-1">Active:</strong>

@@ -1,13 +1,19 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
-  url: "https://heimdall.test/"
-  ssid: "thisted-guest"
-  controller_id: "test-controller-id"
-  controller_url: "https://heimdall.test/"
+  tenant: one
+  name: MyString
+  url: MyString
+  ssid: MyString
+  api_key: MyString
+  controller_url: MyString
+  active: false
 
 two:
-  url: "https://heimdall.test/"
-  ssid: "another-guest"
-  controller_id: "another-controller-id"
-  controller_url: "https://heimdall.test/"
+  tenant: two
+  name: MyString
+  url: MyString
+  ssid: MyString
+  api_key: MyString
+  controller_url: MyString
+  active: false

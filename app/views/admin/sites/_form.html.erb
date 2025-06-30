@@ -1,0 +1,52 @@
+<%= form_with(model: site, url: site.persisted? ? admin_site_path(site.tenant, site) : admin_tenant_sites_path(site.tenant), class: "contents") do |form| %>
+  <% if site.errors.any? %>
+    <div id="error_explanation" class="bg-red-50 text-red-500 px-3 py-2 font-medium rounded-md mt-3">
+      <h2><%= pluralize(site.errors.count, "error") %> prohibited this site from being saved:</h2>
+
+      <ul class="list-disc ml-6">
+        <% site.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="my-5">
+    <%= form.label :tenant_id, "Tenant: #{site.tenant.name}" %>
+    <%= form.hidden_field :tenant_id, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": site.errors[:tenant_id].none?, "border-red-400 focus:outline-red-600": site.errors[:tenant_id].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :name %>
+    <%= form.text_field :name, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": site.errors[:name].none?, "border-red-400 focus:outline-red-600": site.errors[:name].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :url %>
+    <%= form.text_field :url, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": site.errors[:url].none?, "border-red-400 focus:outline-red-600": site.errors[:url].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :ssid %>
+    <%= form.text_field :ssid, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": site.errors[:ssid].none?, "border-red-400 focus:outline-red-600": site.errors[:ssid].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :api_key %>
+    <%= form.text_field :api_key, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": site.errors[:api_key].none?, "border-red-400 focus:outline-red-600": site.errors[:api_key].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :controller_url %>
+    <%= form.text_field :controller_url, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": site.errors[:controller_url].none?, "border-red-400 focus:outline-red-600": site.errors[:controller_url].any?}] %>
+  </div>
+
+  <div class="my-5 flex items-center gap-2">
+    <%= form.label :active %>
+    <%= form.checkbox :active, class: ["block shadow-sm rounded-md border order-first h-5 w-5", {"border-gray-400 focus:outline-blue-600": site.errors[:active].none?, "border-red-400 focus:outline-red-600": site.errors[:active].any?}] %>
+  </div>
+
+  <div class="inline">
+    <%= form.submit class: "w-full sm:w-auto rounded-md px-3.5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white inline-block font-medium cursor-pointer" %>
+  </div>
+<% end %>

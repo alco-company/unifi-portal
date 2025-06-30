@@ -2,6 +2,7 @@
 
 ## 0.1.2
 
+- add sites
 - make admin a scope - not part of tablenames
 - add tenants
 - add Kamal deployment tooling

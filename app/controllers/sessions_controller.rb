@@ -122,11 +122,11 @@ class SessionsController < ApplicationController
   end
 
   def authorize_guest!
-    return false unless @site && @client
+    return false unless @site #&& @client
     result = External::Unifi.authorize_guest(
       url: @site.url,
       site_id: @site_id,
-      client_id: @client["id"],
+      client_id: params["id"],
       api_key: @site.api_key
     )
     !result.nil? && result.dig("action").present? && result["action"] == "AUTHORIZE_GUEST_ACCESS" ?
