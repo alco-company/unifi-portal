@@ -34,11 +34,11 @@ class Admin::SitesController < ApplicationController
   def update
     respond_to do |format|
       if @site.update(site_params)
-        format.html { redirect_to @site, notice: "Site was successfully updated." }
+        format.html { redirect_to admin_tenant_sites_path(@tenant), notice: "Site was successfully updated." }
         format.json { render :show, status: :ok, location: @site }
       else
         format.html { render :edit, status: :unprocessable_entity }
-        format.json { render json: @site.errors, status: :unprocessable_entity }
+        format.json { render json: admin_tenant_site_path(@tenant,@site).errors, status: :unprocessable_entity }
       end
     end
   end

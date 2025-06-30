@@ -1,7 +1,12 @@
 # CHANGELOG
 
+## 0.2.1
+
+- add clients
+
 ## 0.1.2
 
+- edit site form
 - testing with site created
 - add sites
 - make admin a scope - not part of tablenames
