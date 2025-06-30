@@ -1,6 +1,4 @@
 class SessionsController < ApplicationController
-  before_action :load_site, only: [:new, :create, :update]
-  before_action :load_client_info, only: [:new, :update]
 
   # ap=74:83:c2:29:5f:f6
   # id=b6:b8:cb:76:a8:1f
@@ -10,18 +8,24 @@ class SessionsController < ApplicationController
   # for 188.228.84.87 
   # at 2025-06-24 13:22:10 +0200
   def new
-    if @client
+    site = Site.find_by(url: request.remote_ip).first || Site.find_by(ssid: params[:ssid]).first
+    unless site.nil?
+      params[:sid] = site.id
+      params[:tid] = site.tenant_id
       render :new
     else
       render :error, status: :not_found
     end
   end
 
+  # tid = tenant_id
+  # sid = site_id
   def create
-    @user = params.permit(:ap, :id, :url, :ssid, :t, :name, :pnr, :email, :phone)
-    session[:user_data] = @user.to_h
+    user = params.permit(:tid, :sid, :ap, :id, :url, :ssid, :t, :name, :email, :phone)
 
-    if valid_user_input?(@user)
+    if valid_user_input?(user)
+      client = Client.create!(tenant_id: user[:tid], name: user[:name], email: user[:email], phone: user[:phone], active: true)
+      device = 
       otp = OtpGenerator.generate_otp
       session[:otp] = otp
       session[:otp_sent_at] = Time.current

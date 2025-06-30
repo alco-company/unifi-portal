@@ -2,7 +2,7 @@
 
 ## 0.2.1
 
-- add clients
+- add clients resource
 
 ## 0.1.2
 

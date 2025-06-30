@@ -1,9 +1,11 @@
-class ClientsController < ApplicationController
+class Admin::ClientsController < ApplicationController
+  before_action :set_tenant
+  before_action :set_site, only: %i[show edit update destroy]
   before_action :set_client, only: %i[ show edit update destroy ]
 
   # GET /clients or /clients.json
   def index
-    @clients = Client.all
+    @clients = @tenant.clients.all
   end
 
   # GET /clients/1 or /clients/1.json
@@ -12,7 +14,7 @@ class ClientsController < ApplicationController
 
   # GET /clients/new
   def new
-    @client = Client.new
+    @client = @tenant.clients.new
   end
 
   # GET /clients/1/edit
@@ -25,8 +27,8 @@ class ClientsController < ApplicationController
 
     respond_to do |format|
       if @client.save
-        format.html { redirect_to @client, notice: "Client was successfully created." }
-        format.json { render :show, status: :created, location: @client }
+        format.html { redirect_to admin_tenant_clients_path(@client.tenant), notice: "Client was successfully created." }
+        format.json { render :show, status: :created, location: admin_tenant_clients_path(@client.tenant) }
       else
         format.html { render :new, status: :unprocessable_entity }
         format.json { render json: @client.errors, status: :unprocessable_entity }
@@ -38,8 +40,8 @@ class ClientsController < ApplicationController
   def update
     respond_to do |format|
       if @client.update(client_params)
-        format.html { redirect_to @client, notice: "Client was successfully updated." }
-        format.json { render :show, status: :ok, location: @client }
+        format.html { redirect_to admin_tenant_clients_path(@client.tenant), notice: "Client was successfully updated." }
+        format.json { render :show, status: :ok, location: admin_tenant_clients_path(@client.tenant) }
       else
         format.html { render :edit, status: :unprocessable_entity }
         format.json { render json: @client.errors, status: :unprocessable_entity }
@@ -49,18 +51,28 @@ class ClientsController < ApplicationController
 
   # DELETE /clients/1 or /clients/1.json
   def destroy
-    @client.destroy!
+    if !@client.nil?
+      @client.destroy!
 
-    respond_to do |format|
-      format.html { redirect_to clients_path, status: :see_other, notice: "Client was successfully destroyed." }
-      format.json { head :no_content }
+      respond_to do |format|
+        format.html { redirect_to admin_tenant_clients_path(@client.tenant), status: :see_other, notice: "Client was successfully destroyed." }
+        format.json { head :no_content }
+      end
     end
   end
 
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_client
-      @client = Client.find(params.expect(:id))
+      @client = @tenant.clients.find(params.expect(:id)) rescue nil
+    end
+
+    def set_tenant
+      @tenant = Tenant.find(params[:tenant_id])
+    end
+    
+    def set_site
+      @site = @tenant.sites.find(params[:site_id]) rescue nil
     end
 
     # Only allow a list of trusted parameters through.

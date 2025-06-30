@@ -1,8 +1,9 @@
 Rails.application.routes.draw do
-  resources :clients
   namespace :admin do
     resources :tenants do
-      resources :sites
+      resources :sites do
+      end
+      resources :clients
     end
   end
 

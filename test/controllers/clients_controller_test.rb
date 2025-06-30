@@ -6,43 +6,43 @@ class ClientsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should get index" do
-    get clients_url
+    get admin_tenant_clients_path(@client.tenant)
     assert_response :success
   end
 
   test "should get new" do
-    get new_client_url
+    get new_admin_tenant_client_path(@client.tenant)
     assert_response :success
   end
 
   test "should create client" do
     assert_difference("Client.count") do
-      post clients_url, params: { client: { active: @client.active, email: @client.email, guest_max: @client.guest_max, guest_rx: @client.guest_rx, guest_tx: @client.guest_tx, name: @client.name, phone: @client.phone, tenant_id: @client.tenant_id } }
+      post admin_tenant_clients_path(@client.tenant), params: { client: { active: @client.active, email: @client.email, guest_max: @client.guest_max, guest_rx: @client.guest_rx, guest_tx: @client.guest_tx, name: @client.name, phone: @client.phone, tenant_id: @client.tenant_id } }
     end
 
-    assert_redirected_to client_url(Client.last)
+    assert_redirected_to admin_tenant_clients_url(@client.tenant)
   end
 
   test "should show client" do
-    get client_url(@client)
+    get admin_tenant_client_url(@client.tenant, @client)
     assert_response :success
   end
 
   test "should get edit" do
-    get edit_client_url(@client)
+    get edit_admin_tenant_client_url(@client.tenant, @client)
     assert_response :success
   end
 
   test "should update client" do
-    patch client_url(@client), params: { client: { active: @client.active, email: @client.email, guest_max: @client.guest_max, guest_rx: @client.guest_rx, guest_tx: @client.guest_tx, name: @client.name, phone: @client.phone, tenant_id: @client.tenant_id } }
-    assert_redirected_to client_url(@client)
+    patch admin_tenant_client_url(@client.tenant, @client), params: { client: { active: @client.active, email: @client.email, guest_max: @client.guest_max, guest_rx: @client.guest_rx, guest_tx: @client.guest_tx, name: @client.name, phone: @client.phone, tenant_id: @client.tenant_id } }
+    assert_redirected_to admin_tenant_clients_url(@client.tenant)
   end
 
   test "should destroy client" do
     assert_difference("Client.count", -1) do
-      delete client_url(@client)
+      delete admin_tenant_client_url(@client.tenant, @client)
     end
 
-    assert_redirected_to clients_url
+    assert_redirected_to admin_tenant_clients_path(@client.tenant)
   end
 end
