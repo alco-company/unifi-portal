@@ -1,0 +1,21 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  tenant: one
+  name: MyString
+  email: MyString
+  phone: MyString
+  guest_max: 1
+  guest_rx: 1
+  guest_tx: 1
+  active: false
+
+two:
+  tenant: two
+  name: MyString
+  email: MyString
+  phone: MyString
+  guest_max: 1
+  guest_rx: 1
+  guest_tx: 1
+  active: false

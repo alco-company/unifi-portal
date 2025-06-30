@@ -1,0 +1,12 @@
+<dialog data-modal-target="dialog" class="rounded-md m-auto shadow-lg p-6 w-96 bg-white">
+  <h2 class="text-lg font-semibold mb-4">Confirm deletion</h2>
+  <p class="mb-4">Are you sure you want to delete this tenant?</p>
+  <form id="delete-form" method="post">
+    <%= hidden_field_tag :_method, :delete %>
+    <%= hidden_field_tag :authenticity_token, form_authenticity_token  %>
+    <div class="flex justify-end gap-3">
+      <button type="button" data-action="click->modal#cancel" class="px-4 py-2 bg-gray-200 rounded">Cancel</button>
+      <button type="submit" data-action="click->modal#confirm" class="px-4 py-2 bg-red-600 text-white rounded">Delete</button>
+    </div>
+  </form>
+</dialog>

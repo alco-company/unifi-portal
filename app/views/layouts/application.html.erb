@@ -25,8 +25,10 @@
 
   <body>
     <div id="flash_toasts" class="fixed top-4 right-4 z-50 space-y-2"></div>
-    <main class="container mx-auto justify-center mt-28 px-5 flex">
+    <main class="container mx-auto justify-center mt-28 px-5 flex" data-controller="modal" data-modal-target="main">
       <%= yield %>
+      <%= render "admin/tenants/modal" if params[:controller] =~ /admin\/tenants/ %>
+      <%= render "admin/sites/modal" if params[:controller] =~ /admin\/sites/ %>
     </main>
   </body>
 </html>

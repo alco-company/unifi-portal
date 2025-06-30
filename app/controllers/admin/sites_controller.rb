@@ -45,11 +45,18 @@ class Admin::SitesController < ApplicationController
 
   # DELETE /sites/1 or /sites/1.json
   def destroy
-    @site.destroy!
+    if @site.present?
+      @site.destroy!
 
-    respond_to do |format|
-      format.html { redirect_to sites_path, status: :see_other, notice: "Site was successfully destroyed." }
-      format.json { head :no_content }
+      respond_to do |format|
+        format.html { redirect_to admin_tenant_sites_path(@tenant), status: :see_other, notice: "Site was successfully destroyed." }
+        format.json { head :no_content }
+      end
+    else
+      respond_to do |format|
+        format.html { redirect_to admin_tenant_sites_path(@tenant), status: :see_other, alert: "Site not found." }
+        format.json { render json: { error: "Site not found." }, status: :not_found }
+      end
     end
   end
 
@@ -60,7 +67,7 @@ class Admin::SitesController < ApplicationController
     end
     
     def set_site
-      @site = @tenant.sites.find(params[:id])
+      @site = @tenant.sites.find(params[:id]) rescue nil
     end
     # Only allow a list of trusted parameters through.
     def site_params

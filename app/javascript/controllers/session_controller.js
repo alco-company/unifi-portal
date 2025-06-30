@@ -5,29 +5,29 @@ export default class extends Controller {
   connect() {
   }
 
-  checkPnr(event) {
-    event.preventDefault();
-    const pnrInput = event.target;
-    const pnr = pnrInput.value.trim();
+  // checkPnr(event) {
+  //   event.preventDefault();
+  //   const pnrInput = event.target;
+  //   const pnr = pnrInput.value.trim();
 
-    if (pnr === '') {
-      pnrInput.parentElement.classList.add('border', 'border-yellow-500');
-      return;
-    } else {
-      fetch(`/check_pnr?pnr=${encodeURIComponent(pnr)}`)
-        .then(response => response.json())
-        .then(data => {
-          console.log(data)
-          pnrInput.parentElement.classList.add("border", "border-green-500");
-          document.querySelector("#name").disabled = true;
-          document.querySelector("#email").disabled = true;
-        })
-        .catch(error => {
-          console.error('Error checking PNR:', error);
-          alert('An error occurred while checking the PNR.');
-        });
-    }
-  }
+  //   if (pnr === '') {
+  //     pnrInput.parentElement.classList.add('border', 'border-yellow-500');
+  //     return;
+  //   } else {
+  //     fetch(`/check_pnr?pnr=${encodeURIComponent(pnr)}`)
+  //       .then(response => response.json())
+  //       .then(data => {
+  //         console.log(data)
+  //         pnrInput.parentElement.classList.add("border", "border-green-500");
+  //         document.querySelector("#name").disabled = true;
+  //         document.querySelector("#email").disabled = true;
+  //       })
+  //       .catch(error => {
+  //         console.error('Error checking PNR:', error);
+  //         alert('An error occurred while checking the PNR.');
+  //       });
+  //   }
+  // }
 
   checkPhoneNumber(event) {
     event.preventDefault();
@@ -45,8 +45,8 @@ export default class extends Controller {
             return;
           }
           phoneInput.parentElement.classList.add("border", "border-green-500");
-          document.querySelector("#name").disabled = true;
-          document.querySelector("#email").disabled = true;
+          // document.querySelector("#name").disabled = true;
+          // document.querySelector("#email").disabled = true;
         })
         .catch(error => {
           console.error('Error checking phone number:', error);
@@ -55,12 +55,12 @@ export default class extends Controller {
     }
   }
 
-  showPnrModal(event) {
-    event.preventDefault();
-    const modal = document.querySelector("#pnrModal");
-    if (modal) {
-      modal.classList.remove("hidden");
-      modal.classList.add("flex");
-    }
-  }
+  // showPnrModal(event) {
+  //   event.preventDefault();
+  //   const modal = document.querySelector("#pnrModal");
+  //   if (modal) {
+  //     modal.classList.remove("hidden");
+  //     modal.classList.add("flex");
+  //   }
+  // }
 }

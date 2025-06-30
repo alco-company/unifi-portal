@@ -1,0 +1,34 @@
+<div id="<%= dom_id client %>" class="w-full sm:w-auto my-5 space-y-5">
+  <div>
+    <strong class="block font-medium mb-1">Tenant:</strong>
+    <%= client.tenant_id %>
+  </div>
+  <div>
+    <strong class="block font-medium mb-1">Name:</strong>
+    <%= client.name %>
+  </div>
+  <div>
+    <strong class="block font-medium mb-1">Email:</strong>
+    <%= client.email %>
+  </div>
+  <div>
+    <strong class="block font-medium mb-1">Phone:</strong>
+    <%= client.phone %>
+  </div>
+  <div>
+    <strong class="block font-medium mb-1">Guest max:</strong>
+    <%= client.guest_max %>
+  </div>
+  <div>
+    <strong class="block font-medium mb-1">Guest rx:</strong>
+    <%= client.guest_rx %>
+  </div>
+  <div>
+    <strong class="block font-medium mb-1">Guest tx:</strong>
+    <%= client.guest_tx %>
+  </div>
+  <div>
+    <strong class="block font-medium mb-1">Active:</strong>
+    <%= client.active? ? "Yes" : "No" %>
+  </div>
+</div>

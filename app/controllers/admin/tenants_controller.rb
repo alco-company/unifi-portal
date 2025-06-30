@@ -49,18 +49,25 @@ class Admin::TenantsController < ApplicationController
 
   # DELETE /admin/tenants/1 or /admin/tenants/1.json
   def destroy
-    @admin_tenant.destroy!
+    if @admin_tenant.present?
+      @admin_tenant.destroy! 
 
-    respond_to do |format|
-      format.html { redirect_to admin_tenants_path, status: :see_other, notice: "Tenant was successfully destroyed." }
-      format.json { head :no_content }
+      respond_to do |format|
+        format.html { redirect_to admin_tenants_path, status: :see_other, notice: "Tenant was successfully destroyed." }
+        format.json { head :no_content }
+      end
+    else
+      respond_to do |format|
+        format.html { redirect_to admin_tenants_path, status: :see_other, alert: "Tenant not found." }
+        format.json { render json: { error: "Tenant not found." }, status: :not_found }
+      end
     end
   end
 
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_admin_tenant
-      @admin_tenant = Tenant.find(params.expect(:id))
+      @admin_tenant = Tenant.find(params.expect(:id)) rescue nil
     end
 
     # Only allow a list of trusted parameters through.
