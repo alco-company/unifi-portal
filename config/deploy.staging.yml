@@ -36,7 +36,6 @@ env:
     - MAILERSEND_API_TOKEN
     - SECRET_KEY_BASE
     - RAILS_MASTER_KEY
-    - OTP_KEY
     - HEIMDALL_VERSION
     - SMSAPI_API_TOKEN
   clear:
@@ -65,8 +64,11 @@ volumes:
 asset_path: /rails/public/assets
 
 # Configure the image builder.
+# builder:
+#   arch: amd64
 builder:
-  arch: amd64
+  remote: ssh://root@135.181.202.106
+  arch: arm64
 
   # # Build image via remote server (useful for faster amd64 builds on arm64 computers)
   # remote: ssh://docker@docker-builder-server

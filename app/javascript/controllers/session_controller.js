@@ -11,14 +11,14 @@ export default class extends Controller {
     const pnr = pnrInput.value.trim();
 
     if (pnr === '') {
-      pnrInput.classList.add('border', 'border-yellow-500');
+      pnrInput.parentElement.classList.add('border', 'border-yellow-500');
       return;
     } else {
       fetch(`/check_pnr?pnr=${encodeURIComponent(pnr)}`)
         .then(response => response.json())
         .then(data => {
           console.log(data)
-          pnrInput.classList.add("border", "border-green-500");
+          pnrInput.parentElement.classList.add("border", "border-green-500");
           document.querySelector("#name").disabled = true;
           document.querySelector("#email").disabled = true;
         })
@@ -35,23 +35,32 @@ export default class extends Controller {
     const phone = phoneInput.value.trim();
 
     if (phone === '') {
-      phoneInput.classList.add('border', 'border-yellow-500');
+      phoneInput.parentElement.classList.add('border', 'border-yellow-500');
       return;
     } else {
       fetch(`/check_phone?phone=${encodeURIComponent(phone)}`)
         .then(response => response.json())
         .then(data => {
-          console.log(data)
-          phoneInput.classList.add("border", "border-green-500");
-          if (document.querySelector("#pnr").value != "") {
-            document.querySelector("#name").disabled = true;
-            document.querySelector("#email").disabled = true;
+          if (!data.exists) {
+            return;
           }
+          phoneInput.parentElement.classList.add("border", "border-green-500");
+          document.querySelector("#name").disabled = true;
+          document.querySelector("#email").disabled = true;
         })
         .catch(error => {
           console.error('Error checking phone number:', error);
           alert('An error occurred while checking the phone number.');
         });
+    }
+  }
+
+  showPnrModal(event) {
+    event.preventDefault();
+    const modal = document.querySelector("#pnrModal");
+    if (modal) {
+      modal.classList.remove("hidden");
+      modal.classList.add("flex");
     }
   }
 }

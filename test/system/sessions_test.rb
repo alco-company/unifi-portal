@@ -18,7 +18,7 @@ class SessionsTest < ApplicationSystemTestCase
       t:    Time.current.to_i
     )
 
-    within("turbo-frame#login_form") do
+    within("form") do
       fill_in "For- og efternavn", with: "Alice"
       fill_in "Dit P-nr", with: "123456-7890"
       fill_in "Din email adresse", with: "alice@example.com"
@@ -44,7 +44,7 @@ class SessionsTest < ApplicationSystemTestCase
       t:    Time.current.to_i
     )
 
-    within("turbo-frame#login_form") do
+    within("form") do
       fill_in "For- og efternavn", with: "Alice"
       fill_in "Dit P-nr", with: "123456-7890"
       fill_in "Din email adresse", with: "alice@example.com"

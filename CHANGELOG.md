@@ -2,6 +2,7 @@
 
 ## 0.1.2
 
+- add tenants
 - add Kamal deployment tooling
 
 ## 0.1.1
