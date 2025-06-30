@@ -2,6 +2,7 @@
 
 ## 0.1.2
 
+- testing with site created
 - add sites
 - make admin a scope - not part of tablenames
 - add tenants

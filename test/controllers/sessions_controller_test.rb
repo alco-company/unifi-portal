@@ -5,7 +5,8 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
   include ActiveJob::TestHelper
 
   setup do
-    @site = Site.create!(controller_url: "https://heimdall.test", url: "https://heimdall.test", ssid: "thisted-guest", api_key: "test-key")
+    tenant = tenants(:one)
+    @site = Site.create!(tenant: tenant, controller_url: "https://heimdall.test", url: "https://heimdall.test", ssid: "thisted-guest", api_key: "test-key")
     @client_mac = "1c:71:25:63:e4:24"
     stub_unifi_client_api(@client_mac)
     stub_unifi_sites_api()

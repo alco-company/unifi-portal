@@ -55,7 +55,7 @@ module UnifiApiStubs
       }.to_json, headers: { "Content-Type" => "application/json" })
   end
 
-  def stub_guest_authorization_api(base_url = "https://heimdall.test", site_id: "test-site-id", client_id: "497f6eca-6276-4993-bfeb-53cbbbba6f08", api_key: "test-api-key")
+  def stub_guest_authorization_api(base_url = "https://heimdall.test", site_id: "test-site-id", client_id: "1c:71:25:63:e4:24", api_key: "test-api-key")
     stub_request(:post, %r{#{base_url}/proxy/network/integration/v1/sites/#{site_id}/clients/#{client_id}/actions})
       .to_return(status: 200, body: { 
         "action": "AUTHORIZE_GUEST_ACCESS",

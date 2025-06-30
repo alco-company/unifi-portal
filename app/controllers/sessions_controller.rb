@@ -26,8 +26,8 @@ class SessionsController < ApplicationController
       session[:otp] = otp
       session[:otp_sent_at] = Time.current
 
-      OtpMailer.send_otp(@user[:email], otp).deliver_later
-      SmsSender.send_code(@user[:phone], otp)
+      OtpMailer.send_otp(@user[:email], otp).deliver_later if @user[:email].present?
+      SmsSender.send_code(@user[:phone], otp) if @user[:phone].present?
 
       respond_to do |format|
         format.turbo_stream { render turbo_stream: turbo_stream.replace("otp_input", partial: "sessions/otp_form") }
@@ -114,7 +114,7 @@ class SessionsController < ApplicationController
   end
 
   def valid_user_input?(data)
-    data[:name].present? && data[:email] =~ URI::MailTo::EMAIL_REGEXP && data[:phone].present?
+    data[:name].present? && data[:email] =~ URI::MailTo::EMAIL_REGEXP # && data[:phone].present?
   end
 
   def otp_valid?

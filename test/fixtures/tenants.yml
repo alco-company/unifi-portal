@@ -2,20 +2,12 @@
 
 one:
   name: MyString
-  url: MyString
   login: MyString
   password: MyString
-  guest_max: MyString
-  guest_rx: MyString
-  guest_tx: MyString
   active: false
 
 two:
   name: MyString
-  url: MyString
   login: MyString
   password: MyString
-  guest_max: MyString
-  guest_rx: MyString
-  guest_tx: MyString
   active: false
