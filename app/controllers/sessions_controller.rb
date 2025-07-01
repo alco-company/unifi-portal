@@ -26,7 +26,6 @@ class SessionsController < ApplicationController
 
     if valid_user_input?(user)
       device = find_or_create_user_client(user)
-      debugger
       unless device.nil?
         session[:did] = device.id
         begin
