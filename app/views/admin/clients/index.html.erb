@@ -64,14 +64,14 @@
   <p class="mb-4">Please upload a CSV file containing the client information.</p>
   <p class="mb-4">First row should contain the following headers:</p>
   <ul class="list-disc list-inside mb-4">
-    <li>Name</li>
-    <li>Email</li>
-    <li>Phone</li>
-    <li>Note</li>
-    <li>Guest_max</li>
-    <li>Guest_rx</li>
-    <li>Guest_tx</li>
-    <li>Active</li>
+    <li>name</li>
+    <li>email</li>
+    <li>phone</li>
+    <li>note</li>
+    <li>guest_max</li>
+    <li>guest_rx</li>
+    <li>guest_tx</li>
+    <li>active</li>
   </ul>
   <%= form_with url: import_admin_tenant_clients_path(@tenant), multipart: true, method: :post, class: "inline-block" do |form| %>
     <%= hidden_field_tag :authenticity_token, form_authenticity_token  %>

@@ -3,6 +3,8 @@
 ## 0.3.0
 
 - add upload CSV to create clients
+- make tests green - lest one exemption
+- add notes to clients
 
 ## 0.2.1
 

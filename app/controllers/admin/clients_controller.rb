@@ -38,7 +38,7 @@ class Admin::ClientsController < ApplicationController
             name:  row["name"],
             email: row["email"],
             phone: row["phone"],
-            # note:  row["note"]
+            note:  row["note"],
             guest_max: row["guest_max"].to_i,
             guest_rx: row["guest_rx"].to_i,
             guest_tx: row["guest_tx"].to_i,
@@ -111,6 +111,6 @@ class Admin::ClientsController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def client_params
-      params.expect(client: [ :tenant_id, :name, :email, :phone, :guest_max, :guest_rx, :guest_tx, :active ])
+      params.expect(client: [ :tenant_id, :name, :email, :phone, :guest_max, :guest_rx, :guest_tx, :active, :note ])
     end
 end

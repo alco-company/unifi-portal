@@ -46,6 +46,11 @@
     <%= form.number_field :guest_tx, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": client.errors[:guest_tx].none?, "border-red-400 focus:outline-red-600": client.errors[:guest_tx].any?}] %>
   </div>
 
+  <div class="my-5">
+    <%= form.label :note %>
+    <%= form.textarea :note, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": client.errors[:note].none?, "border-red-400 focus:outline-red-600": client.errors[:note].any?}] %>
+  </div>
+
   <div class="my-5 flex items-center gap-2">
     <%= form.label :active %>
     <%= form.checkbox :active, class: ["block shadow-sm rounded-md border order-first h-5 w-5", {"border-gray-400 focus:outline-blue-600": client.errors[:active].none?, "border-red-400 focus:outline-red-600": client.errors[:active].any?}] %>
