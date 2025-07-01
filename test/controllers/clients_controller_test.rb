@@ -17,7 +17,7 @@ class ClientsControllerTest < ActionDispatch::IntegrationTest
 
   test "should create client" do
     assert_difference("Client.count") do
-      post admin_tenant_clients_path(@client.tenant), params: { client: { active: @client.active, email: @client.email, guest_max: @client.guest_max, guest_rx: @client.guest_rx, guest_tx: @client.guest_tx, name: @client.name, phone: @client.phone, tenant_id: @client.tenant_id } }
+      post admin_tenant_clients_path(@client.tenant), params: { client: { active: @client.active, email: @client.email, guest_max: @client.guest_max, guest_rx: @client.guest_rx, guest_tx: @client.guest_tx, name: @client.name, phone: @client.phone, tenant_id: @client.tenant_id, note: @client.note } }
     end
 
     assert_redirected_to admin_tenant_clients_url(@client.tenant)
@@ -34,7 +34,7 @@ class ClientsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should update client" do
-    patch admin_tenant_client_url(@client.tenant, @client), params: { client: { active: @client.active, email: @client.email, guest_max: @client.guest_max, guest_rx: @client.guest_rx, guest_tx: @client.guest_tx, name: @client.name, phone: @client.phone, tenant_id: @client.tenant_id } }
+    patch admin_tenant_client_url(@client.tenant, @client), params: { client: { active: @client.active, email: @client.email, guest_max: @client.guest_max, guest_rx: @client.guest_rx, guest_tx: @client.guest_tx, name: @client.name, phone: @client.phone, tenant_id: @client.tenant_id, note: @client.note } }
     assert_redirected_to admin_tenant_clients_url(@client.tenant)
   end
 

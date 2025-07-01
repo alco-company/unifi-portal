@@ -30,12 +30,11 @@
   <div class="col-span-6 xl:col-span-1 w-full flex flex-col sm:flex-row space-x-2 space-y-2">
     <%= link_to "Devices", admin_client_devices_path(client), class: "w-full sm:w-auto text-center rounded-md px-3.5 py-2.5 bg-gray-100 hover:bg-gray-50 inline-block font-medium" %>
     <%= link_to "Edit", edit_admin_tenant_client_path(client.tenant, client), class: "w-full sm:w-auto text-center rounded-md px-3.5 py-2.5 bg-gray-100 hover:bg-gray-50 inline-block font-medium" %>
-    <%= button_to "Delete", "#", method: :delete, data: {
+    <%= button_tag "Delete", type: "button", data: {
 
           action: "click->modal#show",
           action_url: admin_tenant_client_path(client.tenant, client)
         },
-        form: { data: { turbo: false } }, # prevent button_to from wrapping a real form
         class: "w-full sm:w-auto text-center rounded-md px-3.5 py-2.5 text-white bg-red-600 hover:bg-red-500 inline-block font-medium" %>
 
     <%#= button_to "Destroy", admin_tenant_sites_path(site.tenant, site), method: :delete, class: "w-full sm:w-auto rounded-md px-3.5 py-2.5 text-white bg-red-600 hover:bg-red-500 font-medium cursor-pointer", data: { turbo_confirm: "Are you sure?" } %>

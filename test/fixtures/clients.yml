@@ -2,13 +2,14 @@
 
 one:
   tenant: one
-  name: MyString
-  email: MyString
-  phone: MyString
+  name: Alice
+  email: alice@example.com
+  phone: "+4512345678"
   guest_max: 1
   guest_rx: 1
   guest_tx: 1
   active: false
+  note: this is a note
 
 two:
   tenant: two

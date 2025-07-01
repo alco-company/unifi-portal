@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_06_30_184519) do
+ActiveRecord::Schema[8.1].define(version: 2025_07_01_122313) do
   create_table "clients", force: :cascade do |t|
     t.boolean "active"
     t.datetime "created_at", null: false
@@ -19,6 +19,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_06_30_184519) do
     t.integer "guest_rx"
     t.integer "guest_tx"
     t.string "name"
+    t.text "note"
     t.string "phone"
     t.integer "tenant_id", null: false
     t.datetime "updated_at", null: false
@@ -34,6 +35,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_06_30_184519) do
     t.string "last_otp"
     t.string "mac_address"
     t.integer "site_id"
+    t.string "unifi_id"
     t.datetime "updated_at", null: false
     t.index ["client_id"], name: "index_devices_on_client_id"
     t.index ["site_id"], name: "index_devices_on_site_id"

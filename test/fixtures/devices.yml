@@ -2,12 +2,12 @@
 
 one:
   client: one
-  last_ap: MyString
-  mac_address: MyString
+  last_ap: "94:2a:6f:d0:30:57"
+  mac_address: "1c:71:25:63:e4:24"
   site: one
-  last_authenticated_at: 2025-06-30 20:45:19
+  last_authenticated_at: 2025-06-30 20:45
   last_otp: MyString
-  authentication_expire_at: 2025-06-30 20:45:19
+  authentication_expire_at: 2025-06-30 20:45
 
 two:
   client: two

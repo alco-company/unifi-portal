@@ -42,11 +42,14 @@ export default class extends Controller {
         .then(response => response.json())
         .then(data => {
           if (!data.exists) {
-            return;
+            phoneInput.parentElement.classList.remove("border", "border-green-500");
+            phoneInput.parentElement.classList.add("border", "border-yellow-500");
+          } else {
+            phoneInput.parentElement.classList.remove("border", "border-yellow-500");
+            phoneInput.parentElement.classList.add("border", "border-green-500");
+            // document.querySelector("#name").disabled = true;
+            // document.querySelector("#email").disabled = true;
           }
-          phoneInput.parentElement.classList.add("border", "border-green-500");
-          // document.querySelector("#name").disabled = true;
-          // document.querySelector("#email").disabled = true;
         })
         .catch(error => {
           console.error('Error checking phone number:', error);

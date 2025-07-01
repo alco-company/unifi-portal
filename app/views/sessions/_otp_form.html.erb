@@ -17,11 +17,7 @@
                 action: "input->otp#submitIfComplete paste->otp#handlePaste"
               } %>
       </div>
-      <%= hidden_field_tag :ssid, params[:ssid] %>
-      <%= hidden_field_tag :url,  params[:url] %>
-      <%= hidden_field_tag :id,   params[:id] %>
-      <%= hidden_field_tag :ap,   params[:ap] %>
-      <%= hidden_field_tag :t,    params[:t] %>
+      <%= hidden_field_tag :did, session[:did] %>
 
       <%= form.submit "Godkend", class: "bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded" %>
     <% end %>

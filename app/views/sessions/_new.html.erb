@@ -1,0 +1,75 @@
+<turbo-frame id="login_form">
+  <div data-controller="session" class="relative w-full max-w-md mx-auto p-6 bg-white shadow rounded">
+    <h1 class="text-xl font-semibold mb-4">Log ind for at få adgang til netværket</h1>
+
+    <%= form_with url: session_path, method: :post, data: { turbo: true, turbo_frame: "otp_input" } do |form| %>
+      <!-- 
+      <div class="mb-4">
+        <%= form.label :pnr, "Dit P-nr", class: "block text-sm font-medium text-gray-700" %>
+        <div class="relative mt-2 flex items-center text-lg font-mono border border-gray-300 rounded-md shadow-sm">
+          <%= form.text_field :pnr, autofocus: true, data: { action: "blur->session#checkPnr" }, class: "-ml-px p-2 block w-full grow" %>
+          <div class="flex shrink-0 cursor-pointer items-center p-2 bg-white px-3 text-gray-500 " data-action="click->session#showPnrModal">?</div>
+        </div>
+        <p class="text-xs mt-2 text-gray-400">Har du ikke et P-nr får du kun 24 timers adgang, før du skal godkendes igen. Med et P-nr får du permanent adgang (indtil din translokation).</p>
+      </div> -->
+
+      <div class="mb-4">
+        <%= form.label :phone, "Dit telefonnummer", class: "block text-sm font-medium text-gray-700" %>
+        <div class="mt-2 flex items-center text-lg font-mono border border-gray-300 rounded-md shadow-sm">
+          <div class="flex shrink-0 items-center p-2 bg-white px-3 text-gray-500 ">+45</div>
+          <!-- <input type="text" name="company-website" id="company-website" class=" bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" placeholder="www.example.com" /> -->
+          <%= form.telephone_field :phone, autofocus: true, data: { action: "blur->session#checkPhoneNumber" }, class: "-ml-px p-2 block w-full  grow" %>
+        </div>
+        <p class="text-xs mt-2 text-gray-400">Har du ikke et dansk telefonnummer, bliver der ikke sendt en SMS!</p>
+      </div>
+
+      <div class="mb-4">
+        <%= form.label :name, "For- og efternavn", class: "block text-sm font-medium text-gray-700" %>
+        <%= form.text_field :name, class: "text-lg font-mono p-2 mt-1 block w-full bg-white rounded border-gray-300 shadow-sm" %>
+      </div>
+
+      <div class="mb-4">
+        <%= form.label :email, "Din email adresse", class: "block text-sm font-medium text-gray-700" %>
+        <%= form.email_field :email, class: "text-lg font-mono p-2 mt-1 block w-full rounded border-gray-300 shadow-sm" %>
+      </div>
+
+      <%# Hidden fields to preserve flow context %>
+      <%= hidden_field_tag :tid,  params[:tid] %>
+      <%= hidden_field_tag :sid,  params[:sid] %>
+      <%= hidden_field_tag :ssid, params[:ssid] %>
+      <%= hidden_field_tag :url,  params[:url] %>
+      <%= hidden_field_tag :id,   params[:id] %>
+      <%= hidden_field_tag :ap,   params[:ap] %>
+      <%= hidden_field_tag :t,    params[:t] %>
+      <turbo-frame id="otp_input">
+        <p class="text-xs text-gray-400 mb-4">
+          Har du angivet din email adresse og/eller dit telefonnummer? 
+          Så tryk på knappen "Send mig en OTP" for at modtage en engangskode (OTP) via email og/eller SMS.
+          <br>
+          Koden skal du bruge for at logge på netværket.
+          Hvis du ikke har/vil angive din email eller telefonnummer, kan du kontakte support for at få hjælp.
+        </p>
+        <%= form.submit "Send mig en OTP ", class: "bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded" %>
+      </turbo-frame>
+    <% end %>
+
+
+    <dialog id="pnrModal" class="hidden absolute inset-2 z-50 overflow-auto flex items-center bg-transparent justify-center">
+      <div class="bg-slate-50 p-4 rounded max-h-4/5 w-4/5 max-w-2xl overflow-y-auto">
+        <h2 class="text-lg font-semibold mb-2">Hvad er et P-nr</h2>
+        <p class="text-sm text-gray-600">Her står en kort forklaring af, hvad et P-nr er, og hvordan du finder det.</p>
+        <h4 class="text-sm text-gray-600">Hvad er det?</h4>
+        <p class="text-sm text-gray-600 mb-2">Et Pnr er et personligt nummer, der identificerer dig som studerende her.</p>
+        <h4 class="text-sm text-gray-600">Hvor finder jeg det?</h4>
+        <p class="text-sm text-gray-600 mb-2">Du kan finde dit P-nr på din elevprofil </p>
+        <h4 class="text-sm text-gray-600">Hvis ikke jeg har det?</h4>
+        <p class="text-sm text-gray-600">Så gør det ikke så meget. Du kan altid taste dit telefonnummer og få mindst 24 timers adgang. Genkender vi dit telefonnummer, eller din email adresse, har du åben adgang.</p>
+        <button class="mt-4 bg-blue-600 text-white py-2 px-4 rounded" onclick="document.getElementById('pnrModal').classList.add('hidden')">Luk</button>
+      </div>
+    </dialog>
+  </div>
+  <div class="mt-6 w-full">
+    <p class="text-xs text-gray-500 mr-4">Service provided by <a href="https://unifi-portal.site">Unifi Portal</a> <%= ENV['HEIMDALL_VERSION'] %></p>
+  </div>
+
+</turbo-frame>

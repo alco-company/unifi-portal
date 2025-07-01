@@ -24,7 +24,7 @@ class Admin::SitesController < ApplicationController
   def create
     @site = @tenant.sites.new(site_params)
     if @site.save
-      redirect_to admin_tenant_sites_path(@tenant), notice: "Site created."
+      redirect_to admin_tenant_sites_path(@tenant), notice: "Site was successfully created."
     else
       render :new, status: :unprocessable_entity
     end

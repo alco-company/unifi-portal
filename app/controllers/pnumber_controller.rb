@@ -18,6 +18,11 @@ class PnumberController < ApplicationController
     else
       # Here you would typically check the phone number against a database or an external service.
       # For demonstration, we will just simulate a successful check.
+      client = Client.find_by(phone: @phone)
+      if client.nil?
+        render json: { exists: false } and return
+      end
+      # If the client exists, we assume the phone number is valid.
       render json: { exists: true }
     end
   end

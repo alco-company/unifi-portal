@@ -3,10 +3,10 @@
 one:
   tenant: one
   name: MyString
-  url: MyString
-  ssid: MyString
-  api_key: MyString
-  controller_url: MyString
+  url: "https://heimdall.test"
+  ssid: thisted-guest
+  api_key: test-key
+  controller_url: "https://heimdall.test"
   active: false
 
 two:
