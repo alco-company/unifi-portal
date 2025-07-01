@@ -1,3 +1,5 @@
+require "csv"
+
 class Admin::ClientsController < ApplicationController
   before_action :set_tenant
   before_action :set_site, only: %i[show edit update destroy]
@@ -19,6 +21,38 @@ class Admin::ClientsController < ApplicationController
 
   # GET /clients/1/edit
   def edit
+  end
+
+  def import
+    if params[:file].present?
+      @records = CSV.parse(File.read(params[:file].path), headers: true, col_sep: ";", encoding: "UTF-8")
+      if @records and !@records.empty?
+        @records.each do |row|
+          debugger
+          if row["name"].blank? || row["email"].blank? || row["phone"].blank?
+            redirect_to admin_tenant_clients_path(@tenant), alert: "CSV file is missing required fields (name, email, phone) - no clients imported!"
+            return
+          end
+          Client.create!(
+            tenant: @tenant,
+            name:  row["name"],
+            email: row["email"],
+            phone: row["phone"],
+            # note:  row["note"]
+            guest_max: row["guest_max"].to_i,
+            guest_rx: row["guest_rx"].to_i,
+            guest_tx: row["guest_tx"].to_i,
+            active: row["active"].present? ? ActiveModel::Type::Boolean.new.cast(row["active"]) : true
+          )
+        end
+        redirect_to admin_tenant_clients_path(@tenant), notice: "Clients imported successfully"
+      else
+        redirect_to admin_tenant_clients_path(@tenant), alert: "CSV file is empty - no clients imported!"
+        return
+      end
+    else
+      redirect_to admin_tenant_clients_path(@tenant), alert: "Please select a CSV file - no clients imported!"
+    end
   end
 
   # POST /clients or /clients.json

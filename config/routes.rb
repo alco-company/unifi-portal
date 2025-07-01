@@ -3,7 +3,11 @@ Rails.application.routes.draw do
     resources :tenants do
       resources :sites do
       end
-      resources :clients
+      resources :clients do
+        collection do
+          post :import, to: "clients#import", as: :import
+        end
+      end
     end
     resources :clients do
       resources :devices

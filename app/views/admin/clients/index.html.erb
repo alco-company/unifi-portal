@@ -8,10 +8,17 @@
   <div class="flex justify-between items-center">
     <h1 class="font-bold text-4xl">Clients</h1>
     <span class="flex space-x-2">
+      <%= button_to "Upload", "#", method: :delete, data: {
+
+            action: "click->modal#showUpload",
+            action_url: admin_tenant_path(@tenant)
+          },
+          form: { data: { turbo: false } }, # prevent button_to from wrapping a real form
+          class: "w-full sm:w-auto text-center rounded-md px-3.5 py-2.5 text-white bg-red-600 hover:bg-red-500 inline-block font-medium" %>
+
       <%= link_to @tenant.name, admin_tenant_path(@tenant), class: "rounded-md px-3.5 py-2.5 bg-slate-400 hover:bg-slate-500 text-white block font-medium" %>
       <%= link_to "New client", new_admin_tenant_client_path, class: "rounded-md px-3.5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white block font-medium" %>
     </span>
-
   </div>
 
   <div id="clients" class="min-w-full divide-y divide-gray-200 space-y-5">
@@ -52,3 +59,31 @@
     <% end %>
   </div>
 </div>
+<dialog data-modal-target="upload" class="rounded-md m-auto shadow-lg p-6 w-96 bg-white">
+  <h2 class="text-lg font-semibold mb-4">Upload CSV with clients</h2>
+  <p class="mb-4">Please upload a CSV file containing the client information.</p>
+  <p class="mb-4">First row should contain the following headers:</p>
+  <ul class="list-disc list-inside mb-4">
+    <li>Name</li>
+    <li>Email</li>
+    <li>Phone</li>
+    <li>Note</li>
+    <li>Guest_max</li>
+    <li>Guest_rx</li>
+    <li>Guest_tx</li>
+    <li>Active</li>
+  </ul>
+  <%= form_with url: import_admin_tenant_clients_path(@tenant), multipart: true, method: :post, class: "inline-block" do |form| %>
+    <%= hidden_field_tag :authenticity_token, form_authenticity_token  %>
+    <label class="block mb-2 text-sm font-medium text-gray-700">Import CSV</label>
+    <div class="flex items-center gap-2">
+      <%= form.file_field :file, accept: ".csv", class: "block w-full text-sm text-gray-600 border rounded" %>
+      <%= form.submit "Upload", class: "bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700" %>
+    </div>
+  <% end %>
+  <form id="upload-form" method="post" enctype="multipart/form-data">
+    <div class="flex justify-end gap-3">
+      <button type="button" data-action="click->modal#cancelUpload" class="px-4 py-2 bg-gray-200 rounded">Cancel</button>
+    </div>
+  </form>
+</dialog>

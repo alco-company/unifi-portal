@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 0.3.0
+
+- add upload CSV to create clients
+
 ## 0.2.1
 
 - add device resource
