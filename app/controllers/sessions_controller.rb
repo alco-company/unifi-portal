@@ -26,6 +26,7 @@ class SessionsController < ApplicationController
 
     if valid_user_input?(user)
       device = find_or_create_user_client(user)
+      debugger
       unless device.nil?
         session[:did] = device.id
         begin
@@ -165,7 +166,7 @@ class SessionsController < ApplicationController
     end
 
     def valid_user_input?(data)
-      data[:name].present? && data[:email] =~ URI::MailTo::EMAIL_REGEXP # && data[:phone].present?
+      data[:phone].present? || data[:name].present? && data[:email] =~ URI::MailTo::EMAIL_REGEXP # && data[:phone].present?
     end
 
     def otp_valid?
@@ -182,7 +183,7 @@ class SessionsController < ApplicationController
       return false unless @device && @device.site #&& @client
       load_client_info
       result = External::Unifi.authorize_guest(
-        url: @device.site.url,
+        url: @device.site.controller_url,
         site_id: @device.site.unifi_id,
         client_id: @device.unifi_id,
         api_key: @device.site.api_key

@@ -28,6 +28,7 @@ class SmsSender
     unless response.success?
       raise "SMS sending failed: #{response.code} #{response.body}"
     end
+    true
   end
 
   def self.normalize_phone(phone)
