@@ -10,7 +10,7 @@ class CreateSites < ActiveRecord::Migration[8.1]
       t.integer :guest_max, default: 0, null: false
       t.integer :guest_rx, default: 0, null: false
       t.integer :guest_tx, default: 0, null: false
-      t.boolean :active
+      t.boolean :active, default: true
 
       t.timestamps
     end

@@ -8,6 +8,7 @@
 ## 0.5.0
 
 - add login feature
+- cleanup migration files
 
 ## 0.4.0
 
