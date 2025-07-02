@@ -7,52 +7,44 @@
 
   <div class="flex justify-between items-center">
     <h1 class="font-bold text-4xl">Clients</h1>
-    <span class="flex space-x-2">
-      <%= button_to "Upload", "#", method: :delete, data: {
+    <div class="relative cursor-pointer group focus-within:z-10">
+      <button class="bg-blue-200 text-white px-4 py-2 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 hover:bg-blue-300 transition-colors duration-200">
+        
+        <svg class="" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#5f6368">
+          <path d="M480-160q-33 0-56.5-23.5T400-240q0-33 23.5-56.5T480-320q33 0 56.5 23.5T560-240q0 33-23.5 56.5T480-160Zm0-240q-33 0-56.5-23.5T400-480q0-33 23.5-56.5T480-560q33 0 56.5 23.5T560-480q0 33-23.5 56.5T480-400Zm0-240q-33 0-56.5-23.5T400-720q0-33 23.5-56.5T480-800q33 0 56.5 23.5T560-720q0 33-23.5 56.5T480-640Z"/>
+        </svg>
+      </button>
+      <div class="absolute top-5 right-2 p-2 flex flex-col space-x-2 space-y-1 bg-blue-50 rounded-sm shadow opacity-0 pointer-events-none transition
+           group-hover:opacity-100 group-hover:pointer-events-auto
+           group-focus-within:opacity-100 group-focus-within:pointer-events-auto">
+        <%= button_to "Upload", "#", method: :delete, data: {
 
-            action: "click->modal#showUpload",
-            action_url: admin_tenant_path(@tenant)
-          },
-          form: { data: { turbo: false } }, # prevent button_to from wrapping a real form
-          class: "w-full sm:w-auto text-center rounded-md px-3.5 py-2.5 text-white bg-red-600 hover:bg-red-500 inline-block font-medium" %>
+              action: "click->modal#showUpload",
+              action_url: admin_tenant_path(@tenant)
+            },
+            form: { data: { turbo: false } }, # prevent button_to from wrapping a real form
+            class: "w-full rounded-md border-slate-500 border-1 px-3.5 py-2.5 hover:bg-slate-100 text-slate-500 block font-medium" %>
 
-      <%= link_to @tenant.name, admin_tenant_path(@tenant), class: "rounded-md px-3.5 py-2.5 bg-slate-400 hover:bg-slate-500 text-white block font-medium" %>
-      <%= link_to "New client", new_admin_tenant_client_path, class: "rounded-md px-3.5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white block font-medium" %>
-    </span>
+        <%= link_to @tenant.name, admin_tenant_path(@tenant), class: "w-full rounded-md border-slate-500 border-1 px-3.5 py-2.5 hover:bg-slate-100 text-slate-500 block font-medium" %>
+        <%= link_to "New client", new_admin_tenant_client_path, class: "w-full rounded-md border-slate-500 border-1 px-3.5 py-2.5 hover:bg-slate-100 text-slate-500 block font-medium" %>
+      </div>
+    </div>
   </div>
 
-  <div id="clients" class="min-w-full divide-y divide-gray-200 space-y-5">
-    <% if @clients.any? %>
 
-      <div class="hidden md:grid md:grid-cols-11 w-full sm:w-auto my-5 gap-2 space-y-5">
-        <div class="col-span-2">
-          <strong class="block font-medium mb-1">Name:</strong>
-        </div>
-        <div class="col-span-2">
-          <strong class="block font-medium mb-1">Email:</strong>
-        </div>
-        <div class="col-span-2">
-          <strong class="block font-medium mb-1">Phone:</strong>
-        </div>
-        <div class="col-span-1 md:hidden xl:block">
-          <strong class="block font-medium mb-1">Guest max:</strong>
-        </div>
-        <div class="col-span-1 md:hidden xl:block">
-          <strong class="block font-medium mb-1">Guest rx:</strong>
-        </div>
-        <div class="col-span-1 md:hidden xl:block">
-          <strong class="block font-medium mb-1">Guest tx:</strong>
+  <div id="clients" class="min-w-full divide-y divide-gray-200 space-y-1">
+    <% if @clients.any? %>
+      <div class="grid grid-cols-5 w-full sm:w-auto my-1 gap-2 space-y-1">
+        <div class="col-span-4">
+          <strong class="font-medium ">Name:</strong>
         </div>
         <div class="col-span-1">
-          <strong class="block font-medium mb-1">Active:</strong>
-        </div>
-        <div class="col-span-1">
-          &nbsp;
+          <strong class="font-medium">Active:</strong>
         </div>
       </div>
-      
+
       <% @clients.each do |client| %>
-          <%= render client %>
+        <%= render client %>
       <% end %>
     <% else %>
       <p class="text-center my-10">No clients found.</p>
@@ -73,17 +65,15 @@
     <li>guest_tx</li>
     <li>active</li>
   </ul>
-  <%= form_with url: import_admin_tenant_clients_path(@tenant), multipart: true, method: :post, class: "inline-block" do |form| %>
+  <%= form_with url: import_admin_tenant_clients_path(@tenant), multipart: true, method: :post, class: "inline-block w-full" do |form| %>
     <%= hidden_field_tag :authenticity_token, form_authenticity_token  %>
     <label class="block mb-2 text-sm font-medium text-gray-700">Import CSV</label>
     <div class="flex items-center gap-2">
       <%= form.file_field :file, accept: ".csv", class: "block w-full text-sm text-gray-600 border rounded" %>
-      <%= form.submit "Upload", class: "bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700" %>
     </div>
-  <% end %>
-  <form id="upload-form" method="post" enctype="multipart/form-data">
-    <div class="flex justify-end gap-3">
+    <div class="flex justify-end gap-3 space-y-2 mt-4">
+      <%= form.submit "Upload", class: "bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700" %>
       <button type="button" data-action="click->modal#cancelUpload" class="px-4 py-2 bg-gray-200 rounded">Cancel</button>
     </div>
-  </form>
+  <% end %>
 </dialog>

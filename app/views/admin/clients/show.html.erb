@@ -5,35 +5,46 @@
     <p class="py-2 px-3 bg-green-50 mb-5 text-green-500 font-medium rounded-md inline-block" id="notice"><%= notice %></p>
   <% end %>
 
-  <h1 class="font-bold text-4xl">Showing client</h1>
+  <h1 class="font-bold text-4xl"><%= @client.name %></h1>
   <div id="clients" class="min-w-full divide-y divide-gray-200 space-y-5">
-    <div class="hidden md:grid md:grid-cols-11 w-full sm:w-auto my-5 gap-2 space-y-5">
-      <div class="col-span-2">
-        <strong class="block font-medium mb-1">Name:</strong>
-      </div>
-      <div class="col-span-2">
-        <strong class="block font-medium mb-1">Email:</strong>
-      </div>
-      <div class="col-span-2">
-        <strong class="block font-medium mb-1">Phone:</strong>
-      </div>
-      <div class="col-span-1 md:hidden xl:block">
-        <strong class="block font-medium mb-1">Guest max:</strong>
-      </div>
-      <div class="col-span-1 md:hidden xl:block">
-        <strong class="block font-medium mb-1">Guest rx:</strong>
-      </div>
-      <div class="col-span-1 md:hidden xl:block">
-        <strong class="block font-medium mb-1">Guest tx:</strong>
+    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 w-full sm:w-auto my-5 gap-2 space-y-5">
+      <div class="col-span-1">
+        <strong class="block font-medium mb-1">Name:</strong><%= @client.name %>
       </div>
       <div class="col-span-1">
-        <strong class="block font-medium mb-1">Active:</strong>
+        <strong class="block font-medium mb-1">Email:</strong><%= @client.email %>
+      </div>
+      <div class="col-span-1">
+        <strong class="block font-medium mb-1">Phone:</strong><%= @client.phone %>
+      </div>
+      <div class="col-span-1">
+        <strong class="block font-medium mb-1">Guest max:</strong><%= @client.guest_max %>
+      </div>
+      <div class="col-span-1">
+        <strong class="block font-medium mb-1">Guest rx:</strong><%= @client.guest_rx %>
+      </div>
+      <div class="col-span-1">
+        <strong class="block font-medium mb-1">Guest tx:</strong><%= @client.guest_tx %>
+      </div>
+      <div class="col-span-1">
+        <strong class="block font-medium mb-1">Active:</strong><%= @client.active? ? "Yes" : "No" %>
       </div>
       <div class="col-span-1">
         &nbsp;
       </div>
     </div>
-    <%= render @client %>
+  </div>
+  <div class="col-span-6 xl:col-span-1 w-full flex flex-col sm:flex-row space-x-2 space-y-2">
+    <%= link_to "Devices", admin_client_devices_path(@client), class: "w-full sm:w-auto text-center rounded-md px-3.5 py-2.5 bg-gray-100 hover:bg-gray-50 inline-block font-medium" %>
+    <%= link_to "Edit", edit_admin_tenant_client_path(@client.tenant, @client), class: "w-full sm:w-auto text-center rounded-md px-3.5 py-2.5 bg-gray-100 hover:bg-gray-50 inline-block font-medium" %>
+    <%= button_tag "Delete", type: "button", data: {
+
+          action: "click->modal#show",
+          action_url: admin_tenant_client_path(@client.tenant, @client)
+        },
+        class: "w-full sm:w-auto text-center rounded-md px-3.5 py-2.5 text-white bg-red-600 hover:bg-red-500 inline-block font-medium" %>
+
+    <%#= button_to "Destroy", admin_tenant_sites_path(site.tenant, site), method: :delete, class: "w-full sm:w-auto rounded-md px-3.5 py-2.5 text-white bg-red-600 hover:bg-red-500 font-medium cursor-pointer", data: { turbo_confirm: "Are you sure?" } %>
   </div>
 
   <%#= link_to "Edit this client", edit_admin_tenant_client_path(@client.tenant, @client), class: "w-full sm:w-auto text-center rounded-md px-3.5 py-2.5 bg-gray-100 hover:bg-gray-50 inline-block font-medium" %>

@@ -3,6 +3,7 @@
 ## 0.4.0
 
 - refactor UI - tenants
+- refactor UI - clients
 
 ## 0.3.0
 

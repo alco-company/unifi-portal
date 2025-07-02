@@ -28,15 +28,15 @@ class Admin::ClientsController < ApplicationController
       @records = CSV.parse(File.read(params[:file].path), headers: true, col_sep: ";", encoding: "UTF-8")
       if @records and !@records.empty?
         @records.each do |row|
-          if row["name"].blank? || row["email"].blank? || row["phone"].blank?
-            redirect_to admin_tenant_clients_path(@tenant), alert: "CSV file is missing required fields (name, email, phone) - no clients imported!"
-            return
-          end
+          next if row["email"].blank? && row["phone"].blank? # row["name"].blank? || 
+          #   redirect_to admin_tenant_clients_path(@tenant), alert: "CSV file is missing required fields (name, email, phone) - no clients imported!"
+          #   return
+          # end
           Client.create!(
             tenant: @tenant,
-            name:  row["name"],
-            email: row["email"],
-            phone: row["phone"],
+            name:  row["name"]&.strip&.downcase&.titleize,
+            email: row["email"]&.strip&.downcase,
+            phone: row["phone"]&.squish,
             note:  row["note"],
             guest_max: row["guest_max"].to_i,
             guest_rx: row["guest_rx"].to_i,
