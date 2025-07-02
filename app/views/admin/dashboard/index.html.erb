@@ -1,0 +1,19 @@
+<h1 class="text-xl font-bold mb-4">Admin Dashboard</h1>
+
+<p class="mb-2">Welcome, <%= current_user.email %>.</p>
+
+<% if current_user.superuser? %>
+  <p class="text-green-700 font-semibold">You are logged in as a superuser.</p>
+  <p>
+    <%= link_to "Manage Tenants", admin_tenants_path, class: "text-blue-600 hover:underline" %>
+  </p>
+<% else %>
+  <p class="text-gray-700">You are managing tenant: <%= current_user.tenant.name %>.</p>
+  <p>
+    <%= link_to "View Sites", admin_tenant_sites_path(current_user.tenant), class: "text-blue-600 hover:underline" %>
+  </p>
+<% end %>
+
+<p class="mt-6">
+  <%= button_to "Logout", admin_logout_path, method: :delete, class: "text-red-600 hover:underline" %>
+</p>

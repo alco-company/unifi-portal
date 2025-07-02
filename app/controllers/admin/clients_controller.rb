@@ -1,6 +1,6 @@
 require "csv"
 
-class Admin::ClientsController < ApplicationController
+class Admin::ClientsController < Admin::BaseController
   before_action :set_tenant
   before_action :set_site, only: %i[show edit update destroy]
   before_action :set_client, only: %i[ show edit update destroy ]
@@ -28,7 +28,7 @@ class Admin::ClientsController < ApplicationController
       @records = CSV.parse(File.read(params[:file].path), headers: true, col_sep: ";", encoding: "UTF-8")
       if @records and !@records.empty?
         @records.each do |row|
-          next if row["email"].blank? && row["phone"].blank? # row["name"].blank? || 
+          next if row["email"].blank? && row["phone"].blank? # row["name"].blank? ||
           #   redirect_to admin_tenant_clients_path(@tenant), alert: "CSV file is missing required fields (name, email, phone) - no clients imported!"
           #   return
           # end
@@ -36,7 +36,7 @@ class Admin::ClientsController < ApplicationController
             tenant: @tenant,
             name:  row["name"]&.strip&.downcase&.titleize,
             email: row["email"]&.strip&.downcase,
-            phone: row["phone"]&.squish,
+            phone: row["phone"]&.gsub(/ /, "")&.strip,
             note:  row["note"],
             guest_max: row["guest_max"].to_i,
             guest_rx: row["guest_rx"].to_i,
@@ -47,7 +47,7 @@ class Admin::ClientsController < ApplicationController
         redirect_to admin_tenant_clients_path(@tenant), notice: "Clients imported successfully"
       else
         redirect_to admin_tenant_clients_path(@tenant), alert: "CSV file is empty - no clients imported!"
-        return
+        nil
       end
     else
       redirect_to admin_tenant_clients_path(@tenant), alert: "Please select a CSV file - no clients imported!"
@@ -101,9 +101,9 @@ class Admin::ClientsController < ApplicationController
     end
 
     def set_tenant
-      @tenant = Tenant.find(params[:tenant_id])
+      @tenant = current_user.tenant.id
     end
-    
+
     def set_site
       @site = @tenant.sites.find(params[:site_id]) rescue nil
     end

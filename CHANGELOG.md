@@ -1,5 +1,14 @@
 # CHANGELOG
 
+- search all
+- delete all listed
+- toggle activ
+- expire 10years
+
+## 0.5.0
+
+- add login feature
+
 ## 0.4.0
 
 - refactor UI - tenants

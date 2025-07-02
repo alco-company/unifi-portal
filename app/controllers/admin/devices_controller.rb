@@ -1,4 +1,4 @@
-class Admin::DevicesController < ApplicationController
+class Admin::DevicesController < Admin::BaseController
   before_action :set_client
   before_action :set_device, only: %i[ show edit update destroy ]
 

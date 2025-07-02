@@ -1,4 +1,4 @@
-class Admin::SitesController < ApplicationController
+class Admin::SitesController < Admin::BaseController
   before_action :set_tenant
   before_action :set_site, only: %i[show edit update destroy]
 
@@ -38,7 +38,7 @@ class Admin::SitesController < ApplicationController
         format.json { render :show, status: :ok, location: @site }
       else
         format.html { render :edit, status: :unprocessable_entity }
-        format.json { render json: admin_tenant_site_path(@tenant,@site).errors, status: :unprocessable_entity }
+        format.json { render json: admin_tenant_site_path(@tenant, @site).errors, status: :unprocessable_entity }
       end
     end
   end
@@ -65,7 +65,7 @@ class Admin::SitesController < ApplicationController
     def set_tenant
       @tenant = Tenant.find(params[:tenant_id])
     end
-    
+
     def set_site
       @site = @tenant.sites.find(params[:id]) rescue nil
     end

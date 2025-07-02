@@ -1,9 +1,13 @@
-class Admin::TenantsController < ApplicationController
+class Admin::TenantsController < Admin::BaseController
   before_action :set_admin_tenant, only: %i[ show edit update destroy ]
 
   # GET /admin/tenants or /admin/tenants.json
   def index
-    @tenants = Tenant.all
+    if current_user.superuser?
+      @tenants = Tenant.all
+    else
+      @tenants = Tenant.where(id: current_user.tenant_id)
+    end
   end
 
   # GET /admin/tenants/1 or /admin/tenants/1.json
@@ -50,7 +54,7 @@ class Admin::TenantsController < ApplicationController
   # DELETE /admin/tenants/1 or /admin/tenants/1.json
   def destroy
     if @tenant.present?
-      @tenant.destroy! 
+      @tenant.destroy!
 
       respond_to do |format|
         format.html { redirect_to admin_tenants_path, status: :see_other, notice: "Tenant was successfully destroyed." }
