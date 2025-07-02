@@ -5,6 +5,7 @@
 - refactor UI - tenants
 - refactor UI - clients
 - refactor UI - sites
+- refactor UI - devices
 
 ## 0.3.0
 
