@@ -101,7 +101,7 @@ class Admin::ClientsController < Admin::BaseController
     end
 
     def set_tenant
-      @tenant = current_user.tenant.id
+      @tenant = current_user.tenant
     end
 
     def set_site

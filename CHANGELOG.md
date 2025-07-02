@@ -10,6 +10,7 @@
 - add login feature
 - cleanup migration files
 - add dashboard & navigation - sketch
+- increment navigation
 
 ## 0.4.0
 
