@@ -10,22 +10,19 @@
     <%= link_to "New tenant", new_admin_tenant_path, class: "shrink-0 rounded-md px-3.5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white block font-medium" %>
   </div>
 
-  <div id="admin_tenants" class="min-w-full divide-y divide-gray-200 space-y-5">
-    <% if @admin_tenants.any? %>
-      <div class="hidden md:grid md:grid-cols-6 w-full sm:w-auto my-5 gap-2 space-y-5">
+  <div id="tenants" class="min-w-full divide-y divide-gray-200 space-y-1">
+    <% if @tenants.any? %>
+      <div class="grid grid-cols-5 w-full sm:w-auto my-1 gap-2 space-y-1">
         <div class="col-span-4">
-          <strong class="block font-medium mb-1">Name:</strong>
+          <strong class="font-medium ">Name:</strong>
         </div>
         <div class="col-span-1">
-          <strong class="block font-medium mb-1">Active:</strong>
-        </div>
-        <div class="col-span-1">
-          &nbsp;
+          <strong class="font-medium">Active:</strong>
         </div>
       </div>
 
-      <% @admin_tenants.each do |admin_tenant| %>
-        <%= render admin_tenant %>
+      <% @tenants.each do |tenant| %>
+        <%= render tenant %>
       <% end %>
     <% else %>
       <p class="text-center my-10">No tenants found.</p>

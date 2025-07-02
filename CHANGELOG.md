@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 0.4.0
+
+- refactor UI - tenants
+
 ## 0.3.0
 
 - add upload CSV to create clients

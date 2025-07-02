@@ -3,7 +3,7 @@ class Admin::TenantsController < ApplicationController
 
   # GET /admin/tenants or /admin/tenants.json
   def index
-    @admin_tenants = Tenant.all
+    @tenants = Tenant.all
   end
 
   # GET /admin/tenants/1 or /admin/tenants/1.json
@@ -12,7 +12,7 @@ class Admin::TenantsController < ApplicationController
 
   # GET /admin/tenants/new
   def new
-    @admin_tenant = Tenant.new
+    @tenant = Tenant.new
   end
 
   # GET /admin/tenants/1/edit
@@ -21,15 +21,15 @@ class Admin::TenantsController < ApplicationController
 
   # POST /admin/tenants or /admin/tenants.json
   def create
-    @admin_tenant = Tenant.new(admin_tenant_params)
+    @tenant = Tenant.new(admin_tenant_params)
 
     respond_to do |format|
-      if @admin_tenant.save
+      if @tenant.save
         format.html { redirect_to admin_tenants_path, notice: "Tenant was successfully created." }
         format.json { render :show, status: :created, location: admin_tenants_path }
       else
         format.html { render :new, status: :unprocessable_entity }
-        format.json { render json: @admin_tenant.errors, status: :unprocessable_entity }
+        format.json { render json: @tenant.errors, status: :unprocessable_entity }
       end
     end
   end
@@ -37,20 +37,20 @@ class Admin::TenantsController < ApplicationController
   # PATCH/PUT /admin/tenants/1 or /admin/tenants/1.json
   def update
     respond_to do |format|
-      if @admin_tenant.update(admin_tenant_params)
+      if @tenant.update(admin_tenant_params)
         format.html { redirect_to admin_tenants_path, notice: "Tenant was successfully updated." }
         format.json { render :show, status: :ok, location: admin_tenants_path }
       else
         format.html { render :edit, status: :unprocessable_entity }
-        format.json { render json: @admin_tenant.errors, status: :unprocessable_entity }
+        format.json { render json: @tenant.errors, status: :unprocessable_entity }
       end
     end
   end
 
   # DELETE /admin/tenants/1 or /admin/tenants/1.json
   def destroy
-    if @admin_tenant.present?
-      @admin_tenant.destroy! 
+    if @tenant.present?
+      @tenant.destroy! 
 
       respond_to do |format|
         format.html { redirect_to admin_tenants_path, status: :see_other, notice: "Tenant was successfully destroyed." }
@@ -67,7 +67,7 @@ class Admin::TenantsController < ApplicationController
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_admin_tenant
-      @admin_tenant = Tenant.find(params.expect(:id)) rescue nil
+      @tenant = Tenant.find(params.expect(:id)) rescue nil
     end
 
     # Only allow a list of trusted parameters through.

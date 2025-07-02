@@ -5,7 +5,30 @@
     <p class="py-2 px-3 bg-green-50 mb-5 text-green-500 font-medium rounded-md inline-block" id="notice"><%= notice %></p>
   <% end %>
 
-  <h1 class="font-bold text-4xl">Showing tenant</h1>
+  <h1 class="font-bold text-4xl"><%= @tenant.name %></h1>
 
-  <%= render @admin_tenant %>
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 my-5">
+    <div class="col-span-1">
+      <strong class="font-medium">Name:</strong>
+      <p><%= @tenant.name %></p>
+    </div>
+    <div class="col-span-1">
+      <strong class="font-medium">Active:</strong>
+      <p><%= @tenant.active? ? "Yes" : "No" %></p>
+    </div>
+  </div>
+  <div class="col-span-6 xl:col-span-1 w-full flex flex-col sm:flex-row space-x-2 space-y-2">
+    <%= link_to "Clients", admin_tenant_clients_path(@tenant), class: "w-full sm:w-auto text-center rounded-md px-3.5 py-2.5 bg-gray-100 hover:bg-gray-50 inline-block font-medium" %>
+    <%= link_to "Sites", admin_tenant_sites_path(@tenant), class: "w-full sm:w-auto text-center rounded-md px-3.5 py-2.5 bg-gray-100 hover:bg-gray-50 inline-block font-medium" %>
+    <%= link_to "Edit", edit_admin_tenant_path(@tenant), class: "w-full sm:w-auto text-center rounded-md px-3.5 py-2.5 bg-gray-100 hover:bg-gray-50 inline-block font-medium" %>
+    <%#= button_to "Destroy", admin_tenant_path(tenant), method: :delete, class: "w-full sm:w-auto rounded-md px-3.5 py-2.5 text-white bg-red-600 hover:bg-red-500 font-medium cursor-pointer", data: { turbo_confirm: "Are you sure?" } %>
+    <%= button_tag "Delete", type: "button", data: {
+          action: "click->modal#show",
+          turbo: false,
+          action_url: admin_tenant_path(@tenant)
+        },
+        class: "w-full sm:w-auto text-center rounded-md px-3.5 py-2.5 text-white bg-red-600 hover:bg-red-500 inline-block font-medium" %>
+
+    <%= link_to "Back to Tenants", admin_tenants_path, class: "w-full sm:w-auto text-center rounded-md px-3.5 py-2.5 bg-gray-100 hover:bg-gray-50 inline-block font-medium" %>
+  </div>
 </div>
