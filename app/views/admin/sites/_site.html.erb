@@ -1,48 +1,8 @@
-<div id="<%= dom_id site %>" class="md:grid md:grid-cols-12 w-full sm:w-auto my-5 gap-2 space-y-5">
-  <div class="md:col-span-2">
-    <strong class="block md:hidden font-medium mb-1">Name:</strong>
+<div id="<%= dom_id site %>" data-controller="site" data-action="click->site#show" data-site-id="<%= site.id %>" data-tenant-id="<%= site.tenant.id %>" class="cursor-pointer p-2 grid grid-cols-5 w-full rounded-sm bg-indigo-100 sm:w-auto my-2 gap-2 space-y-1 items-center">
+  <div class="col-span-4 truncate">
     <%= site.name %>
   </div>
-  <div class="md:col-span-2">
-    <strong class="block md:hidden font-medium mb-1">Url:</strong>
-    <%= site.url %>
-  </div>
-  <div class="md:col-span-2">
-    <strong class="block md:hidden font-medium mb-1">Controller url:</strong>
-    <%= site.controller_url %>
-  </div>
-  <div class="md:col-span-1">
-    <strong class="block md:hidden font-medium mb-1">Ssid:</strong>
-    <%= site.ssid %>
-  </div>
-  <div class="md:col-span-1">
-    <strong class="block md:hidden font-medium mb-1">Guest max KB:</strong>
-    <%= site.guest_max %>
-  </div>
-  <div class="md:col-span-1">
-    <strong class="block md:hidden font-medium mb-1">Guest rx Kbps:</strong>
-    <%= site.guest_rx %>
-  </div>
-  <div class="md:col-span-1">
-    <strong class="block md:hidden font-medium mb-1">Guest tx Kbps:</strong>
-    <%= site.guest_tx %>
-  </div>
-  <div class="md:col-span-1">
-    <strong class="block md:hidden font-medium mb-1">Active:</strong>
+  <div class="col-span-1">
     <%= site.active? ? "Yes" : "No" %>
   </div>
-  <div class="col-span-6 xl:col-span-1 w-full flex flex-col sm:flex-row space-x-2 space-y-2">
-    <%#= link_to "Clients", admin_tenant_clients_path(site.tenant), class: "w-full sm:w-auto text-center rounded-md px-3.5 py-2.5 bg-gray-100 hover:bg-gray-50 inline-block font-medium" %>
-    <%= link_to "Edit", edit_admin_tenant_site_path(site.tenant, site), class: "w-full sm:w-auto text-center rounded-md px-3.5 py-2.5 bg-gray-100 hover:bg-gray-50 inline-block font-medium" %>
-    <%= button_to "Delete", "#", method: :delete, data: {
-
-          action: "click->modal#show",
-          action_url: admin_tenant_site_path(site.tenant, site)
-        },
-        form: { data: { turbo: false } }, # prevent button_to from wrapping a real form
-        class: "w-full sm:w-auto text-center rounded-md px-3.5 py-2.5 text-white bg-red-600 hover:bg-red-500 inline-block font-medium" %>
-
-    <%#= button_to "Destroy", admin_tenant_sites_path(site.tenant, site), method: :delete, class: "w-full sm:w-auto rounded-md px-3.5 py-2.5 text-white bg-red-600 hover:bg-red-500 font-medium cursor-pointer", data: { turbo_confirm: "Are you sure?" } %>
-  </div>
-
 </div>

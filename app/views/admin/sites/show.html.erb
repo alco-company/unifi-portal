@@ -5,12 +5,45 @@
     <p class="py-2 px-3 bg-green-50 mb-5 text-green-500 font-medium rounded-md inline-block" id="notice"><%= notice %></p>
   <% end %>
 
-  <h1 class="font-bold text-4xl">Showing site</h1>
+  <h1 class="font-bold text-4xl"><%= @site.name %></h1>
 
-  <%= render @site %>
+  <div id="<%= dom_id @site %>" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 w-full sm:w-auto my-5 gap-2 space-y-5">
+    <div class="col-span-1">
+      <strong class="block font-medium mb-1">Name:</strong>
+      <%= @site.name %>
+    </div>
+    <div class="col-span-1">
+      <strong class="block font-medium mb-1">Url:</strong>
+      <%= @site.url %>
+    </div>
+    <div class="col-span-1">
+      <strong class="block font-medium mb-1">Controller url:</strong>
+      <%= @site.controller_url %>
+    </div>
+    <div class="col-span-1">
+      <strong class="block font-medium mb-1">Ssid:</strong>
+      <%= @site.ssid %>
+    </div>
+    <div class="col-span-1">
+      <strong class="block font-medium mb-1">Guest max KB:</strong>
+      <%= @site.guest_max %>
+    </div>
+    <div class="col-span-1">
+      <strong class="block font-medium mb-1">Guest rx Kbps:</strong>
+      <%= @site.guest_rx %>
+    </div>
+    <div class="col-span-1">
+      <strong class="block font-medium mb-1">Guest tx Kbps:</strong>
+      <%= @site.guest_tx %>
+    </div>
+    <div class="col-span-1">
+      <strong class="block font-medium mb-1">Active:</strong>
+      <%= @site.active? ? "Yes" : "No" %>
+    </div>
 
-  <%= link_to "Edit this site", edit_admin_tenant_site_path(@site.tenant, @site), class: "w-full sm:w-auto text-center rounded-md px-3.5 py-2.5 bg-gray-100 hover:bg-gray-50 inline-block font-medium" %>
-  <%= link_to "Back to sites", admin_tenant_sites_path(@site.tenant), class: "w-full sm:w-auto text-center mt-2 sm:mt-0 sm:ml-2 rounded-md px-3.5 py-2.5 bg-gray-100 hover:bg-gray-50 inline-block font-medium" %>
+  </div>
+
+  <%= link_to "Edit this site", edit_admin_tenant_site_path(@site.tenant, @site), class: "w-full mb-2 sm:w-auto text-center rounded-md px-3.5 py-2.5 bg-gray-100 hover:bg-gray-50 inline-block font-medium" %>
   <%#= button_to "Destroy this site", admin_tenant_site_path(@site.tenant, @site), method: :delete, form_class: "sm:inline-block mt-2 sm:mt-0 sm:ml-2", class: "w-full rounded-md px-3.5 py-2.5 text-white bg-red-600 hover:bg-red-500 font-medium cursor-pointer", data: { turbo_confirm: "Are you sure?" } %>
   <%= button_to "Delete", "#", method: :delete, data: {
 
@@ -20,5 +53,6 @@
       form: { data: { turbo: false } }, # prevent button_to from wrapping a real form
       class: "w-full sm:w-auto text-center rounded-md px-3.5 py-2.5 text-white bg-red-600 hover:bg-red-500 inline-block font-medium" %>
 
+  <%= link_to "Back to sites", admin_tenant_sites_path(@site.tenant), class: "w-full sm:w-auto text-center mt-2 sm:mt-0 sm:ml-2 rounded-md px-3.5 py-2.5 bg-gray-100 hover:bg-gray-50 inline-block font-medium" %>
 
 </div>

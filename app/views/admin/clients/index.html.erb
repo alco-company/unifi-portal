@@ -7,26 +7,19 @@
 
   <div class="flex justify-between items-center">
     <h1 class="font-bold text-4xl">Clients</h1>
-    <div class="relative cursor-pointer group focus-within:z-10">
-      <button class="bg-blue-200 text-white px-4 py-2 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 hover:bg-blue-300 transition-colors duration-200">
-        
-        <svg class="" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#5f6368">
+    <div data-controller="tooltip" class="relative cursor-pointer group focus-within:z-10">
+      <button type="button" data-action="click->tooltip#toggle" class="w-full bg-blue-200 text-white px-4 py-2 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 hover:bg-blue-300 transition-colors duration-200">
+        <span class="sr-only">Open client actions</span>
+        <svg class="text-slate-400" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor">
           <path d="M480-160q-33 0-56.5-23.5T400-240q0-33 23.5-56.5T480-320q33 0 56.5 23.5T560-240q0 33-23.5 56.5T480-160Zm0-240q-33 0-56.5-23.5T400-480q0-33 23.5-56.5T480-560q33 0 56.5 23.5T560-480q0 33-23.5 56.5T480-400Zm0-240q-33 0-56.5-23.5T400-720q0-33 23.5-56.5T480-800q33 0 56.5 23.5T560-720q0 33-23.5 56.5T480-640Z"/>
         </svg>
       </button>
-      <div class="absolute top-5 right-2 p-2 flex flex-col space-x-2 space-y-1 bg-blue-50 rounded-sm shadow opacity-0 pointer-events-none transition
+      <div data-tooltip-target="tooltip" class="absolute top-5 right-2 p-2 flex flex-col space-x-2 space-y-1 bg-blue-50 rounded-sm shadow opacity-0 pointer-events-none transition
            group-hover:opacity-100 group-hover:pointer-events-auto
            group-focus-within:opacity-100 group-focus-within:pointer-events-auto">
-        <%= button_to "Upload", "#", method: :delete, data: {
-
-              action: "click->modal#showUpload",
-              action_url: admin_tenant_path(@tenant)
-            },
-            form: { data: { turbo: false } }, # prevent button_to from wrapping a real form
-            class: "w-full rounded-md border-slate-500 border-1 px-3.5 py-2.5 hover:bg-slate-100 text-slate-500 block font-medium" %>
-
-        <%= link_to @tenant.name, admin_tenant_path(@tenant), class: "w-full rounded-md border-slate-500 border-1 px-3.5 py-2.5 hover:bg-slate-100 text-slate-500 block font-medium" %>
-        <%= link_to "New client", new_admin_tenant_client_path, class: "w-full rounded-md border-slate-500 border-1 px-3.5 py-2.5 hover:bg-slate-100 text-slate-500 block font-medium" %>
+           <button data-action="click->modal#showUpload" data-action-url="<%= admin_tenant_path(@tenant) %>" class="w-full rounded-md border-slate-500 border-1 px-3.5 py-2.5 hover:bg-slate-100 text-slate-500 block font-medium text-left">Upload</button>
+        <%= link_to @tenant.name, admin_tenant_path(@tenant), class: "w-full rounded-md border-slate-500 border-1 px-3.5 py-2.5 hover:bg-slate-100 text-slate-500 block font-medium text-left" %>
+        <%= link_to "New client", new_admin_tenant_client_path, class: "w-full rounded-md border-slate-500 border-1 px-3.5 py-2.5 hover:bg-slate-100 text-slate-500 block font-medium text-left" %>
       </div>
     </div>
   </div>

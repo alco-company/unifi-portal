@@ -6,51 +6,41 @@
   <% end %>
 
   <div class="flex justify-between items-center">
-    <h1 class="font-bold text-4xl">Sites</h1>
-    <span class="flex space-x-2">
-      <%= link_to @tenant.name, admin_tenant_path(@tenant), class: "rounded-md px-3.5 py-2.5 bg-slate-400 hover:bg-slate-500 text-white block font-medium" %>
-      <%= link_to "New site", new_admin_tenant_site_path(@tenant), class: "rounded-md px-3.5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white block font-medium" %>
-    </span>
-  </div>
-
-  <div id="sites" class="min-w-full divide-y divide-gray-200 space-y-5">
-    <% if @sites.any? %>
-
-      <div class="hidden md:grid md:grid-cols-12 w-full sm:w-auto my-5 gap-2 space-y-5">
-        <div class="col-span-2">
-          <strong class="block font-medium mb-1">Name:</strong>
-        </div>
-        <div class="col-span-2">
-          <strong class="block font-medium mb-1">Url:</strong>
-        </div>
-        <div class="col-span-2">
-          <strong class="block font-medium mb-1">Controller Url:</strong>
-        </div>
-        <div class="col-span-1">
-          <strong class="block font-medium mb-1">SSID:</strong>
-        </div>
-        <div class="col-span-1">
-          <strong class="block font-medium mb-1">Guest max:</strong>
-        </div>
-        <div class="col-span-1">
-          <strong class="block font-medium mb-1">Guest rx:</strong>
-        </div>
-        <div class="col-span-1">
-          <strong class="block font-medium mb-1">Guest tx:</strong>
-        </div>
-        <div class="col-span-1">
-          <strong class="block font-medium mb-1">Active:</strong>
-        </div>
-        <div class="col-span-1">
-          &nbsp;
-        </div>
+    <h1 class="grow font-bold text-4xl">Sites</h1>
+    <div data-controller="tooltip" class="relative cursor-pointer group focus-within:z-10">
+      <button type="button" data-action="click->tooltip#toggle" class="w-full bg-blue-200 text-white px-4 py-2 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 hover:bg-blue-300 transition-colors duration-200">
+        <span class="sr-only">Open sites actions</span>
+        <svg class="text-slate-400" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor">
+          <path d="M480-160q-33 0-56.5-23.5T400-240q0-33 23.5-56.5T480-320q33 0 56.5 23.5T560-240q0 33-23.5 56.5T480-160Zm0-240q-33 0-56.5-23.5T400-480q0-33 23.5-56.5T480-560q33 0 56.5 23.5T560-480q0 33-23.5 56.5T480-400Zm0-240q-33 0-56.5-23.5T400-720q0-33 23.5-56.5T480-800q33 0 56.5 23.5T560-720q0 33-23.5 56.5T480-640Z"/>
+        </svg>
+      </button>
+      <div data-tooltip-target="tooltip" class="absolute top-5 right-2 p-2 flex flex-col space-x-2 space-y-1 bg-blue-50 rounded-sm shadow opacity-0 pointer-events-none transition
+           group-hover:opacity-100 group-hover:pointer-events-auto
+           group-focus-within:opacity-100 group-focus-within:pointer-events-auto">
+        <%= link_to @tenant.name, admin_tenant_path(@tenant), class: "w-full whitespace-nowrap rounded-md border-slate-500 border-1 px-3.5 py-2.5 hover:bg-slate-100 text-slate-500 block font-medium text-left" %>
+        <%= link_to "New site", new_admin_tenant_site_path(@tenant), class: "w-full whitespace-nowrap rounded-md border-slate-500 border-1 px-3.5 py-2.5 hover:bg-slate-100 text-slate-500 block font-medium text-left" %>
       </div>
-
-      <% @sites.each do |site| %>
-        <%= render site %>
-      <% end %>
-    <% else %>
-      <p class="text-center my-10">No sites found.</p>
-    <% end %>
+    </div>    
   </div>
+
+  <div id="sites" class="min-w-full divide-y divide-gray-200 space-y-1">
+      <% if @sites.any? %>
+        <div class="grid grid-cols-5 w-full sm:w-auto my-1 gap-2 space-y-1">
+          <div class="col-span-4">
+            <strong class="font-medium ">Name:</strong>
+          </div>
+          <div class="col-span-1">
+            <strong class="font-medium">Active:</strong>
+          </div>
+        </div>
+
+        <% @sites.each do |site| %>
+          <%= render site %>
+        <% end %>
+      <% else %>
+        <p class="text-center my-10">No sites found.</p>
+      <% end %>
+    </div>
+  </div>  
+
 </div>
