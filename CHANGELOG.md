@@ -11,6 +11,7 @@
 - cleanup migration files
 - add dashboard & navigation - sketch
 - increment navigation
+- refactor user and navigation
 
 ## 0.4.0
 

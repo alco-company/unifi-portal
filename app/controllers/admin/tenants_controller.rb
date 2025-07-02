@@ -76,6 +76,6 @@ class Admin::TenantsController < Admin::BaseController
 
     # Only allow a list of trusted parameters through.
     def admin_tenant_params
-      params.expect(tenant: [ :name, :url, :login, :password, :guest_max, :guest_rx, :guest_tx, :active ])
+      params.expect(tenant: [ :name, :url, :guest_max, :guest_rx, :guest_tx, :active, :note ])
     end
 end

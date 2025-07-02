@@ -13,6 +13,7 @@ Rails.application.routes.draw do
           post :import, to: "clients#import", as: :import
         end
       end
+      resources :users
     end
     resources :clients do
       resources :devices

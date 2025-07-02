@@ -31,20 +31,7 @@
     <%= form.text_field :phone, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": client.errors[:phone].none?, "border-red-400 focus:outline-red-600": client.errors[:phone].any?}] %>
   </div>
 
-  <div class="my-5">
-    <%= form.label :guest_max %>
-    <%= form.number_field :guest_max, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": client.errors[:guest_max].none?, "border-red-400 focus:outline-red-600": client.errors[:guest_max].any?}] %>
-  </div>
-
-  <div class="my-5">
-    <%= form.label :guest_rx %>
-    <%= form.number_field :guest_rx, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": client.errors[:guest_rx].none?, "border-red-400 focus:outline-red-600": client.errors[:guest_rx].any?}] %>
-  </div>
-
-  <div class="my-5">
-    <%= form.label :guest_tx %>
-    <%= form.number_field :guest_tx, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": client.errors[:guest_tx].none?, "border-red-400 focus:outline-red-600": client.errors[:guest_tx].any?}] %>
-  </div>
+  <%= render "admin/guest_fields", form: form, resource: client %>
 
   <div class="my-5">
     <%= form.label :note %>
