@@ -8,6 +8,7 @@ class Admin::TenantsController < Admin::BaseController
     else
       @tenants = Tenant.where(id: current_user.tenant_id)
     end
+    @tenants = case_insensitive_match(@tenants, [ :name, :url, :note ], params[:query]) if params[:query].present?
   end
 
   # GET /admin/tenants/1 or /admin/tenants/1.json

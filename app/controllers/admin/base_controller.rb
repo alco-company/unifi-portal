@@ -26,4 +26,23 @@ class Admin::BaseController < ApplicationController
     end
     @tenant || current_user&.tenant
   end
+
+
+  def case_insensitive_match(scope, fields, query)
+    return scope if query.blank?
+    query = "%#{query}%"
+    adapter = ActiveRecord::Base.connection.adapter_name.downcase
+
+    if adapter.include?("postgres")
+      scope.where(
+        fields.map { |field| "#{field} ILIKE :query" }.join(" OR "),
+        query: query
+      )
+    else
+      scope.where(
+        fields.map { |field| "LOWER(#{field}) LIKE LOWER(:query)" }.join(" OR "),
+        query: query
+      )
+    end
+  end
 end
