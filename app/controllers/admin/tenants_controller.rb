@@ -8,7 +8,7 @@ class Admin::TenantsController < Admin::BaseController
     else
       @tenants = Tenant.where(id: current_user.tenant_id)
     end
-    @tenants = case_insensitive_match(@tenants, [ :name, :url, :note ], params[:query]) if params[:query].present?
+    @tenants = case_insensitive_match(@tenants, [ :name, :url, :note ])
   end
 
   # GET /admin/tenants/1 or /admin/tenants/1.json
@@ -66,6 +66,16 @@ class Admin::TenantsController < Admin::BaseController
         format.html { redirect_to admin_tenants_path, status: :see_other, alert: "Tenant not found." }
         format.json { render json: { error: "Tenant not found." }, status: :not_found }
       end
+    end
+  end
+
+  def delete_all
+    @tenants = current_user.superuser? ? Tenant.all : Tenant.where(id: current_user.tenant_id)
+    case_insensitive_match(@tenants, [ :name, :url, :note ]).destroy_all
+
+    respond_to do |format|
+      format.html { redirect_to admin_tenants_path, status: :see_other, notice: "All tenants were successfully deleted." }
+      format.json { head :no_content }
     end
   end
 

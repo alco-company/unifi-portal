@@ -20,6 +20,7 @@
            <button data-action="click->modal#showUpload" data-action-url="<%= admin_tenant_path(@tenant) %>" class="w-full rounded-md border-slate-500 border-1 px-3.5 py-2.5 hover:bg-slate-100 text-slate-500 block font-medium text-left">Upload</button>
         <%= link_to @tenant.name, admin_tenant_path(@tenant), class: "w-full rounded-md border-slate-500 border-1 px-3.5 py-2.5 hover:bg-slate-100 text-slate-500 block font-medium text-left" %>
         <%= link_to "New client", new_admin_tenant_client_path(@tenant), class: "w-full rounded-md border-slate-500 border-1 px-3.5 py-2.5 hover:bg-slate-100 text-slate-500 block font-medium text-left" %>
+        <%= button_to "Delete all", delete_all_admin_tenant_clients_path(@tenant), method: :delete, class: "w-full whitespace-nowrap rounded-md border-slate-500 border-1 px-3.5 py-2.5 hover:bg-slate-100 text-slate-500 block font-medium text-left" %>
       </div>
     </div>
   </div>

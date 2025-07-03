@@ -1,6 +1,6 @@
 # CHANGELOG
 
-- delete all listed
+
 - toggle activ
 - expire 10years
 - send OTP if phone found
@@ -10,6 +10,7 @@
 
 - current_tenant from set_tenant
 - search tenants
+- delete all listed
 
 ## 0.5.0
 

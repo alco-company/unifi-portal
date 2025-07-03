@@ -2,6 +2,9 @@ class Admin::BaseController < ApplicationController
   # layout "admin/application"
   helper_method :current_tenant
 
+  # set the query parameter for case-insensitive matching
+  before_action :set_query, only: [ :index ]
+
   # Ensure the user is logged in as an admin
   before_action :require_user!
 
@@ -24,13 +27,22 @@ class Admin::BaseController < ApplicationController
     when "admin/devices"; @tenant ||= @client.tenant if @client.present?
     else @tenant ||= params[:tenant_id].present? ? Tenant.find(params[:tenant_id]) : nil
     end
-    @tenant || current_user&.tenant
+    @tenant.nil? ? @tenant = current_user&.tenant : @tenant
   end
 
+  def set_query
+    @query = params[:query].presence || nil
+    if @query and @query == "*"
+      session.delete(:query)
+      @query = ""
+    else
+      session[:query] = @query unless @query.nil?
+    end
+  end
 
-  def case_insensitive_match(scope, fields, query)
-    return scope if query.blank?
-    query = "%#{query}%"
+  def case_insensitive_match(scope, fields)
+    return scope if session[:query].blank?
+    query = "%#{session[:query]}%"
     adapter = ActiveRecord::Base.connection.adapter_name.downcase
 
     if adapter.include?("postgres")

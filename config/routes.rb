@@ -6,17 +6,32 @@ Rails.application.routes.draw do
     delete "logout" => "sessions#destroy"
     get "dashboard" => "dashboard#index", as: :dashboard
     resources :tenants do
+      collection do
+        delete :delete_all, to: "tenants#delete_all", as: :delete_all
+      end
       resources :sites do
+        collection do
+          delete :delete_all, to: "sites#delete_all", as: :delete_all
+        end
       end
       resources :clients do
         collection do
+          delete :delete_all, to: "clients#delete_all", as: :delete_all
           post :import, to: "clients#import", as: :import
         end
       end
-      resources :users
+      resources :users do
+        collection do
+          delete :delete_all, to: "users#delete_all", as: :delete_all
+        end
+      end
     end
     resources :clients do
-      resources :devices
+      resources :devices do
+        collection do
+          delete :delete_all, to: "devices#delete_all", as: :delete_all
+        end
+      end
     end
   end
 
@@ -40,5 +55,5 @@ Rails.application.routes.draw do
   # get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
 
   # Defines the root path route ("/")
-  root "admin/dashboard#index"
+  root "admin/tenants#index"
 end

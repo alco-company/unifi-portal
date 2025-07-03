@@ -8,6 +8,7 @@ class Admin::ClientsController < Admin::BaseController
   # GET /clients or /clients.json
   def index
     @clients = @tenant.clients.all
+    @clients = case_insensitive_match(@clients, [ :name, :email, :phone, :note ])
   end
 
   # GET /clients/1 or /clients/1.json
@@ -91,6 +92,16 @@ class Admin::ClientsController < Admin::BaseController
         format.html { redirect_to admin_tenant_clients_path(@client.tenant), status: :see_other, notice: "Client was successfully destroyed." }
         format.json { head :no_content }
       end
+    end
+  end
+
+  def delete_all
+    @clients = @tenant.clients # current_user.superuser? ? Client.all : Client.where(tenant_id: current_user.tenant_id)
+    case_insensitive_match(@clients, [ :name, :email, :phone, :note ]).destroy_all
+
+    respond_to do |format|
+      format.html { redirect_to admin_tenant_clients_path(@tenant), status: :see_other, notice: "All clients were successfully deleted." }
+      format.json { head :no_content }
     end
   end
 

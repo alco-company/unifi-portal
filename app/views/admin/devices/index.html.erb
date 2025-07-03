@@ -21,6 +21,7 @@
 
         <%= link_to @client.name, admin_tenant_client_path(@client.tenant, @client), class: "w-full whitespace-nowrap rounded-md border-slate-500 border-1 px-3.5 py-2.5 hover:bg-slate-100 text-slate-500 block font-medium text-left" %>
         <%= link_to "New device", new_admin_client_device_path(@client), class: "w-full whitespace-nowrap rounded-md border-slate-500 border-1 px-3.5 py-2.5 hover:bg-slate-100 text-slate-500 block font-medium text-left" %>
+        <%= button_to "Delete all", delete_all_admin_client_devices_path(@client), method: :delete, class: "w-full whitespace-nowrap rounded-md border-slate-500 border-1 px-3.5 py-2.5 hover:bg-slate-100 text-slate-500 block font-medium text-left" %>
       </div>
     </div>
   </div>

@@ -5,6 +5,7 @@ class Admin::SitesController < Admin::BaseController
   # GET /sites or /sites.json
   def index
     @sites = @tenant.sites
+    @sites = case_insensitive_match(@sites, [ :name, :url, :ssid, :controller_url ])
   end
 
   # GET /sites/1 or /sites/1.json
@@ -59,6 +60,17 @@ class Admin::SitesController < Admin::BaseController
       end
     end
   end
+
+  def delete_all
+    @sites = current_user.superuser? ? Site.all : Site.where(tenant_id: current_user.tenant_id)
+    case_insensitive_match(@sites, [ :name, :url, :ssid, :controller_url ]).destroy_all
+
+    respond_to do |format|
+      format.html { redirect_to admin_tenant_sites_path(@tenant), status: :see_other, notice: "All sites were successfully deleted." }
+      format.json { head :no_content }
+    end
+  end
+
 
   private
 

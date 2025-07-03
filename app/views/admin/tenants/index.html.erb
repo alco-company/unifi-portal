@@ -18,6 +18,7 @@
            group-hover:opacity-100 group-hover:pointer-events-auto
            group-focus-within:opacity-100 group-focus-within:pointer-events-auto">
         <%= link_to "New tenant", new_admin_tenant_path, class: "w-full whitespace-nowrap rounded-md border-slate-500 border-1 px-3.5 py-2.5 hover:bg-slate-100 text-slate-500 block font-medium text-left" %>
+        <%= button_to "Delete all", delete_all_admin_tenants_path, method: :delete, class: "w-full whitespace-nowrap rounded-md border-slate-500 border-1 px-3.5 py-2.5 hover:bg-slate-100 text-slate-500 block font-medium text-left" %>
       </div>
     </div>    
   </div>

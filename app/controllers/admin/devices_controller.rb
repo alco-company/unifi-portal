@@ -6,6 +6,7 @@ class Admin::DevicesController < Admin::BaseController
   # GET /devices or /devices.json
   def index
     @devices = @client.devices.all
+    @devices = case_insensitive_match(@devices, [ :mac_address, :last_ap ])
   end
 
   # GET /devices/1 or /devices/1.json
@@ -58,6 +59,16 @@ class Admin::DevicesController < Admin::BaseController
         format.html { redirect_to admin_client_devices_path(@client), status: :see_other, notice: "Device was successfully destroyed." }
         format.json { head :no_content }
       end
+    end
+  end
+
+  def delete_all
+    @devices = @client.devices # current_user.superuser? ? Device.all : Device.where(tenant_id: current_user.tenant_id)
+    case_insensitive_match(@devices, [ :mac_address, :last_ap ]).destroy_all
+
+    respond_to do |format|
+      format.html { redirect_to admin_client_devices_path(@client), status: :see_other, notice: "All devices were successfully deleted." }
+      format.json { head :no_content }
     end
   end
 
