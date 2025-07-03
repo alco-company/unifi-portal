@@ -1,11 +1,11 @@
 class SessionsController < ApplicationController
-
+  layout "guest"
   # ap=74:83:c2:29:5f:f6
   # id=b6:b8:cb:76:a8:1f
   # t=1750764123
   # url=http://netcts.cdn-apple.com%2F
-  # ssid=alco-free" 
-  # for 188.228.84.87 
+  # ssid=alco-free"
+  # for 188.228.84.87
   # at 2025-06-24 13:22:10 +0200
   def new
     load_site
@@ -29,16 +29,16 @@ class SessionsController < ApplicationController
       unless device.nil?
         session[:did] = device.id
         begin
-        
-          result = OtpMailer.send_otp( device.client.email, device.last_otp).deliver_later if email_available?(device)
+
+          result = OtpMailer.send_otp(device.client.email, device.last_otp).deliver_later if email_available?(device)
           result2= SmsSender.send_code(device.client.phone, device.last_otp) if sms_available?(device)
-  
+
           if result || result2
             session[:otp] = device.last_otp if Rails.env.test?
             respond_to do |format|
-              format.turbo_stream { 
+              format.turbo_stream {
                 render turbo_stream: [
-                  turbo_stream.replace("otp_input", partial: "sessions/otp_form"), 
+                  turbo_stream.replace("otp_input", partial: "sessions/otp_form"),
                   turbo_stream.append("flash_toasts", partial: "shared/toast", locals: {
                     message: "Code sent successfully",
                     type: :success
@@ -50,7 +50,7 @@ class SessionsController < ApplicationController
           else
             some_fault(status: :unprocessable_entity)
           end
-            
+
         rescue => e
           some_fault(status: :unprocessable_entity)
         end
@@ -80,9 +80,9 @@ class SessionsController < ApplicationController
     unless device.nil?
       session[:did] = device.id
       device.update!(last_otp: OtpGenerator.generate_otp) if @device.present?
-    
+
       begin
-        result = OtpMailer.send_otp( device.client.email, device.last_otp).deliver_later if email_available?(device)
+        result = OtpMailer.send_otp(device.client.email, device.last_otp).deliver_later if email_available?(device)
         result2= SmsSender.send_code(device.client.phone, device.last_otp) if sms_available?(device)
         if result || result2
           session[:otp] = device.last_otp if Rails.env.test?
@@ -94,12 +94,12 @@ class SessionsController < ApplicationController
                   message: "Code sent successfully",
                   type: :success
                 })
-              ]    
+              ]
             }
             format.html { render partial: "sessions/otp_form" }
           end
         end
-  
+
       rescue => e
         logger.error("OTP resend failed: #{e.message}")
         render turbo_stream: turbo_stream.append("flash_toasts", partial: "shared/toast", locals: {
@@ -174,12 +174,12 @@ class SessionsController < ApplicationController
         return false if @device.nil? || @device.last_otp.nil?
         @device.last_otp == params[:otp]
       else
-        return false
+        false
       end
     end
 
     def authorize_guest!
-      return false unless @device && @device.site #&& @client
+      return false unless @device && @device.site # && @client
       load_client_info
       result = External::Unifi.authorize_guest(
         url: @device.site.controller_url,
@@ -204,5 +204,4 @@ class SessionsController < ApplicationController
         @device.unifi_id = @unifi_client["data"].first["id"]
       end
     end
-
 end
