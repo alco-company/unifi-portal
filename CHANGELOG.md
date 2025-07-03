@@ -16,6 +16,7 @@
 - show alert and notice flash'es - WIP
 - error on unifi
 - context behind toggle_active
+- error on update
 
 ## 0.5.0
 

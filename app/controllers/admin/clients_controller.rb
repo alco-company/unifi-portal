@@ -74,7 +74,7 @@ class Admin::ClientsController < Admin::BaseController
   def update
     respond_to do |format|
       if @client.update(client_params)
-        client.devices.each do |device|
+        @client.devices.each do |device|
           device.update(
             guest_max: @client.guest_max,
             guest_rx: @client.guest_rx,
