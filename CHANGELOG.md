@@ -11,6 +11,7 @@
 - current_tenant from set_tenant
 - search tenants
 - delete all listed
+- send OTP if phone found
 
 ## 0.5.0
 

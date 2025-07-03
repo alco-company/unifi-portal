@@ -47,8 +47,9 @@ export default class extends Controller {
           } else {
             phoneInput.parentElement.classList.remove("border", "border-yellow-500");
             phoneInput.parentElement.classList.add("border", "border-green-500");
-            // document.querySelector("#name").disabled = true;
-            // document.querySelector("#email").disabled = true;
+            document.querySelector("#name").disabled = true;
+            document.querySelector("#email").disabled = true;
+            document.getElementById("submit-otp").click();
           }
         })
         .catch(error => {
