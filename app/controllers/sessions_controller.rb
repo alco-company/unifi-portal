@@ -26,7 +26,7 @@ class SessionsController < ApplicationController
 
     if valid_user_input?(user)
       device = find_or_create_user_client(user)
-      unless device.nil?
+      if !device.nil? and device.client.active?
         session[:did] = device.id
         begin
 
@@ -112,6 +112,12 @@ class SessionsController < ApplicationController
 
   def update
     if otp_valid? && authorize_guest!
+      expire_at = client.created_at < 5.minute.ago ? 24.hours.from_now : 10.years.from_now
+      Device.find(session[:did]).update!(
+        last_authenticated_at: Time.current,
+        authentication_expire_at: expire_at,
+        active: true
+      )
       session.delete(:did)
 
       respond_to do |format|
@@ -136,9 +142,9 @@ class SessionsController < ApplicationController
     end
 
     def find_or_create_user_client(user)
-      client = Client.find_or_create_by!(tenant_id: user[:tid], email: user[:email], phone: user[:phone])
-      client.update!(name: user[:name], active: true) if client.name != user[:name]
-      expire_at = client.created_at < 1.minute.ago ? 24.hours.from_now : 10.years.from_now
+      client = Client.where(tenant_id: user[:tid]).or(Client.where(email: user[:email])).or(Client.where(phone: user[:phone])).first_or_initialize
+      client.update!(name: user[:name], active: true) if client.name != user[:name] && user[:name].present? && user[:name] != ""
+      expire_at = client.created_at < 5.minute.ago ? 24.hours.from_now : 10.years.from_now
       device = Device.find_or_create_by!(client_id: client.id, mac_address: user[:id])
       device.update!(
         last_ap: user[:ap],
@@ -171,7 +177,7 @@ class SessionsController < ApplicationController
     def otp_valid?
       if params[:did] && session[:did] && params[:did] == session[:did].to_s
         @device = Device.find_by(id: session[:did])
-        return false if @device.nil? || @device.last_otp.nil?
+        return false if @device.nil? || @device.last_otp.nil? || !@device.client.active?
         @device.last_otp == params[:otp]
       else
         false
@@ -179,29 +185,7 @@ class SessionsController < ApplicationController
     end
 
     def authorize_guest!
-      return false unless @device && @device.site # && @client
-      load_client_info
-      result = External::Unifi.authorize_guest(
-        url: @device.site.controller_url,
-        site_id: @device.site.unifi_id,
-        client_id: @device.unifi_id,
-        api_key: @device.site.api_key
-      )
-      !result.nil? && result.dig("action").present? && result["action"] == "AUTHORIZE_GUEST_ACCESS" ?
-        { success: true } :
-        { success: false, error: result["error"] || "Failed to authorize guest access" }
-    end
-
-    def load_client_info
-      site_info = External::Unifi.get_sites(@device.site&.controller_url, key: @device.site&.api_key)
-      @device.site.unifi_id = site_info["data"].first["id"]
-      @unifi_client = External::Unifi.get_client(@device.site.controller_url, @device.site.unifi_id, @device.mac_address, key: @device.site&.api_key)
-      unless @unifi_client.nil? ||
-        @unifi_client.dig("count").zero? ||
-        @unifi_client.dig("data").nil? ||
-        @unifi_client.dig("data").empty? ||
-        @unifi_client.dig("count") > 1
-        @device.unifi_id = @unifi_client["data"].first["id"]
-      end
+      return false if @device.nil?
+      @device.authorize
     end
 end

@@ -12,6 +12,7 @@
 - no layout on /guest/s
 - ingen id på client and note on index
 - toggle activ - on tenants, sites, clients, and users
+- act on toggle active off on client
 
 ## 0.5.0
 

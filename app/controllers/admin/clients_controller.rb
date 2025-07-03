@@ -74,12 +74,25 @@ class Admin::ClientsController < Admin::BaseController
   def update
     respond_to do |format|
       if @client.update(client_params)
+        client.devices.each do |device|
+          device.update(
+            guest_max: @client.guest_max,
+            guest_rx: @client.guest_rx,
+            guest_tx: @client.guest_tx
+          )
+          device.authorize
+        end
         format.html { redirect_to admin_tenant_clients_path(@client.tenant), notice: "Client was successfully updated." }
         format.json { render :show, status: :ok, location: admin_tenant_clients_path(@client.tenant) }
       else
         format.html { render :edit, status: :unprocessable_entity }
         format.json { render json: @client.errors, status: :unprocessable_entity }
       end
+    end
+  rescue => e
+    Rails.logger.error("Error updating client: #{e.message}")
+    respond_to do |format|
+      format.html { redirect_to admin_tenant_clients_path(@client.tenant), alert: "Failed to update client: #{e.message}" }
     end
   end
 
