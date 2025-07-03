@@ -50,7 +50,7 @@ module External
     #     "txRateLimitKbps": 1000,
     #     "usage": {}
     #   }
-    # }    
+    # }
     def self.authorize_guest(url:, site_id:, client_id:, api_key:, time:, guest_max:, guest_rx:, guest_tx:)
       post_url = "#{url.chomp("/")}/proxy/network/integration/v1/sites/#{site_id}/clients/#{client_id}/actions"
 
@@ -84,7 +84,7 @@ module External
     #   "txRateLimitKbps": 1000,
     #   "usage": {}
     #   }
-    #   }    
+    #   }
     def self.unauthorize_guest(url:, site_id:, client_id:, api_key:)
       post_url = "#{url.chomp("/")}/proxy/network/integration/v1/sites/#{site_id}/clients/#{client_id}/actions"
 
@@ -94,6 +94,15 @@ module External
 
       headers = {
         "X-API-KEY" => api_key,
+        "Accept" => "application/json",
+        "Content-Type" => "application/json"
+      }
+
+      post_json(post_url, body: body, headers: headers)
+    rescue => e
+      Rails.logger.error("ERROR: Failed to unauthorize guest access: #{e.message}")
+      { error: e.message }
+    end
 
     def self.success_redirect(base_url, mac, token)
       "#{base_url}/guest/s/default?mac=#{mac}&token=#{token}"

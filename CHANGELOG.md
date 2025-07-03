@@ -14,6 +14,7 @@
 - toggle activ - on tenants, sites, clients, and users
 - act on toggle active off on client
 - show alert and notice flash'es - WIP
+- error on unifi
 
 ## 0.5.0
 
