@@ -5,6 +5,7 @@ Rails.application.configure do
 
   # Code is not reloaded between requests.
   config.enable_reloading = false
+  config.hosts << ENV.fetch("SSL_DOMAIN", "app.unifi-portal.site")
 
   # Eager load code on boot for better performance and memory savings (ignored by Rake tasks).
   config.eager_load = true
@@ -14,7 +15,7 @@ Rails.application.configure do
 
   # Turn on fragment caching in view templates.
   config.action_controller.perform_caching = true
-  config.action_controller.default_url_options = { host: ENV["WEB_HOST"] }
+  config.action_controller.default_url_options = { host: ENV["SSL_DOMAIN"], protocol: "https" }
   # Cache assets for far-future expiry since they are all digest stamped.
   config.public_file_server.headers = { "cache-control" => "public, max-age=#{1.year.to_i}" }
 
@@ -61,7 +62,7 @@ Rails.application.configure do
   config.action_cable.allowed_request_origins = [ %r{http://*}, %r{https://*} ]
   config.action_mailer.default_url_options = { host: ENV["WEB_HOST"] }
   config.action_mailer.delivery_method = :mailersend
-  
+
   # Specify outgoing SMTP server. Remember to add smtp/* credentials via bin/rails credentials:edit.
   # config.action_mailer.smtp_settings = {
   #   user_name: Rails.application.credentials.dig(:smtp, :user_name),

@@ -2,12 +2,12 @@
 service: heimdall
 
 # Name of the container image.
-image: your-user/heimdall
+image: wdiechmann/heimdall
 
 # Deploy to these servers.
 servers:
   web:
-    - 192.168.0.1
+    - 37.27.217.89
   # job:
   #   hosts:
   #     - 192.168.0.1
@@ -19,13 +19,13 @@ servers:
 # Note: If using Cloudflare, set encryption mode in SSL/TLS setting to "Full" to enable CF-to-app encryption.
 proxy:
   ssl: true
-  host: app.example.com
+  host: app.unifi-portal.site
 
 # Credentials for your image host.
 registry:
   # Specify the registry server, if you're not using Docker Hub
   # server: registry.digitalocean.com / ghcr.io / ...
-  username: your-user
+  username: wdiechmann
 
   # Always use an access token rather than real password when possible.
   password:
@@ -34,11 +34,18 @@ registry:
 # Inject ENV variables into containers (secrets come from .kamal/secrets).
 env:
   secret:
+    - MAILERSEND_API_WEBHOOK_SECRET
+    - MAILERSEND_API_TOKEN
+    - SECRET_KEY_BASE
     - RAILS_MASTER_KEY
+    - HEIMDALL_VERSION
+    - SMSAPI_API_TOKEN
   clear:
-    # Run the Solid Queue Supervisor inside the web server's Puma process to do jobs.
-    # When you start using multiple servers, you should split out job processing to a dedicated machine.
     SOLID_QUEUE_IN_PUMA: true
+    WEB_HOST: app.unifi-portal.site
+    PORT: 3001
+    RAILS_ENV: production
+    SSL_DOMAIN: app.unifi-portal.site
 
     # Set number of processes dedicated to Solid Queue (default: 1)
     # JOB_CONCURRENCY: 3
@@ -73,7 +80,8 @@ asset_path: /rails/public/assets
 
 # Configure the image builder.
 builder:
-  arch: amd64
+  remote: ssh://root@135.181.202.106
+  arch: arm64
 
   # # Build image via remote server (useful for faster amd64 builds on arm64 computers)
   # remote: ssh://docker@docker-builder-server

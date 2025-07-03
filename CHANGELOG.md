@@ -1,6 +1,5 @@
 # CHANGELOG
 
-- expire 10years
 - hide name/email
 
 ## 0.5.1
@@ -17,7 +16,8 @@
 - error on unifi
 - context behind toggle_active
 - error on update
-- missed setting time on authorize_guest
+- missed setting time on authorize_guest - max 1000000 minutes
+- setting production
 
 ## 0.5.0
 
