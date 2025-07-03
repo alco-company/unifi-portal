@@ -17,6 +17,11 @@
   </div>
 
   <div class="my-5">
+    <%= form.label :site_id, "Site: #{device&.site&.name}" %>
+    <%= form.hidden_field :site_id, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": device.errors[:site_id].none?, "border-red-400 focus:outline-red-600": device.errors[:site_id].any?}] %>
+  </div>
+
+  <div class="my-5">
     <%= form.label :last_ap %>
     <%= form.text_field :last_ap, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": device.errors[:last_ap].none?, "border-red-400 focus:outline-red-600": device.errors[:last_ap].any?}] %>
   </div>
@@ -24,11 +29,6 @@
   <div class="my-5">
     <%= form.label :mac_address %>
     <%= form.text_field :mac_address, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": device.errors[:mac_address].none?, "border-red-400 focus:outline-red-600": device.errors[:mac_address].any?}] %>
-  </div>
-
-  <div class="my-5">
-    <%= form.label :site_id %>
-    <%= form.text_field :site_id, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": device.errors[:site_id].none?, "border-red-400 focus:outline-red-600": device.errors[:site_id].any?}] %>
   </div>
 
   <div class="my-5">

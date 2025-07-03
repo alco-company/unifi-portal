@@ -13,6 +13,7 @@
 - ingen id på client and note on index
 - toggle activ - on tenants, sites, clients, and users
 - act on toggle active off on client
+- show alert and notice flash'es - WIP
 
 ## 0.5.0
 
