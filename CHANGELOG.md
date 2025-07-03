@@ -1,10 +1,7 @@
 # CHANGELOG
 
-- toggle activ
 - expire 10years
 - hide name/email
-- du kan nu lukke
-- ingen id på client
 
 ## 0.5.1
 
@@ -14,6 +11,7 @@
 - send OTP if phone found
 - no layout on /guest/s
 - ingen id på client and note on index
+- toggle activ - on tenants, sites, clients, and users
 
 ## 0.5.0
 

@@ -35,6 +35,8 @@ Rails.application.routes.draw do
     end
   end
 
+  put "/toggle_active", to: "toggle_active#update", as: :toggle_active
+
   get "/check_pnr", to: "pnumber#check_pnr", as: :check_pnr
   get "/check_phone", to: "pnumber#check_phone", as: :check_phone
 

@@ -1,8 +1,10 @@
-<div id="<%= dom_id tenant %>" data-controller="tenant" data-action="click->tenant#show" data-tenant-id="<%= tenant.id %>" class="cursor-pointer p-2 grid grid-cols-5 w-full rounded-sm bg-indigo-100 sm:w-auto my-2 gap-2 space-y-1 items-center">
+<div id="<%= dom_id tenant %>" 
+  data-controller="tenant active" data-action="click->tenant#show" data-tenant-id="<%= tenant.id %>" 
+  class="cursor-pointer p-2 grid grid-cols-5 w-full rounded-sm bg-indigo-100 sm:w-auto my-2 gap-2 space-y-1 items-center ">
   <div class="col-span-4">
     <%= tenant.name %>
   </div>
   <div class="col-span-1">
-    <%= tenant.active? ? "Yes" : "No" %>
+    <%= render "admin/toggle_active", resource: tenant %>
   </div>
 </div>
