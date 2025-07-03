@@ -15,6 +15,7 @@
 - act on toggle active off on client
 - show alert and notice flash'es - WIP
 - error on unifi
+- context behind toggle_active
 
 ## 0.5.0
 

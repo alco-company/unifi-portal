@@ -18,7 +18,7 @@
           <path d="M480-160q-33 0-56.5-23.5T400-240q0-33 23.5-56.5T480-320q33 0 56.5 23.5T560-240q0 33-23.5 56.5T480-160Zm0-240q-33 0-56.5-23.5T400-480q0-33 23.5-56.5T480-560q33 0 56.5 23.5T560-480q0 33-23.5 56.5T480-400Zm0-240q-33 0-56.5-23.5T400-720q0-33 23.5-56.5T480-800q33 0 56.5 23.5T560-720q0 33-23.5 56.5T480-640Z"/>
         </svg>
       </button>
-      <div data-tooltip-target="tooltip" class="absolute top-5 right-2 p-2 flex flex-col space-x-2 space-y-1 bg-blue-50 rounded-sm shadow opacity-0 pointer-events-none transition
+      <div data-tooltip-target="tooltip" class="absolute z-30 top-5 right-2 p-2 flex flex-col space-x-2 space-y-1 bg-blue-50 rounded-sm shadow opacity-0 pointer-events-none transition
            group-hover:opacity-100 group-hover:pointer-events-auto
            group-focus-within:opacity-100 group-focus-within:pointer-events-auto">
         <%= link_to @tenant.name, admin_tenant_path(@tenant), class: "w-full whitespace-nowrap rounded-md border-slate-500 border-1 px-3.5 py-2.5 hover:bg-slate-100 text-slate-500 block font-medium text-left" %>
