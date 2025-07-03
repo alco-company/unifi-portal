@@ -17,7 +17,7 @@ class Admin::ClientsController < Admin::BaseController
 
   # GET /clients/new
   def new
-    @client = @tenant.clients.new
+    @client = @tenant.clients.new(guest_max: @tenant.guest_max, guest_rx: @tenant.guest_rx, guest_tx: @tenant.guest_tx, active: true)
   end
 
   # GET /clients/1/edit

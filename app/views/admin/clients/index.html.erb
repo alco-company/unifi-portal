@@ -28,9 +28,12 @@
 
   <div id="clients" class="min-w-full divide-y divide-gray-200 space-y-1">
     <% if @clients.any? %>
-      <div class="grid grid-cols-5 w-full sm:w-auto my-1 gap-2 space-y-1">
-        <div class="col-span-4">
+      <div class="grid grid-cols-7 w-full sm:w-auto my-1 gap-2 space-y-1">
+        <div class="col-span-2">
           <strong class="font-medium ">Name:</strong>
+        </div>
+        <div class="col-span-4">
+          <strong class="font-medium ">Note:</strong>
         </div>
         <div class="col-span-1">
           <strong class="font-medium">Active:</strong>

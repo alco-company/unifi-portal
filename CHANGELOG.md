@@ -13,6 +13,7 @@
 - delete all listed
 - send OTP if phone found
 - no layout on /guest/s
+- ingen id på client and note on index
 
 ## 0.5.0
 

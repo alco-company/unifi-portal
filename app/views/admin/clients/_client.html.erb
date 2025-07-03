@@ -1,6 +1,11 @@
-<div id="<%= dom_id client %>" data-controller="client" data-action="click->client#show" data-client-id="<%= client.id %>" data-tenant-id="<%= client.tenant.id %>" class="cursor-pointer p-2 grid grid-cols-5 w-full rounded-sm bg-indigo-100 sm:w-auto my-2 gap-2 space-y-1 items-center">
-  <div class="col-span-4 truncate">
+<div id="<%= dom_id client %>" 
+  data-controller="client" data-action="click->client#show" data-client-id="<%= client.id %>" data-tenant-id="<%= client.tenant.id %>" 
+  class="cursor-pointer p-2 grid grid-cols-7 w-full rounded-sm bg-indigo-100 sm:w-auto my-2 gap-2 space-y-1 items-center">
+  <div class="col-span-2 truncate">
     <%= client.name %>
+  </div>
+  <div class="col-span-4 truncate">
+    <%= client.note %>
   </div>
   <div class="col-span-1">
     <%= client.active? ? "Yes" : "No" %>
