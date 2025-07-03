@@ -17,6 +17,7 @@
 - error on unifi
 - context behind toggle_active
 - error on update
+- missed setting time on authorize_guest
 
 ## 0.5.0
 

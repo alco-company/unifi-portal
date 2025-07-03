@@ -28,6 +28,7 @@ class Device < ApplicationRecord
       site_id: site.unifi_id,
       client_id: unifi_id,
       api_key: site.api_key,
+      time: time_limit,
       guest_max: client.guest_max,
       guest_rx: client.guest_rx,
       guest_tx: client.guest_tx
@@ -35,6 +36,10 @@ class Device < ApplicationRecord
     !result.nil? && result.dig("action").present? && result["action"] == "AUTHORIZE_GUEST_ACCESS" ?
       { success: true } :
       { success: false, error: result["error"] || "Failed to authorize guest access" }
+  end
+
+  def time_limit
+    authentication_expire_at > 24.hours.from_now ? 1000000 : 1440
   end
 
   def load_client_info
