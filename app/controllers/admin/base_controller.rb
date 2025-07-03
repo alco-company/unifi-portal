@@ -1,5 +1,6 @@
 class Admin::BaseController < ApplicationController
   # layout "admin/application"
+  helper_method :current_tenant
 
   # Ensure the user is logged in as an admin
   before_action :require_user!
@@ -15,5 +16,14 @@ class Admin::BaseController < ApplicationController
     unless current_user.superuser?
       @tenant = current_user.tenant
     end
+  end
+
+  def current_tenant
+    case params[:controller]
+    when "admin/tenants"; @tenant ||= Tenant.find(params[:id]) if params[:id].present?
+    when "admin/devices"; @tenant ||= @client.tenant if @client.present?
+    else @tenant ||= params[:tenant_id].present? ? Tenant.find(params[:tenant_id]) : nil
+    end
+    @tenant || current_user&.tenant
   end
 end

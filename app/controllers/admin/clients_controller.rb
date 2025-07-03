@@ -1,7 +1,7 @@
 require "csv"
 
 class Admin::ClientsController < Admin::BaseController
-  before_action :set_tenant
+  before_action :current_tenant
   before_action :set_site, only: %i[show edit update destroy]
   before_action :set_client, only: %i[ show edit update destroy ]
 
@@ -98,10 +98,6 @@ class Admin::ClientsController < Admin::BaseController
     # Use callbacks to share common setup or constraints between actions.
     def set_client
       @client = @tenant.clients.find(params.expect(:id)) rescue nil
-    end
-
-    def set_tenant
-      @tenant = current_user.tenant
     end
 
     def set_site

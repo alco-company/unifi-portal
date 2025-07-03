@@ -1,5 +1,5 @@
 class Admin::SitesController < Admin::BaseController
-  before_action :set_tenant
+  before_action :current_tenant
   before_action :set_site, only: %i[show edit update destroy]
 
   # GET /sites or /sites.json
@@ -63,7 +63,7 @@ class Admin::SitesController < Admin::BaseController
   private
 
     def set_tenant
-      @tenant = Tenant.find(params[:tenant_id])
+      @tenant = Tenant.find(params[:tenant_id]) || current_user.tenant
     end
 
     def set_site

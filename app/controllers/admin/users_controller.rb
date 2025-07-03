@@ -53,7 +53,7 @@ class Admin::UsersController < Admin::BaseController
   end
 
   def set_tenant
-    @tenant = current_user.tenant
+    @tenant = Tenant.find(params[:tenant_id]) || current_user.tenant
     redirect_to admin_login_path unless @tenant
   end
 

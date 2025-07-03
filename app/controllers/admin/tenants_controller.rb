@@ -1,5 +1,5 @@
 class Admin::TenantsController < Admin::BaseController
-  before_action :set_admin_tenant, only: %i[ show edit update destroy ]
+  before_action :current_tenant
 
   # GET /admin/tenants or /admin/tenants.json
   def index
@@ -25,7 +25,7 @@ class Admin::TenantsController < Admin::BaseController
 
   # POST /admin/tenants or /admin/tenants.json
   def create
-    @tenant = Tenant.new(admin_tenant_params)
+    @tenant = Tenant.new(tenant_params)
 
     respond_to do |format|
       if @tenant.save
@@ -41,7 +41,7 @@ class Admin::TenantsController < Admin::BaseController
   # PATCH/PUT /admin/tenants/1 or /admin/tenants/1.json
   def update
     respond_to do |format|
-      if @tenant.update(admin_tenant_params)
+      if @tenant.update(tenant_params)
         format.html { redirect_to admin_tenants_path, notice: "Tenant was successfully updated." }
         format.json { render :show, status: :ok, location: admin_tenants_path }
       else
@@ -70,12 +70,12 @@ class Admin::TenantsController < Admin::BaseController
 
   private
     # Use callbacks to share common setup or constraints between actions.
-    def set_admin_tenant
-      @tenant = Tenant.find(params.expect(:id)) rescue nil
+    def set_tenant
+      @tenant = current_tenant
     end
 
     # Only allow a list of trusted parameters through.
-    def admin_tenant_params
+    def tenant_params
       params.expect(tenant: [ :name, :url, :guest_max, :guest_rx, :guest_tx, :active, :note ])
     end
 end

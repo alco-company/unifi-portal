@@ -5,6 +5,10 @@
 - toggle activ
 - expire 10years
 
+## 0.5.1
+
+- current_tenant from set_tenant
+
 ## 0.5.0
 
 - add login feature
