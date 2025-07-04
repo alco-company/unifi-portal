@@ -2,6 +2,10 @@
 
 - hide name/email
 
+## 0.6.0
+
+- make a site distinction between login and API controllers
+
 ## 0.5.1
 
 - current_tenant from set_tenant

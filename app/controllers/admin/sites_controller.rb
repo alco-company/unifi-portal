@@ -14,7 +14,7 @@ class Admin::SitesController < Admin::BaseController
 
   # GET /sites/new
   def new
-    @site = @tenant.sites.new
+    @site = @tenant.sites.new(controller_type: "login")
   end
 
   # GET /sites/1/edit
@@ -83,6 +83,6 @@ class Admin::SitesController < Admin::BaseController
     end
     # Only allow a list of trusted parameters through.
     def site_params
-      params.expect(site: [ :tenant_id, :name, :url, :ssid, :api_key, :controller_url, :guest_max, :guest_rx, :guest_tx, :active ])
+      params.expect(site: [ :tenant_id, :name, :url, :ssid, :login, :password, :unifi_id, :controller_type, :api_key, :controller_url, :guest_max, :guest_rx, :guest_tx, :active ])
     end
 end

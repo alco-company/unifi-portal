@@ -44,7 +44,7 @@ class Device < ApplicationRecord
 
   def load_client_info
     site_info = External::Unifi.get_sites(site&.controller_url, key: site&.api_key)
-    site.unifi_id = site_info["data"].first["id"]
+    site.update(unifi_id: site_info["data"].first["id"])
     @unifi_client = External::Unifi.get_client(site.controller_url, site.unifi_id, mac_address, key: site&.api_key)
     unless @unifi_client.nil? ||
       @unifi_client.dig("count").zero? ||

@@ -30,10 +30,34 @@
     <%= form.label :ssid %>
     <%= form.text_field :ssid, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": site.errors[:ssid].none?, "border-red-400 focus:outline-red-600": site.errors[:ssid].any?}] %>
   </div>
+    
+  <div data-controller="controller-type">
+    <div class="mb-4">
+      <label class="font-semibold block mb-1">Controller Type</label>
+      <div class="space-x-4">
+        <label>
+          <%= form.radio_button :controller_type, "login", data: { action: "controller-type#change" } %>
+          Login (Username/Password)
+        </label>
+        <label>
+          <%= form.radio_button :controller_type, "api_key", data: { action: "controller-type#change" } %>
+          API Key
+        </label>
+      </div>
+    </div>
 
-  <div class="my-5">
-    <%= form.label :api_key %>
-    <%= form.text_field :api_key, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": site.errors[:api_key].none?, "border-red-400 focus:outline-red-600": site.errors[:api_key].any?}] %>
+    <div data-controller-type-target="basicFields" class="mb-4">
+      <%= form.label :username %>
+      <%= form.text_field :username, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": site.errors[:username].none?, "border-red-400 focus:outline-red-600": site.errors[:username].any?}] %>
+
+      <%= form.label :password %>
+      <%= form.password_field :password, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": site.errors[:password].none?, "border-red-400 focus:outline-red-600": site.errors[:password].any?}] %>
+    </div>
+
+    <div data-controller-type-target="apiFields" class="mb-4">
+      <%= form.label :api_key %>
+      <%= form.text_field :api_key, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": site.errors[:api_key].none?, "border-red-400 focus:outline-red-600": site.errors[:api_key].any?}] %>
+    </div>
   </div>
 
   <div class="my-5">

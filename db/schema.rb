@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_07_02_113002) do
+ActiveRecord::Schema[8.1].define(version: 2025_07_04_211722) do
   create_table "clients", force: :cascade do |t|
     t.boolean "active", default: true
     t.datetime "created_at", null: false
@@ -48,16 +48,20 @@ ActiveRecord::Schema[8.1].define(version: 2025_07_02_113002) do
   create_table "sites", force: :cascade do |t|
     t.boolean "active", default: true
     t.string "api_key"
+    t.integer "controller_type", default: 0, null: false
     t.string "controller_url"
     t.datetime "created_at", null: false
     t.integer "guest_max", default: 0, null: false
     t.integer "guest_rx", default: 0, null: false
     t.integer "guest_tx", default: 0, null: false
     t.string "name"
+    t.string "password"
     t.string "ssid"
     t.integer "tenant_id", null: false
+    t.string "unifi_id"
     t.datetime "updated_at", null: false
     t.string "url"
+    t.string "username"
     t.index ["tenant_id"], name: "index_sites_on_tenant_id"
   end
 
