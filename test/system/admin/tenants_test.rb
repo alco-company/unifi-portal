@@ -3,6 +3,7 @@ require "application_system_test_case"
 class Admin::TenantsTest < ApplicationSystemTestCase
   setup do
     @admin_tenant = tenants(:one)
+    login_as(users(:one))
   end
 
   test "visiting the index" do
@@ -15,7 +16,7 @@ class Admin::TenantsTest < ApplicationSystemTestCase
     click_on "New tenant"
 
     check "Active" if @admin_tenant.active
-    fill_in "Login", with: @admin_tenant.login
+    fill_in "Username", with: @admin_tenant.username
     fill_in "Name", with: @admin_tenant.name
     fill_in "Password", with: @admin_tenant.password
     click_on "Create Tenant"
@@ -29,7 +30,7 @@ class Admin::TenantsTest < ApplicationSystemTestCase
     click_on "Edit", match: :first
 
     check "Active" if @admin_tenant.active
-    fill_in "Login", with: @admin_tenant.login
+    fill_in "Username", with: @admin_tenant.username
     fill_in "Name", with: @admin_tenant.name
     fill_in "Password", with: @admin_tenant.password
     click_on "Update Tenant"

@@ -6,6 +6,7 @@
 
 - make a site distinction between login and API controllers
 - align action buttons css under heimdall_*button
+- work on getting tests green
 
 ## 0.5.1
 

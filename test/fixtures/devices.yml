@@ -8,6 +8,7 @@ one:
   last_authenticated_at: 2025-06-30 20:45
   last_otp: MyString
   authentication_expire_at: 2025-06-30 20:45
+  unifi_id: "1234567890abcdef"
 
 two:
   client: two
@@ -17,3 +18,4 @@ two:
   last_authenticated_at: 2025-06-30 20:45:19
   last_otp: MyString
   authentication_expire_at: 2025-06-30 20:45:19
+  unifi_id: "1234567890abcdef"

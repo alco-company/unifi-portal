@@ -16,11 +16,10 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
     stub_guest_authorization_api()
     stub_mailersend_api()
     stub_smsapi(@client.phone.gsub("+", ""), "123456") # Stub the SMS API to return a fixed OTP code - leave out the '+'
-
   end
 
   test "GET #new shows login form when site and client are found" do
-    get '/guest/s/default', params: {
+    get "/guest/s/default", params: {
       url: @site.url,
       ssid: @site.ssid,
       id: @client_mac,
@@ -54,7 +53,7 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
       }, headers: { "Accept" => "text/vnd.turbo-stream.html" }
       assert_response :success
       assert_match "Indtast koden vi har sendt til dig", @response.body
-    end  
+    end
   end
 
   test "PATCH #update authenticates and renders success with correct OTP" do
@@ -81,10 +80,10 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
     email = ActionMailer::Base.deliveries.last
     plain_body = email.text_part.body.to_s
     html_body = email.html_part.body.to_s
-    assert_equal ["alice@example.com"], email.to
+    assert_equal [ "alice@example.com" ], email.to
     assert_match /\d{6}/, plain_body || html_body
 
-    patch session_path, 
+    patch session_path,
       params: {
         did: @device.id,
         otp: otp_code
@@ -119,13 +118,12 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
     patch session_path, params: {
       did: @device.id,
       otp:  otp_code
-    }, 
+    },
     headers: {  "Accept" => "text/html" }
     assert_response :redirect
     follow_redirect!
     assert_response :success
-
-  end  
+  end
 
   test "PATCH #update fails with incorrect OTP" do
     # stub_guest_authorization_api
@@ -139,14 +137,14 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
         url: @site.url,
         ssid: @site.ssid,
         id: @client_mac,
-        ap: @device.last_ap,
+        ap: @device.last_ap
       }, headers: { "Accept" => "text/vnd.turbo-stream.html" }
     end
 
     patch session_path, params: {
       did: @device.id,
       otp: "111111"
-    }, 
+    },
     headers: { "Accept" => "text/vnd.turbo-stream.html" }
 
     assert_response :success

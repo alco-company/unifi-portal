@@ -15,4 +15,10 @@ class ApplicationSystemTestCase < ActionDispatch::SystemTestCase
    }
 
   include CupriteHelpers
+  def login_as(user)
+    visit admin_login_path
+    fill_in "Email", with: user.email
+    fill_in "Password", with: "secret"
+    click_button "Log in"
+  end
 end

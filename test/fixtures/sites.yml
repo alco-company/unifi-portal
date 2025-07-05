@@ -5,8 +5,11 @@ one:
   name: MyString
   url: "https://heimdall.test"
   ssid: thisted-guest
-  api_key: test-key
   controller_url: "https://heimdall.test"
+  controller_type: "login"
+  username: test_user
+  password: test_password
+  unifi_id: "1234567890abcdef"
   active: false
 
 two:
@@ -16,4 +19,6 @@ two:
   ssid: MyString
   api_key: MyString
   controller_url: MyString
+  controller_type: "api_key"
+  unifi_id: "1234567890abcdef"
   active: false

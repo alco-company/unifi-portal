@@ -3,6 +3,8 @@ require "test_helper"
 class Admin::SitesControllerTest < ActionDispatch::IntegrationTest
   setup do
     @site = sites(:one)
+    @user = users(:one)
+    post admin_login_path, params: { email: @user.email, password: "password" }
   end
 
   test "should get index" do

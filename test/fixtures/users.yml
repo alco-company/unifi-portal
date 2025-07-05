@@ -2,9 +2,9 @@
 
 one:
   name: MyString
-  email: MyString
+  email: email
   phone: MyString
-  password_digest: MyString
+  password_digest: <%= BCrypt::Password.create("password") %>
   superuser: false
   tenant: one
 
@@ -12,6 +12,6 @@ two:
   name: MyString
   email: MyString
   phone: MyString
-  password_digest: MyString
+  password_digest: <%= BCrypt::Password.create("password") %>
   superuser: false
   tenant: two

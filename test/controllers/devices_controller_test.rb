@@ -4,6 +4,8 @@ class DevicesControllerTest < ActionDispatch::IntegrationTest
   setup do
     @device = devices(:one)
     @client = @device.client
+    @user = users(:one)
+    post admin_login_path, params: { email: @user.email, password: "password" }
   end
 
   test "should get index" do

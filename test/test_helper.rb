@@ -20,5 +20,15 @@ module ActiveSupport
     include UnifiApiStubs
     include MailersendApiStubs
     include SmsapiStubs
+
+
+    def login_as(user)
+      if defined?(post)
+        post login_path, params: { email: user.email, password: "password" }
+      else
+        # For system tests or others where you can't call post
+        raise "login_as not implemented for this type of test"
+      end
+    end
   end
 end
