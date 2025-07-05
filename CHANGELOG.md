@@ -5,6 +5,7 @@
 ## 0.6.0
 
 - make a site distinction between login and API controllers
+- align action buttons css under heimdall_*button
 
 ## 0.5.1
 

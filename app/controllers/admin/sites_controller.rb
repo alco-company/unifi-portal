@@ -83,6 +83,6 @@ class Admin::SitesController < Admin::BaseController
     end
     # Only allow a list of trusted parameters through.
     def site_params
-      params.expect(site: [ :tenant_id, :name, :url, :ssid, :login, :password, :unifi_id, :controller_type, :api_key, :controller_url, :guest_max, :guest_rx, :guest_tx, :active ])
+      params.expect(site: [ :tenant_id, :name, :url, :ssid, :username, :password, :unifi_id, :controller_type, :api_key, :controller_url, :guest_max, :guest_rx, :guest_tx, :active ])
     end
 end

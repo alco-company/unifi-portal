@@ -51,7 +51,7 @@
       <%= form.text_field :username, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": site.errors[:username].none?, "border-red-400 focus:outline-red-600": site.errors[:username].any?}] %>
 
       <%= form.label :password %>
-      <%= form.password_field :password, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": site.errors[:password].none?, "border-red-400 focus:outline-red-600": site.errors[:password].any?}] %>
+      <%= form.text_field :password, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": site.errors[:password].none?, "border-red-400 focus:outline-red-600": site.errors[:password].any?}] %>
     </div>
 
     <div data-controller-type-target="apiFields" class="mb-4">
@@ -71,6 +71,6 @@
   </div>
 
   <div class="inline">
-    <%= form.submit class: "w-full sm:w-auto rounded-md px-3.5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white inline-block font-medium cursor-pointer" %>
+    <%= form.submit class: "heimdall_save_button" %>
   </div>
 <% end %>

@@ -21,6 +21,25 @@
       <%= @site.controller_url %>
     </div>
     <div class="col-span-1">
+      <strong class="block font-medium mb-1">Controller type:</strong>
+      <%= @site.controller_type %>
+    </div>
+    <% if @site.controller_type == "login" %>
+      <div class="col-span-1">
+        <strong class="block font-medium mb-1">Username:</strong>
+        <%= @site.username %>
+      </div>
+      <div class="col-span-1">
+        <strong class="block font-medium mb-1">Password:</strong>
+        <%= @site.password %>
+      </div>
+    <% else %>
+      <div class="col-span-1">
+        <strong class="block font-medium mb-1">API key:</strong>
+        <%= @site.api_key %>
+      </div>
+    <% end %>
+    <div class="col-span-1">
       <strong class="block font-medium mb-1">Ssid:</strong>
       <%= @site.ssid %>
     </div>
@@ -43,16 +62,16 @@
 
   </div>
 
-  <%= link_to "Edit this site", edit_admin_tenant_site_path(@site.tenant, @site), class: "w-full mb-2 sm:w-auto text-center rounded-md px-3.5 py-2.5 bg-gray-100 hover:bg-gray-50 inline-block font-medium" %>
-  <%#= button_to "Destroy this site", admin_tenant_site_path(@site.tenant, @site), method: :delete, form_class: "sm:inline-block mt-2 sm:mt-0 sm:ml-2", class: "w-full rounded-md px-3.5 py-2.5 text-white bg-red-600 hover:bg-red-500 font-medium cursor-pointer", data: { turbo_confirm: "Are you sure?" } %>
-  <%= button_to "Delete", "#", method: :delete, data: {
+  <div class="md:flex gap-2">
+    <%= link_to "Edit this site", edit_admin_tenant_site_path(@site.tenant, @site), class: "heimdall_button" %>
+    <%= button_to "Delete", "#", method: :delete, data: {
+          action: "click->modal#show",
+          action_url: admin_tenant_site_path(@site.tenant, @site)
+        },
+        form: { data: { turbo: false } }, # prevent button_to from wrapping a real form
+        class: "heimdall_delete_button" %>
 
-        action: "click->modal#show",
-        action_url: admin_tenant_site_path(@site.tenant, @site)
-      },
-      form: { data: { turbo: false } }, # prevent button_to from wrapping a real form
-      class: "w-full sm:w-auto text-center rounded-md px-3.5 py-2.5 text-white bg-red-600 hover:bg-red-500 inline-block font-medium" %>
-
-  <%= link_to "Back to sites", admin_tenant_sites_path(@site.tenant), class: "w-full sm:w-auto text-center mt-2 sm:mt-0 sm:ml-2 rounded-md px-3.5 py-2.5 bg-gray-100 hover:bg-gray-50 inline-block font-medium" %>
+    <%= link_to "Back to sites", admin_tenant_sites_path(@site.tenant), class: "heimdall_button" %>
+  </div>
 
 </div>

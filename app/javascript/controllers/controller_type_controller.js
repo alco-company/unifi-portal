@@ -7,7 +7,8 @@ export default class extends Controller {
   static targets = ["basicFields", "apiFields"]
 
   connect() {
-    this.toggle()
+    let type = document.getElementById("site_controller_type_api_key").checked ? "api_key" : "login";
+    this.toggle(type);
   }
 
   change(event) {

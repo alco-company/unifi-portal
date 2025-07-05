@@ -7,52 +7,51 @@
 
   <h1 class="font-bold text-4xl"><%= @device.mac_address %></h1>
 
-  <div id="<%= dom_id @device %>" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 w-full sm:w-auto my-5 gap-2 space-y-5">
-    <div class="col-span-1">
-      <strong class="block font-medium mb-1">Site:</strong>
-      <%= @device&.site&.name %>
+  <div id="devices" class="min-w-full divide-y divide-gray-200 space-y-5">
+    <div id="<%= dom_id @device %>" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 w-full sm:w-auto my-5 gap-2 space-y-5">
+      <div class="col-span-1">
+        <strong class="block font-medium mb-1">Site:</strong>
+        <%= @device&.site&.name %>
+      </div>
+      <div class="col-span-1">
+        <strong class="block font-medium mb-1">Client:</strong>
+        <%= @device.client.name %>
+      </div>
+      <div class="col-span-1">
+        <strong class="block font-medium mb-1">MAC Address:</strong>
+        <%= @device.mac_address %>
+      </div>
+      <div class="col-span-1">
+        <strong class="block font-medium mb-1">Last AP:</strong>
+        <%= @device.last_ap %>
+      </div>
+      <div class="col-span-1">
+        <strong class="block font-medium mb-1">Last OTP:</strong>
+        <%= @device.last_otp %>
+      </div>
+      <div class="col-span-1">
+        <strong class="block font-medium mb-1">Unifi ID:</strong>
+        <%= @device.unifi_id %>
+      </div>
+      <div class="col-span-1">
+        <strong class="block font-medium mb-1">Last authenticated at:</strong>
+        <%= @device.last_authenticated_at %>
+      </div>
+      <div class="col-span-1">
+        <strong class="block font-medium mb-1">Authentication Expire At:</strong>
+        <%= @device.authentication_expire_at %>
+      </div>
     </div>
-    <div class="col-span-1">
-      <strong class="block font-medium mb-1">Client:</strong>
-      <%= @device.client.name %>
-    </div>
-    <div class="col-span-1">
-      <strong class="block font-medium mb-1">MAC Address:</strong>
-      <%= @device.mac_address %>
-    </div>
-    <div class="col-span-1">
-      <strong class="block font-medium mb-1">Last AP:</strong>
-      <%= @device.last_ap %>
-    </div>
-    <div class="col-span-1">
-      <strong class="block font-medium mb-1">Last OTP:</strong>
-      <%= @device.last_otp %>
-    </div>
-    <div class="col-span-1">
-      <strong class="block font-medium mb-1">Unifi ID:</strong>
-      <%= @device.unifi_id %>
-    </div>
-    <div class="col-span-1">
-      <strong class="block font-medium mb-1">Last authenticated at:</strong>
-      <%= @device.last_authenticated_at %>
-    </div>
-    <div class="col-span-1">
-      <strong class="block font-medium mb-1">Authentication Expire At:</strong>
-      <%= @device.authentication_expire_at %>
-    </div>
-
   </div>
 
-
-  <%= link_to "Edit this device", edit_admin_client_device_path(@device.client, @device), class: "w-full my-1 sm:w-auto text-center rounded-md px-3.5 py-2.5 bg-gray-100 hover:bg-gray-50 inline-block font-medium" %>
-  <%#= button_to "Destroy this device", @device, method: :delete, form_class: "sm:inline-block mt-2 sm:mt-0 sm:ml-2", class: "w-full rounded-md px-3.5 py-2.5 text-white bg-red-600 hover:bg-red-500 font-medium cursor-pointer", data: { turbo_confirm: "Are you sure?" } %>
-  <%= button_to "Delete", "#", method: :delete, data: {
-
-        action: "click->modal#show",
-        action_url: admin_client_device_path(@device.client, @device)
-      },
-      form: { data: { turbo: false } }, # prevent button_to from wrapping a real form
-      class: "w-full my-1 sm:w-auto text-center rounded-md px-3.5 py-2.5 text-white bg-red-600 hover:bg-red-500 inline-block font-medium" %>
-
-  <%= link_to "Back to devices", admin_client_devices_path(@device.client), class: "w-full sm:w-auto text-center mt-2 sm:mt-0 sm:ml-2 rounded-md px-3.5 py-2.5 bg-gray-100 hover:bg-gray-50 inline-block font-medium" %>
+  <div class="md:flex gap-2">
+    <%= link_to "Edit this device", edit_admin_client_device_path(@device.client, @device), class: "heimdall_button" %>
+    <%= button_to "Delete", "#", method: :delete, data: {
+          action: "click->modal#show",
+          action_url: admin_client_device_path(@device.client, @device)
+        },
+        form: { data: { turbo: false } }, # prevent button_to from wrapping a real form
+        class: "heimdall_delete_button" %>
+    <%= link_to "Back to devices", admin_client_devices_path(@device.client), class: "heimdall_button" %>
+  </div>
 </div>

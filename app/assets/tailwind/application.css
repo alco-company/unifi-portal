@@ -2,3 +2,12 @@
 @theme {
   --font-sans: InterVariable, sans-serif;
 }
+.heimdall_button {
+  @apply w-full mb-2 sm:w-auto text-center rounded-md px-3.5 py-2.5 bg-gray-100 hover:bg-gray-200 inline-block font-medium;
+}
+.heimdall_save_button {
+  @apply w-full mb-2 sm:w-auto text-center text-white rounded-md px-3.5 py-2.5 bg-green-600 hover:bg-green-500 inline-block font-medium;
+}
+.heimdall_delete_button {
+  @apply w-full mb-2 sm:w-auto text-center text-white rounded-md px-3.5 py-2.5 bg-red-600 hover:bg-red-500 inline-block font-medium;
+}
