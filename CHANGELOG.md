@@ -8,6 +8,7 @@
 - align action buttons css under heimdall_*button
 - work on getting tests green
 - make API work on login 
+- align APIs on API-key and on login libs
 
 ## 0.5.1
 

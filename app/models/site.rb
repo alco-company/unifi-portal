@@ -3,6 +3,8 @@ class Site < ApplicationRecord
   has_many :devices, dependent: :destroy
   has_many :clients, through: :devices
 
+  attr_accessor :site_unifi_id
+
   enum :controller_type, {
     login: 0,      # uses username/password
     api_key: 1     # uses API token

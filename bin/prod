@@ -4,11 +4,11 @@ if [ -n "$1" ]; then
   # Argument is provided, do something
   backup_prod
 fi
-# git checkout main
-# git pull
+git checkout main
+git pull
 kamal deploy 
 kamal app exec --interactive --reuse "bin/rails db:migrate"
-# git checkout development
+git checkout development
 #
 # clean up ssh's
 echo Cleaning SSH local: `ps aux | grep 'ConnectTimeout' | wc -l` remote: `ssh docker6 -lroot "ps aux | grep 'ConnectTimeout' | wc -l"`

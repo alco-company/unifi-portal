@@ -12,7 +12,7 @@ module External
         # cookie_path = Rails.root.join("tmp", "cookie.txt")
         cookie_path = "cookie.txt"
         cmd = <<~CURL
-          curl --silent --location --request POST \
+          curl --insecure --silent --location --request POST \
           --connect-timeout 1 --retry 1 --max-time 2 \
           --header 'Content-Type: application/json' \
           -c 'cookie.txt' \

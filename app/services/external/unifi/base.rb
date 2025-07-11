@@ -6,7 +6,7 @@ module External
     # It uses HTTParty for making HTTP requests and handles JSON responses.
     #
     class Base
-      attr_accessor :site, :state, :unifi, :cookie, :site_info
+      attr_accessor :site, :state, :unifi, :site_info, :cookie_key
 
       def initialize(site: nil, cookie: nil)
         @site = site
@@ -18,43 +18,77 @@ module External
         @site_info = nil
       end
 
-      def get_site_info
-        unifi_site_info if logged_in?
+      def site_info
+        @site_info ||= unifi_get_site_info(name: site.name)
       end
 
-      def get_cookie
-        unifi_login unless logged_in?
-        cookie
+      def get_cookie_or_key
+        @cookie_key ||= unifi_get_cookie_or_key
       end
 
-      def get_client_info
-        unifi_login unless logged_in?
+      def client_info(mac_address)
+        unifi_client_info(mac_address)
       end
 
-      def authorize_guest_access
+      #
+      # Authorizes guest access for a given MAC address.
+      # @param mac_address [String] The MAC address of the guest device.
+      # @param minutes [Integer] The duration in minutes for which the guest access is valid - default is 1440 minutes (24 hours).
+      # @param up [Integer] The upload speed limit in Kbps - default is 200.
+      # @param down [Integer] The download speed limit in Kbps - default is 200.
+      # @param megabytes [Integer] The data limit in MB - default is 0 (unlimited).
+      def authorize_guest_access(mac_address:, minutes: 1440, up: 200, down: 200, megabytes: 0)
+        unifi_authorize(mac_address, minutes: minutes, up: up, down: down, megabytes: megabytes)
       end
 
-      def revoke_guest_access
+      def revoke_guest_access(mac_address)
+        unifi_unauthorize(mac_address)
       end
 
       private
 
-        def logged_in?
-          state == :logged_in || unifi_login
-        end
+        # IMPLEMENTATION OF THE UNIFI API CLIENT METHODS
+        # stubs - actual implementation is in the UnifiLogin or UnifiApiKey classes
+        #
 
-        def unifi_login
-          state = unifi.login
-          cookie = unifi.get_cookie if state == :logged_in
+        # return true|false
+        def logged_in?
+          unifi_login if state == :logged_out
           state == :logged_in
         end
 
-        def unifi_site_info
-          site_info ||= unifi.list_sites
+        # return true|false
+        def unifi_login
+          @state = unifi.login
+          state == :logged_in
         end
 
+        def unifi_get_cookie_or_key
+          unifi.get_cookie_or_key if logged_in?
+        end
+
+        def unifi_get_site_info(name: nil)
+          unifi.site_info(name: name) if logged_in?
+        end
+
+        # named values array or empty array
         def unifi_client_info(mac_address)
-          unifi.get_client(mac_address)
+          unifi.get_client(mac_address) if logged_in?
+        end
+
+        # return true|false
+        def unifi_authorize(mac_address, minutes:, up:, down:, megabytes:)
+          unifi.authorize_guest_access(
+            mac_address: mac_address,
+            minutes: minutes,
+            up: up,
+            down: down,
+            megabytes: megabytes) if logged_in?
+        end
+
+        # return true|false
+        def unifi_unauthorize(mac_address)
+          unifi.unauthorize_guest_access(mac_address) if logged_in?
         end
     end
   end
