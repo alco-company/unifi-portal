@@ -3,11 +3,12 @@ module External
     # Unifi API Key service for managing API keys.
     # This service provides methods to retrieve and manage API keys for Unifi Network Integration.
     class UnifiApiKey
-      attr_accessor :base_url, :api_key, :headers
+      attr_accessor :base_url, :api_key, :headers, :site
 
       def initialize(site: nil)
-        @base_url = "#{site.controller_url.chomp("/")}/proxy/network/integration/v1" if site
-        @api_key = site.api_key if site
+        @base_url = "#{site&.controller_url&.chomp("/")}/proxy/network/integration/v1"
+        @api_key = site&.api_key
+        @site = site
         @headers = {
           "X-API-KEY" => api_key,
           "Accept" => "application/json",
@@ -25,7 +26,7 @@ module External
 
       # Retrieves the API key for the Unifi Network Integration.
       # @return [String] The API key.
-      def get_api_key
+      def get_cookie_or_key
         site.api_key
       end
 
@@ -35,6 +36,51 @@ module External
         Rails.logger.error("ERROR: UnifiApiKey - Failed to list sites: #{e.message}")
         { error: e.message }
       end
+
+      def site_info(name:)
+        list_sites.find { |site| site["name"] == name }
+      end
+
+      def get_client(mac_address)
+        url = "#{base_url}/sites/#{site.site_unifi_id}/clients?filter=macAddress.eq('#{CGI.escape(mac_address)}')"
+        External::Unifi::Calls.get_json(url, headers: headers)
+      end
+
+      def authorize_guest_access(retry_number = 0, mac_address:, minutes:, up:, down:, megabytes:)
+        body = {
+          action: "AUTHORIZE_GUEST_ACCESS",
+          timeLimitMinutes: minutes,
+          dataUsageLimitMBytes: megabytes,
+          rxRateLimitKbps: down,
+          txRateLimitKbps: up
+        }
+        post_url = "#{base_url}/sites/#{site.site_unifi_id}/clients/#{mac_address}/actions"
+        response = External::Unifi::Calls.post_json(post_url, body: body, headers: headers)
+        return false if response[:error].present?
+        response["meta"]["rc"] == "ok"
+      rescue StandardError => e
+        Rails.logger.error "ERROR: Other error while authorizing guest access: #{e.message}"
+        false
+      end
+
+      def unauthorize_guest_access(mac_address, retry_number = 0)
+        post_url = "#{base_url}/sites/#{site.site_unifi_id}/clients/#{mac_address}/actions"
+        body = {
+          action: "UNAUTHORIZE_GUEST_ACCESS"
+        }
+        response = External::Unifi::Calls.post_json(post_url, body: body, headers: headers)
+        return false if response[:error].present?
+        response["meta"]["rc"] == "ok"
+      rescue StandardError => e
+        Rails.logger.error "ERROR: Other error while unauthorizing guest access: #{e.message}"
+        false
+      end
+
+      private
+
+        def set_site_id
+          site.site_unifi_id ||= site_info(site.name)["id"]
+        end
     end
   end
 end
@@ -58,15 +104,6 @@ end
 #     get_json("#{url}/sites", headers: headers)
 #   end
 
-#   def self.get_client(base_url, site_id, mac_address, key: nil)
-#     headers = {
-#       "X-API-KEY" => key,
-#       "Accept" => "application/json",
-#       "Content-Type" => "application/json"
-#     }
-#     url = "#{base_url.chomp("/")}/proxy/network/integration/v1/sites/#{site_id}/clients?filter=macAddress.eq('#{CGI.escape(mac_address)}')"
-#     get_json(url, headers: headers)
-#   end
 
 #   # {
 #   #   "action": "AUTHORIZE_GUEST_ACCESS",
