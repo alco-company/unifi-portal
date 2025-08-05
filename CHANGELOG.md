@@ -10,6 +10,7 @@
 - short-circuit Site search - use site.first
 - change mailersend API token and sending address
 - fix site search
+- fix site search 2
 
 ## 0.6.1
 
