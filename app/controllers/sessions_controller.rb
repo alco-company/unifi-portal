@@ -137,7 +137,7 @@ class SessionsController < ApplicationController
 
     def load_site
       @client = nil
-      @site = Site.where(url: params[:url]).or(Site.where(ssid: params[:ssid])).first
+      @site = Site.where(ssid: params[:ssid], name: params[:site_name], url: request.remote_addr).first
     rescue
       @site = nil
     end
