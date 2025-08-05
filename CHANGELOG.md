@@ -11,6 +11,7 @@
 - change mailersend API token and sending address
 - fix site search
 - fix site search 2
+- fix site search 3
 
 ## 0.6.1
 
