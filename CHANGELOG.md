@@ -5,6 +5,7 @@
 - unauthorize
 - always do bundle exec now!
 - bundle lock --add-platform aarch64-linux
+- fix search issue
 
 ## 0.6.1
 
