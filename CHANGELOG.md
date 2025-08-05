@@ -15,6 +15,7 @@
 - testing guest session once more
 - use httparty to login
 - store cookie in tmp
+- use mortimer.pro mailersend API key
 
 ## 0.6.1
 
