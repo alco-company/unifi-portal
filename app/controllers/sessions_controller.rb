@@ -26,6 +26,7 @@ class SessionsController < ApplicationController
 
     if valid_user_input?(user)
       device = find_or_create_user_client(user)
+      Rails.logger.info("Device found or created: #{device.client.inspect}") if device
       if !device.nil? and device.client.active?
         session[:did] = device.id
         begin

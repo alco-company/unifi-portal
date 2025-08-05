@@ -3,12 +3,13 @@ module External
     # Unifi API Key service for managing API keys.
     # This service provides methods to retrieve and manage API keys for Unifi Network Integration.
     class UnifiApiKey
-      attr_accessor :base_url, :api_key, :headers, :site
+      attr_accessor :base_url, :api_key, :headers, :site, :site_info
 
       def initialize(site: nil)
         @base_url = "#{site&.controller_url&.chomp("/")}/proxy/network/integration/v1"
         @api_key = site&.api_key
         @site = site
+        @site_info = nil
         @headers = {
           "X-API-KEY" => api_key,
           "Accept" => "application/json",
@@ -22,6 +23,10 @@ module External
       rescue StandardError => e
         Rails.logger.error("ERROR: UnifiApiKey - Failed to login: #{e.message}")
         :logged_out
+      end
+
+      def get_id
+        @site_info["data"].first["id"]
       end
 
       # Retrieves the API key for the Unifi Network Integration.
@@ -38,14 +43,17 @@ module External
       end
 
       def site_info(name:)
-        list_sites.find { |site| site["name"] == name }
+        @site_info = list_sites.find { |site| site["name"] == name }
       end
 
-      def get_client(mac_address)
+      def get_client_id(mac_address)
         url = "#{base_url}/sites/#{site.site_unifi_id}/clients?filter=macAddress.eq('#{CGI.escape(mac_address)}')"
-        External::Unifi::Calls.get_json(url, headers: headers)
+        ci = External::Unifi::Calls.get_json(url, headers: headers)
+        return ci["data"].first["id"] if ci && ci["data"].present? && ci["count"] == 1
+        nil
       end
 
+      # result.dig("action").present? && result["action"] == "AUTHORIZE_GUEST_ACCESS"
       def authorize_guest_access(retry_number = 0, mac_address:, minutes:, up:, down:, megabytes:)
         body = {
           action: "AUTHORIZE_GUEST_ACCESS",

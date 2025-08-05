@@ -1,6 +1,7 @@
 ENV["RAILS_ENV"] ||= "test"
 require_relative "../config/environment"
 require_relative "support/unifi_api_stubs"
+require_relative "support/unifi_login_stubs"
 require_relative "support/mailersend_api_stubs"
 require_relative "support/smsapi_stubs"
 require "rails/test_help"

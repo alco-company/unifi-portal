@@ -1,6 +1,9 @@
 # CHANGELOG
 
+## 0.6.1
+
 - hide name/email
+- fix Unifi API calls
 
 ## 0.6.0
 

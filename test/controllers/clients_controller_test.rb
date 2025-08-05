@@ -2,12 +2,17 @@ require "test_helper"
 
 class ClientsControllerTest < ActionDispatch::IntegrationTest
   setup do
+    @site = sites(:one)
     @client = clients(:one)
     @user = users(:one)
     post admin_login_path, params: { email: @user.email, password: "password" }
     stub_unifi_sites_api(@client.devices.first.site.unifi_id)
     stub_unifi_client_api(@client.devices.first.mac_address, @client.devices.first.site.unifi_id)
-    stub_guest_authorization_api("https://heimdall.test", site_id: @client.devices.first.site.unifi_id)
+    stub_unifi_authorize_api("https://heimdall.test", site_id: @client.devices.first.site.unifi_id)
+
+    stub_unifi_sites_login(@site.unifi_id)
+    stub_unifi_client_login(@client.devices.first.mac_address)
+    stub_unifi_authorize_login(@site.unifi_id)
   end
 
   test "should get index" do
