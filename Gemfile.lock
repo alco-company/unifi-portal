@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/rails/rails.git
-  revision: 9a64857d7002554b0af94158de386def5bfef9d3
+  revision: 81d64b15bf63f9ad7b4cf68f362de882b622ba92
   branch: main
   specs:
     actioncable (8.1.0.alpha)
@@ -411,6 +411,7 @@ DEPENDENCIES
   cuprite
   debug
   dotenv (~> 3.1)
+  drb
   httparty
   importmap-rails
   jbuilder

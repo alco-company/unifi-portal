@@ -3,6 +3,7 @@
 ## 0.6.2
 
 - unauthorize
+- always do bundle exec now!
 
 ## 0.6.1
 
