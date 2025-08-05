@@ -9,6 +9,7 @@
 - fix load_site issue
 - short-circuit Site search - use site.first
 - change mailersend API token and sending address
+- fix site search
 
 ## 0.6.1
 
