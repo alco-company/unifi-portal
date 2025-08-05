@@ -14,6 +14,7 @@
 - fix site search 3
 - testing guest session once more
 - use httparty to login
+- store cookie in tmp
 
 ## 0.6.1
 

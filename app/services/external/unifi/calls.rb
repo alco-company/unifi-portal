@@ -34,6 +34,7 @@ module External
       end
 
       def self.login_with_httparty(url: nil, username: nil, password: nil)
+        cookie_path = Rails.root.join("tmp", "cookie.txt")
         login_response = HTTParty.post(
           url,
           body: { username: username, password: password }.to_json,
@@ -44,7 +45,7 @@ module External
           cookie = login_response.headers["set-cookie"]
           if cookie
             cookie = cookie.split(";").first # Get the first part of the cookie
-            File.write("cookie.txt", cookie) # Save to file
+            File.write(cookie_path, cookie) # Save to file
             cookie
           else
             nil
