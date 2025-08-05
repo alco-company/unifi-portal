@@ -7,6 +7,7 @@
 - bundle lock --add-platform aarch64-linux
 - fix search issue
 - fix load_site issue
+- short-circuit Site search - use site.first
 
 ## 0.6.1
 
