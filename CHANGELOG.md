@@ -4,6 +4,7 @@
 
 - unauthorize
 - always do bundle exec now!
+- bundle lock --add-platform aarch64-linux
 
 ## 0.6.1
 
