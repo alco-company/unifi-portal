@@ -151,5 +151,16 @@ module UnifiApiStubs
   end
 
   def stub_unifi_authorize_login(unifi_id, base_url = "https://heimdall.test")
+    stub_request(:post, "https://heimdall.test/api/s/default/cmd/stamgr").
+      with(
+        body: "{\"cmd\":\"authorize-guest\",\"mac\":\"1c:71:25:63:e4:24\",\"minutes\":1440,\"up\":1,\"down\":1,\"bytes\":1048576}",
+        headers: {
+          "Accept"=>"application/json",
+          "Accept-Encoding"=>"gzip;q=1.0,deflate;q=0.6,identity;q=0.3",
+          "Content-Type"=>"application/json",
+          "Cookie"=>"test_cookie",
+          "User-Agent"=>"Ruby"
+        }).
+      to_return(status: 200, body: "", headers: { "Content-Type" => "application/json" })
   end
 end

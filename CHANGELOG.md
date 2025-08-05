@@ -13,6 +13,7 @@
 - fix site search 2
 - fix site search 3
 - testing guest session once more
+- use httparty to login
 
 ## 0.6.1
 

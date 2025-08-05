@@ -15,7 +15,7 @@ module External
       def login
         @cookie = Rails.env.test? ?
           "test_cookie" :
-          External::Unifi::Calls.login_with_curl(
+          External::Unifi::Calls.login_with_httparty(
             url: "#{base_url.chomp("/")}/api/login",
             username: username,
             password: password
@@ -278,7 +278,7 @@ module External
           {
             "Accept" => "application/json",
             "Content-Type" => "application/json",
-            "Cookie" => cookie
+            "Cookie" => @cookie
           }
         end
     end

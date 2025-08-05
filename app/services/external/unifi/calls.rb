@@ -10,12 +10,12 @@ module External
 
       def self.login_with_curl(url: nil, username: nil, password: nil)
         # cookie_path = Rails.root.join("tmp", "cookie.txt")
-        cookie_path = "cookie.txt"
+        # cookie_path = "cookie.txt"
         cmd = <<~CURL
           curl --insecure --silent --location --request POST \
           --connect-timeout 1 --retry 1 --max-time 2 \
           --header 'Content-Type: application/json' \
-          -c 'cookie.txt' \
+          --cookie-jar cookie.txt \
           --data '{ "username": "#{username}", "password": "#{password}" }' \
           #{url}
         CURL
@@ -31,6 +31,28 @@ module External
       rescue StandardError => e
         Rails.logger.error("ERROR: Unifi::Calls - Failed to login with cURL: #{e.message}")
         nil
+      end
+
+      def self.login_with_httparty(url: nil, username: nil, password: nil)
+        login_response = HTTParty.post(
+          url,
+          body: { username: username, password: password }.to_json,
+          headers: { "Content-Type" => "application/json" },
+          verify: false # skip SSL verification
+        )
+        if login_response.code == 200 && login_response["meta"]["rc"] == "ok"
+          cookie = login_response.headers["set-cookie"]
+          if cookie
+            cookie = cookie.split(";").first # Get the first part of the cookie
+            File.write("cookie.txt", cookie) # Save to file
+            cookie
+          else
+            nil
+          end
+        else
+          Rails.logger.error("ERROR: Unifi::Calls - Failed to login with HTTParty: #{login_response.body}")
+          nil
+        end
       end
 
       def self.get_json(url, headers: {})
