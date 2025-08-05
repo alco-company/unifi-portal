@@ -4,6 +4,7 @@
 
 - hide name/email
 - fix Unifi API calls
+- add base64
 
 ## 0.6.0
 
