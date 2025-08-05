@@ -12,6 +12,7 @@
 - fix site search
 - fix site search 2
 - fix site search 3
+- testing guest session once more
 
 ## 0.6.1
 
