@@ -6,16 +6,12 @@ class Device < ApplicationRecord
     if site.nil?
       return false
     end
-    load_client_info
-    result = External::Unifi.unauthorize_guest(
-      url: site.controller_url,
-      site_id: site.unifi_id,
-      client_id: unifi_id,
-      api_key: site.api_key
-    )
-    !result.nil? && result.dig("action").present? && result["action"] == "UNAUTHORIZE_GUEST_ACCESS" ?
+    eu = External::Unifi::Base.new(site: site)
+    load_client_info(eu)
+    result = eu.revoke_guest_access(mac_address)
+    result ?
       { success: true } :
-      { success: false, error: result["error"] || "Failed to unauthorize guest access" }
+      { success: false, error: "Failed to unauthorize guest access" }
   end
 
   def authorize

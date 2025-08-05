@@ -80,7 +80,7 @@ class Admin::ClientsController < Admin::BaseController
             guest_rx: @client.guest_rx,
             guest_tx: @client.guest_tx
           )
-          device.authorize
+          @client.active? ? device.authorize : device.unauthorize
         end
         format.html { redirect_to admin_tenant_clients_path(@client.tenant), notice: "Client was successfully updated." }
         format.json { render :show, status: :ok, location: admin_tenant_clients_path(@client.tenant) }

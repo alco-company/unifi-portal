@@ -256,6 +256,7 @@ module External
         false
       end
 
+      # && result.dig("action").present? && result["action"] == "UNAUTHORIZE_GUEST_ACCESS" ?
       def unauthorize_guest_access(mac_address, retry_number = 0)
         url = "#{base_url.chomp("/")}/api/s/#{site.name}/cmd/stamgr"
         body = {

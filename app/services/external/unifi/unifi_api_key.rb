@@ -71,6 +71,7 @@ module External
         false
       end
 
+      # && result.dig("action").present? && result["action"] == "UNAUTHORIZE_GUEST_ACCESS" ?
       def unauthorize_guest_access(mac_address, retry_number = 0)
         post_url = "#{base_url}/sites/#{site.site_unifi_id}/clients/#{mac_address}/actions"
         body = {

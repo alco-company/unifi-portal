@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 0.6.2
+
+- unauthorize
+
 ## 0.6.1
 
 - hide name/email
