@@ -11,6 +11,6 @@ class ApplicationMailer < ActionMailer::Base
   private
     def build_default_from_address(address = nil)
       address ||= ENV["SMTP_USER_NAME"]
-      email_address_with_name address, "Mortimer Pro"
+      email_address_with_name address, "Unifi Portal Service"
     end
 end

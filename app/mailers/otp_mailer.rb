@@ -1,5 +1,5 @@
 class OtpMailer < ApplicationMailer
-  default from: "info@mortimer.pro" # Customize your sender email
+  default from: "info@unifi-portal.site" # Customize your sender email
 
   def send_otp(user_email, otp_code)
     @otp_code = otp_code

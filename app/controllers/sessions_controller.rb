@@ -144,9 +144,10 @@ class SessionsController < ApplicationController
     end
 
     def find_or_create_user_client(user)
-      @client = Client.where(tenant_id: user[:tid]).or(Client.where(email: user[:email])).or(Client.where(phone: user[:phone])).first_or_initialize
+      @client = Client.where(tenant_id: user[:tid], phone: user[:phone]).first_or_initialize
       @client.update!(name: user[:name], active: true) if @client.name != user[:name] && user[:name].present? && user[:name] != ""
-      expire_at = @client.created_at < 5.minute.ago ? 24.hours.from_now : 10.years.from_now
+      @client.update!(email: user[:email]) if @client.email != user[:email] && user[:email].present? && user[:email] != ""
+      expire_at = @client.created_at < 5.minute.ago ? 10.years.from_now : 24.hours.from_now
       device = Device.find_or_create_by!(client_id: @client.id, mac_address: user[:id])
       device.update!(
         last_ap: user[:ap],
