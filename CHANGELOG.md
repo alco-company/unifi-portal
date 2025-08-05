@@ -6,6 +6,7 @@
 - always do bundle exec now!
 - bundle lock --add-platform aarch64-linux
 - fix search issue
+- fix load_site issue
 
 ## 0.6.1
 
