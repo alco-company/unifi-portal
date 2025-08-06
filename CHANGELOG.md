@@ -6,6 +6,7 @@
 - fixing authorize for api version
 - fix sending emails with Mailersend
 - fighting Mailersend unauthenticated
+- fighting Mailersend unauthenticated 2 & SMS
 
 ## 0.6.3
 

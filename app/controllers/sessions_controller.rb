@@ -190,6 +190,13 @@ class SessionsController < ApplicationController
 
     def authorize_guest?
       return false if @device.nil?
-      @device.authorize
+      result = @device.authorize
+      if result[:success]
+        Rails.logger.info("Guest access authorized for device: #{@device.id}")
+        true
+      else
+        Rails.logger.error("Failed to authorize guest access: #{result[:error]}")
+        false
+      end
     end
 end
