@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 0.7.1
+
+- fixing diffs between api and login versions
+
 ## 0.6.3
 
 - adjust success redirect

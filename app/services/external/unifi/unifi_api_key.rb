@@ -26,7 +26,7 @@ module External
       end
 
       def get_id
-        @site_info["data"].first["id"]
+        @site_info.first["id"]
       end
 
       # Retrieves the API key for the Unifi Network Integration.
@@ -42,8 +42,20 @@ module External
         { error: e.message }
       end
 
+      def list_guests(retry_number = 0, unauthorized: false)
+        url = "#{base_url}/sites/#{site.site_unifi_id}/clients?filter=guest.eq(true)"
+        url += "&filter=unauthorized.eq(true)" if unauthorized
+        External::Unifi::Calls.get_json(url, headers: headers)
+      rescue StandardError => e
+        Rails.logger.error("ERROR: UnifiApiKey - Failed to list guests: #{e.message}")
+        { error: e.message }
+      end
+
       def site_info(name:)
-        @site_info = list_sites.find { |site| site["name"] == name }
+        sites = list_sites
+        return nil if sites.empty?
+        @site_info = sites.find { |site| site["name"] == name } rescue nil
+        @site_info = sites["data"] if @site_info.nil?
       end
 
       def get_client_id(mac_address)
