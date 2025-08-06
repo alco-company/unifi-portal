@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 0.6.3
+
+- adjust success redirect
+
 ## 0.6.2
 
 - unauthorize

@@ -29,6 +29,7 @@ class SessionsController < ApplicationController
       Rails.logger.info("Device found or created: #{device.client.inspect}") if device
       if !device.nil? and device.client.active?
         session[:did] = device.id
+        session[:url] = user[:url].present? ? user[:url] : "http://captive.apple.com"
         begin
 
           result = OtpMailer.send_otp(device.client.email, device.last_otp).deliver_later if email_available?(device)
