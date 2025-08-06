@@ -38,6 +38,7 @@ env:
     - RAILS_MASTER_KEY
     - HEIMDALL_VERSION
     - SMSAPI_API_TOKEN
+    - SMTP_USER_NAME
   clear:
     SOLID_QUEUE_IN_PUMA: true
     WEB_HOST: staging.unifi-portal.site
