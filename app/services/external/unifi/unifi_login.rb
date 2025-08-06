@@ -194,6 +194,11 @@ module External
         nil
       end
 
+      def get_client_info(mac_address, retry_number = 0)
+        url = "#{base_url.chomp("/")}/api/s/#{site.name}/stat/sta/#{CGI.escape(mac_address)}"
+        External::Unifi::Calls.get_json(url, headers: headers)
+      end
+
       # {
       #   "meta": {
       #       "rc": "ok"
