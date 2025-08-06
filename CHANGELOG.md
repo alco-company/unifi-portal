@@ -4,6 +4,7 @@
 
 - adjust success redirect
 - trying to sync with UnifiOS on authorize
+- more trying to sync
 
 ## 0.6.2
 

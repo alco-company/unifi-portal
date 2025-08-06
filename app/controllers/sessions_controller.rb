@@ -113,7 +113,7 @@ class SessionsController < ApplicationController
   end
 
   def update
-    if otp_valid? && authorize_guest!
+    if otp_valid? && authorize_guest?
       expire_at = @device.client.created_at < 5.minute.ago ? 10.years.from_now : 24.hours.from_now
       Device.find(session[:did]).update!(
         last_authenticated_at: Time.current,
@@ -188,7 +188,7 @@ class SessionsController < ApplicationController
       end
     end
 
-    def authorize_guest!
+    def authorize_guest?
       return false if @device.nil?
       @device.authorize
     end

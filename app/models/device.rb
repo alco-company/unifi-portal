@@ -55,14 +55,21 @@ class Device < ApplicationRecord
     unless unifi_client_id.nil?
       update unifi_id: unifi_client_id
     else
-      Rails.logger.error("ERROR: Unifi client info not found for MAC address: #{mac_address}")
-      nil
+      guests = eu.list_guests.filter { |g| g["mac"] == mac_address }
+      if guests.any?
+        guests.each do |guest|
+          update unifi_id: guest["id"] if guest["id"].present?
+        end
+        true
+      else
+        Rails.logger.error("ERROR: Unifi client info not found for MAC address: #{mac_address}")
+        false
+      end
     end
   end
 
   def update_client_info(eu)
-    unifi_client_id = eu.get_client_id(mac_address)
-    update unifi_id: unifi_client_id unless unifi_client_id.nil?
+    load_client_info(eu)
     { success: true }
   end
 end
