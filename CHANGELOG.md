@@ -4,6 +4,7 @@
 
 - fixing diffs between api and login versions
 - fixing authorize for api version
+- fix sending emails with Mailersend
 
 ## 0.6.3
 

@@ -1,6 +1,4 @@
 class OtpMailer < ApplicationMailer
-  default from: ENV["SMTP_USER_NAME"] # Customize your sender email
-
   def send_otp(user_email, otp_code)
     @otp_code = otp_code
     mail(
