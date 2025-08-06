@@ -6,6 +6,7 @@
 - trying to sync with UnifiOS on authorize
 - more trying to sync
 - add helper
+- setting ENV to unifi(-)portal for email / SMS
 
 ## 0.6.2
 
