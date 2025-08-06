@@ -43,7 +43,7 @@ module External
       end
 
       def list_guests(retry_number = 0, unauthorized: false)
-        url = "#{base_url}/sites/#{site.site_unifi_id}/clients?filter=guest.eq(true)"
+        url = "#{base_url}/sites/#{site.unifi_id}/clients?filter=guest.eq(true)"
         url += "&filter=unauthorized.eq(true)" if unauthorized
         External::Unifi::Calls.get_json(url, headers: headers)
       rescue StandardError => e
@@ -59,7 +59,7 @@ module External
       end
 
       def get_client_id(mac_address)
-        url = "#{base_url}/sites/#{site.site_unifi_id}/clients?filter=macAddress.eq('#{CGI.escape(mac_address)}')"
+        url = "#{base_url}/sites/#{site.unifi_id}/clients?filter=macAddress.eq('#{CGI.escape(mac_address)}')"
         ci = External::Unifi::Calls.get_json(url, headers: headers)
         return ci["data"].first["id"] if ci && ci["data"].present? && ci["count"] == 1
         nil
@@ -74,7 +74,12 @@ module External
           rxRateLimitKbps: down,
           txRateLimitKbps: up
         }
-        post_url = "#{base_url}/sites/#{site.site_unifi_id}/clients/#{mac_address}/actions"
+        id = get_client_id(mac_address)
+        if id.nil?
+          Rails.logger.error("ERROR: UnifiApiKey - Client ID not found for MAC address: #{mac_address}")
+          return false
+        end
+        post_url = "#{base_url}/sites/#{site.unifi_id}/clients/#{id}/actions"
         response = External::Unifi::Calls.post_json(post_url, body: body, headers: headers)
         return false if response[:error].present?
         response["meta"]["rc"] == "ok"
@@ -85,7 +90,7 @@ module External
 
       # && result.dig("action").present? && result["action"] == "UNAUTHORIZE_GUEST_ACCESS" ?
       def unauthorize_guest_access(mac_address, retry_number = 0)
-        post_url = "#{base_url}/sites/#{site.site_unifi_id}/clients/#{mac_address}/actions"
+        post_url = "#{base_url}/sites/#{site.unifi_id}/clients/#{mac_address}/actions"
         body = {
           action: "UNAUTHORIZE_GUEST_ACCESS"
         }
@@ -96,12 +101,6 @@ module External
         Rails.logger.error "ERROR: Other error while unauthorizing guest access: #{e.message}"
         false
       end
-
-      private
-
-        def set_site_id
-          site.site_unifi_id ||= site_info(site.name)["id"]
-        end
     end
   end
 end

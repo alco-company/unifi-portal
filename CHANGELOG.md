@@ -3,6 +3,7 @@
 ## 0.7.1
 
 - fixing diffs between api and login versions
+- fixing authorize for api version
 
 ## 0.6.3
 
