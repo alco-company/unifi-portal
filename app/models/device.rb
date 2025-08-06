@@ -39,7 +39,7 @@ class Device < ApplicationRecord
       #   guest_tx: client.guest_tx
       # )
       result ?
-        { success: true } :
+        update_client_info(eu) :
         { success: false, error: "Failed to authorize guest access" }
     end
   end
@@ -58,5 +58,11 @@ class Device < ApplicationRecord
       Rails.logger.error("ERROR: Unifi client info not found for MAC address: #{mac_address}")
       nil
     end
+  end
+
+  def update_client_info(eu)
+    unifi_client_id = eu.get_client_id(mac_address)
+    update unifi_id: unifi_client_id unless unifi_client_id.nil?
+    { success: true }
   end
 end
