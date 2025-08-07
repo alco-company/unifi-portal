@@ -14,12 +14,14 @@ class SessionsController < ApplicationController
         respond_to do |format|
           format.html {
             case params[:url]
-            when /apple/; render "success", status: 302
+            when /apple/; render "success", layout: :success, status: 302
             when /generate_204/; head 204
             when /msftconnect/; render plain: "Microsoft Connect Test"
             when /msftncsi/; render plain: "Microsoft NCSI"
             when /gnome/; render plain: "NetworkManager is online"
             when /check\.kde\.org/; render plain: "OK"
+            else
+               render plain: params[:url] || "No URL provided"
             end
           }
         end and return

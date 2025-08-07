@@ -27,6 +27,7 @@
 - response depends on platform
 - missing "success"
 - reverse the flow
+- check device and layout
 
 ## 0.7.1
 
