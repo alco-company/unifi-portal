@@ -2,6 +2,23 @@ class Device < ApplicationRecord
   belongs_to :client
   belongs_to :site, optional: true
 
+  def self.authorized?(mac_address)
+    device = find_by(mac_address: mac_address)
+    return false if device.nil? || device.client.nil? || !device.client.active?
+    return false if device.authentication_expire_at.nil? || device.authentication_expire_at < Time.current
+    eu = External::Unifi::Base.new(site: device.site)
+    return eu.is_mac_authorized?(mac_address) if eu
+    false
+  end
+
+  def mac_address
+    read_attribute(:mac_address).downcase.strip
+  end
+
+  def unifi_id
+    read_attribute(:unifi_id).presence || mac_address.gsub(/:/, "")
+  end
+
   def unauthorize
     if site.nil?
       return false
@@ -19,6 +36,7 @@ class Device < ApplicationRecord
       return false
     end
     eu = External::Unifi::Base.new(site: site)
+    Rails.logger.error("Authorizing device with MAC address: #{mac_address} for site: #{site.name} using eu: #{eu.inspect}")
     if eu
       load_client_info(eu)
       result = eu.authorize_guest_access(
@@ -70,6 +88,7 @@ class Device < ApplicationRecord
   end
 
   def update_client_info(eu, result)
+    Rails.logger.error("Updating device info for MAC address: #{mac_address} with result: #{result.inspect}")
     if result[:data].present?
       data = result[:data]
       update(
@@ -81,6 +100,7 @@ class Device < ApplicationRecord
     else
       load_client_info(eu)
     end
+    Rails.logger.error("Device info updated for MAC address: #{mac_address}")
     { success: true }
   end
 end

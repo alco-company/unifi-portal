@@ -17,6 +17,7 @@
 - full on logging
 - look for clients
 - wait longer before redirecting
+- chasing the error
 
 ## 0.7.1
 

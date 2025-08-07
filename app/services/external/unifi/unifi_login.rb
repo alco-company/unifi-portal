@@ -252,6 +252,7 @@ module External
           "down" => down,
           "bytes" => megabytes * 1024 * 1024 # Convert MB to bytes
         }
+        Rails.logger.error("Authorizing guest access on #{url} for MAC address: #{mac_address} with body: #{body.inspect}")
         response = External::Unifi::Calls.post_json(url, body: body, headers: headers)
         Rails.logger.error("AUTHORIZE: response: #{response.inspect}")
         # response: {"meta" => {"rc" => "ok"}, "data" => [{"mac" => "76:45:ed:60:c9:84", "ap_mac" => "68:d7:9a:62:85:2f", "start" => 1754551678, "site_id" => "6803b1a107ae330ef4d6f5b8", "authorized_by" => "api", "_id" => "6894557e340bd477ed714abd", "end" => 1814551678, "qos_rate_max_up" => 100, "qos_rate_max_down" => 100, "qos_usage_quota" => 104857600, "qos_overwrite" => true}]}

@@ -42,6 +42,9 @@ module External
         unifi_get_client_id(mac_address)
       end
 
+      def is_mac_authorized?(mac_address)
+        unifi_is_mac_authorized?(mac_address)
+      end
       #
       # Authorizes guest access for a given MAC address.
       # @param mac_address [String] The MAC address of the guest device.
@@ -98,6 +101,10 @@ module External
         # named values array or empty array
         def unifi_get_client_id(mac_address)
           unifi.get_client_id(mac_address) if logged_in?
+        end
+
+        def unifi_is_mac_authorized?(mac_address)
+          unifi.is_mac_authorized?(mac_address) if logged_in?
         end
 
         # return true|false

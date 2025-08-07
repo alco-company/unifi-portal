@@ -10,9 +10,13 @@ class SessionsController < ApplicationController
   def new
     load_site
     unless @site.nil?
-      params[:sid] = @site.id
-      params[:tid] = @site.tenant_id
-      render :new
+      if device_is_authorized?
+        render redirect_to success_path and return
+      else
+        params[:sid] = @site.id
+        params[:tid] = @site.tenant_id
+        render :new
+      end
     else
       render :error, status: :not_found
     end
@@ -214,5 +218,9 @@ class SessionsController < ApplicationController
         @error = result[:error]
         false
       end
+    end
+
+    def device_is_authorized?
+      Device.authorized?(params[:id])
     end
 end
