@@ -14,6 +14,7 @@
 - return proper success on unauthorize
 - update device on success
 - try no help on otp input
+- full on logging
 
 ## 0.7.1
 

@@ -113,8 +113,10 @@ class SessionsController < ApplicationController
   end
 
   def update
+    Rails.logger.error("PATCH: with these parameters #{params.inspect}")
     if otp_valid? && authorize_guest?
       expire_at = @device.client.created_at < 5.minute.ago ? 10.years.from_now : 24.hours.from_now
+      Rails.logger.error("PATCH: will expire this device at #{expire_at}")
       Device.find(session[:did]).update!(
         last_authenticated_at: Time.current,
         authentication_expire_at: expire_at,
@@ -180,8 +182,12 @@ class SessionsController < ApplicationController
     end
 
     def otp_valid?
+      Rails.logger.error("PATCH: testing the OTP validity: #{params[:otp]} / #{@device.last_otp}")
+
       if params[:did] && session[:did] && params[:did] == session[:did].to_s
+        Rails.logger.error("PATCH: did matches session did, more")
         @device = Device.find_by(id: session[:did])
+        Rails.logger.error("PATCH: device found: #{@device.inspect}")
         if @device.nil? || @device.last_otp.nil? || !@device.client.active?
           errs = []
           errs << "Device not found" if @device.nil?
