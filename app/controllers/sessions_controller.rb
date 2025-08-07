@@ -120,6 +120,7 @@ class SessionsController < ApplicationController
         authentication_expire_at: expire_at,
         active: true
       )
+      Rails.logger.error("Device authenticated successfully: #{session[:did]}")
       session.delete(:did)
 
       respond_to do |format|

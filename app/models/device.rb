@@ -39,7 +39,7 @@ class Device < ApplicationRecord
       #   guest_tx: client.guest_tx
       # )
       result[:success] ?
-        update_client_info(eu) :
+        update_client_info(eu, result) :
         result
     end
   end
@@ -69,8 +69,18 @@ class Device < ApplicationRecord
     end
   end
 
-  def update_client_info(eu)
-    load_client_info(eu)
+  def update_client_info(eu, result)
+    if result[:data].present?
+      data = result[:data]
+      update(
+        last_ap: data["ap_mac"],
+        unifi_id: data["_id"],
+        last_authenticated_at: Time.current,
+        authentication_expire_at: time_limit.minutes.from_now
+      )
+    else
+      load_client_info(eu)
+    end
     { success: true }
   end
 end

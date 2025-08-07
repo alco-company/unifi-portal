@@ -12,6 +12,7 @@
 - doing for login what i did for api - debug
 - return proper success
 - return proper success on unauthorize
+- update device on success
 
 ## 0.7.1
 
