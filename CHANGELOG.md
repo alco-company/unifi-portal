@@ -25,6 +25,7 @@
 - address javascript file properly
 - no turbo on the OTP form!
 - response depends on platform
+- missing "success"
 
 ## 0.7.1
 

@@ -134,7 +134,7 @@ class SessionsController < ApplicationController
       respond_to do |format|
         format.html {
           case params[:url]
-          when /apple/; render success_path, status: 302
+          when /apple/; render "success", status: 302
           when /generate_204/; head 204
           when /msftconnect/; render plain: "Microsoft Connect Test"
           when /msftncsi/; render plain: "Microsoft NCSI"
