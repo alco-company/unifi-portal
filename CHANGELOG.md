@@ -33,6 +33,7 @@
 - layout is string
 - send proper status
 - try with do_redirect
+- one more test render
 
 ## 0.7.1
 
