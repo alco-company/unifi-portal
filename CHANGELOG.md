@@ -18,6 +18,7 @@
 - look for clients
 - wait longer before redirecting
 - chasing the error
+- forgot to set up login api for checking authorization
 
 ## 0.7.1
 

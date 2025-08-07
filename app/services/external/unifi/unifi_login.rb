@@ -242,6 +242,19 @@ module External
         []
       end
 
+      def is_mac_authorized?(mac_address)
+        url = "#{base_url.chomp("/")}/api/s/#{site.name}/stat/sta"
+        clients = External::Unifi::Calls.get_json(url, headers: headers)
+        client = clients["data"].find { |c| c["mac"] == mac_address }
+        if client
+          Rails.logger.error("AUTHORIZE: client found: #{client.inspect}")
+        end
+        false
+      rescue StandardError => e
+        Rails.logger.error("ERROR: UnifiLogin - Failed to check if MAC is authorized: #{e.message}")
+        false
+      end
+
       def authorize_guest_access(retry_number = 0, mac_address:, minutes:, up:, down:, megabytes:)
         url = "#{base_url.chomp("/")}/api/s/#{site.name}/cmd/stamgr"
         body = {
