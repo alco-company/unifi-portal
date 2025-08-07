@@ -29,6 +29,8 @@
 - reverse the flow
 - check device and layout
 - log on new
+- return true if client found!
+- layout is string
 
 ## 0.7.1
 

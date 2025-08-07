@@ -17,7 +17,7 @@ class SessionsController < ApplicationController
         respond_to do |format|
           format.html {
             case params[:url]
-            when /apple/; render "success", layout: :success, status: 302
+            when /apple/; render "success", layout: "success", status: 302
             when /generate_204/; head :no_content
             when /googleapis\.com/; head :no_content
             when /msftconnect/; render plain: "Microsoft Connect Test"
