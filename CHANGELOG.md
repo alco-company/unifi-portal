@@ -16,6 +16,7 @@
 - try no help on otp input
 - full on logging
 - look for clients
+- wait longer before redirecting
 
 ## 0.7.1
 
