@@ -23,6 +23,7 @@
 - head :no_content
 - not double render - Turbo.action instead
 - address javascript file properly
+- no turbo on the OTP form!
 
 ## 0.7.1
 

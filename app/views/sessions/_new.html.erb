@@ -1,4 +1,9 @@
 <turbo-frame id="login_form">
+  <% if flash[:alert] %>
+    <div class="p-4 mb-4 bg-red-100 text-red-800 rounded">
+      <strong>Advarsel:</strong> <%= flash[:alert] %>
+    </div>
+  <% end %>
   <div data-controller="session" class="relative w-full max-w-md mx-auto p-6 bg-white shadow rounded">
     <h1 class="text-xl font-semibold mb-4">Log ind for at få adgang til netværket</h1>
 
@@ -18,7 +23,7 @@
         <div data-session-target="phonediv" class="mt-2 flex items-center text-lg font-mono border border-gray-300 rounded-md shadow-sm">
           <div class="flex shrink-0 items-center p-2 bg-white px-3 text-gray-500 ">+45</div>
           <!-- <input type="text" name="company-website" id="company-website" class=" bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" placeholder="www.example.com" /> -->
-          <%= form.telephone_field :phone, autofocus: true, data: { action: "blur->session#checkPhoneNumber" }, class: "-ml-px p-2 block w-full  grow" %>
+          <%= form.telephone_field :phone, autofocus: true, data: { action: "blur->session#checkPhoneNumber" }, class: "-ml-px p-2 block w-full grow", value: ( params[:phone] rescue "") %>
         </div>
         <p class="text-xs mt-2 text-gray-400">Har du ikke et dansk telefonnummer, bliver der ikke sendt en SMS!</p>
       </div>

@@ -44,7 +44,7 @@ class SessionsController < ApplicationController
             respond_to do |format|
               format.turbo_stream {
                 render turbo_stream: [
-                  turbo_stream.replace("otp_input", partial: "sessions/otp_form"),
+                  turbo_stream.replace("otp_input", partial: "sessions/otp_form", locals: { site_id: params[:sid] }),
                   turbo_stream.append("flash_toasts", partial: "shared/toast", locals: {
                     message: "Code sent successfully",
                     type: :success
@@ -118,6 +118,7 @@ class SessionsController < ApplicationController
 
   def update
     Rails.logger.error("PATCH: with these parameters #{params.inspect}")
+    @site = Site.find_by(id: params[:sid]) if params[:site_id].present?
     if otp_valid? && authorize_guest?
       expire_at = @device.client.created_at < 5.minute.ago ? 10.years.from_now : 24.hours.from_now
       Rails.logger.error("PATCH: will expire this device at #{expire_at}")
@@ -131,13 +132,21 @@ class SessionsController < ApplicationController
 
       # redirect_to params[:url], allow_other_host: true, status: :found
       respond_to do |format|
-        format.turbo_stream { render turbo_stream: turbo_stream.action(:redirect, params[:url]) }
+        # format.turbo_stream { render turbo_stream: turbo_stream.action(:redirect, params[:url]) }
         format.html { redirect_to params[:url], allow_other_host: true, status: :found }
       end
     else
       respond_to do |format|
-        format.turbo_stream { render turbo_stream: turbo_stream.replace("otp_input", partial: "sessions/failed") }
-        format.html { redirect_to otp_path, alert: "Invalid code" }
+        # format.turbo_stream { render turbo_stream: turbo_stream.replace("otp_input", partial: "sessions/failed") }
+        format.html { redirect_to new_session_path(site_name: @site.name,
+          phone: @device&.client&.phone,
+          ap: params[:ap],
+          ssid: params[:ssid],
+          tid: params[:tid],
+          sid: params[:sid],
+          id: params[:id],
+          url: params[:url],
+          t: params[:t]), alert: @error }
       end
     end
   end
