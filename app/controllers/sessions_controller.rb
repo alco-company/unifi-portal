@@ -182,7 +182,7 @@ class SessionsController < ApplicationController
     end
 
     def otp_valid?
-      Rails.logger.error("PATCH: testing the OTP validity: #{params[:otp]} / #{@device.last_otp}")
+      Rails.logger.error("PATCH: testing the OTP validity: #{params[:otp]} ")
 
       if params[:did] && session[:did] && params[:did] == session[:did].to_s
         Rails.logger.error("PATCH: did matches session did, more")
