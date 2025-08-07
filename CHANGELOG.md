@@ -21,6 +21,7 @@
 - forgot to set up login api for checking authorization
 - important! redirect once approved!
 - head :no_content
+- not double render - Turbo.action instead
 
 ## 0.7.1
 
