@@ -4,6 +4,7 @@
 
 - better error reporting on OTP
 - fixing response test
+- stab at unauthorize
 
 ## 0.7.1
 

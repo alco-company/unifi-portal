@@ -93,15 +93,23 @@ module External
       # && result.dig("action").present? && result["action"] == "UNAUTHORIZE_GUEST_ACCESS" ?
       def unauthorize_guest_access(mac_address, retry_number = 0)
         post_url = "#{base_url}/sites/#{site.unifi_id}/clients/#{mac_address}/actions"
+        id = get_client_id(mac_address)
+        if id.nil?
+          err = "ERROR: UnifiApiKey - Client ID not found for MAC address: #{mac_address}"
+          Rails.logger.error(err)
+          return { success: false, error: err }
+        end
         body = {
           action: "UNAUTHORIZE_GUEST_ACCESS"
         }
         response = External::Unifi::Calls.post_json(post_url, body: body, headers: headers)
-        return false if response[:error].present?
-        response["meta"]["rc"] == "ok"
+        return { success: false, error: response["error"]["message"] } if response["error"].present?
+        Rails.logger.error("UNAUTHORIZED: response: #{response.inspect}")
+        { success: response["revokedAuthorization"].present? }
+
       rescue StandardError => e
         Rails.logger.error "ERROR: Other error while unauthorizing guest access: #{e.message}"
-        false
+        { success: false, error: e.message }
       end
     end
   end

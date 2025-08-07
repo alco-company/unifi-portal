@@ -9,9 +9,9 @@ class Device < ApplicationRecord
     eu = External::Unifi::Base.new(site: site)
     load_client_info(eu)
     result = eu.revoke_guest_access(mac_address)
-    result ?
+    result[:success] ?
       { success: true } :
-      { success: false, error: "Failed to unauthorize guest access" }
+      result
   end
 
   def authorize
