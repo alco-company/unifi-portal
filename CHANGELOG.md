@@ -8,6 +8,7 @@
 - wrong id for client
 - updating when toggled client
 - wrong resource
+- use either or
 
 ## 0.7.1
 

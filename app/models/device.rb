@@ -45,7 +45,8 @@ class Device < ApplicationRecord
   end
 
   def time_limit
-    authentication_expire_at > 24.hours.from_now ? 1000000 : 1440
+    val = authentication_expire_at || created_at
+    val > 24.hours.from_now ? 1000000 : 1440
   end
 
   def load_client_info(eu)
