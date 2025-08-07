@@ -254,7 +254,9 @@ module External
         }
         response = External::Unifi::Calls.post_json(url, body: body, headers: headers)
         Rails.logger.error("AUTHORIZE: response: #{response.inspect}")
-        response["meta"]["rc"] == "ok"
+        # response: {"meta" => {"rc" => "ok"}, "data" => [{"mac" => "76:45:ed:60:c9:84", "ap_mac" => "68:d7:9a:62:85:2f", "start" => 1754551678, "site_id" => "6803b1a107ae330ef4d6f5b8", "authorized_by" => "api", "_id" => "6894557e340bd477ed714abd", "end" => 1814551678, "qos_rate_max_up" => 100, "qos_rate_max_down" => 100, "qos_usage_quota" => 104857600, "qos_overwrite" => true}]}
+        return { success: false, error: "Failed to authorize guest access" } if response[:error].present?
+        { success: response["meta"].present? && response["meta"]["rc"] == "ok" && response["data"].present? && response["data"].any? }
       rescue LoginError => _e
         authorize_guest_access(retry_number + 1, mac_address: mac_address, minutes: minutes, up: up, down: down, megabytes: megabytes) if retry_number < 3 && login == :logged_in
       rescue StandardError => e

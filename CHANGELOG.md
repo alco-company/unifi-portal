@@ -10,6 +10,7 @@
 - wrong resource
 - use either or
 - doing for login what i did for api - debug
+- return proper success
 
 ## 0.7.1
 
