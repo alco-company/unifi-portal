@@ -8,9 +8,12 @@ class SessionsController < ApplicationController
   # for 188.228.84.87
   # at 2025-06-24 13:22:10 +0200
   def new
+    Rails.logger.error("GET: with these parameters #{params.inspect}")
     load_site
     unless @site.nil?
+      Rails.logger.error("GET: site found: #{@site.inspect}")
       if device_is_authorized?
+        Rails.logger.error("GET: device is authorized, redirecting to success page")
         respond_to do |format|
           format.html {
             case params[:url]

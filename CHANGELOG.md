@@ -28,6 +28,7 @@
 - missing "success"
 - reverse the flow
 - check device and layout
+- log on new
 
 ## 0.7.1
 
