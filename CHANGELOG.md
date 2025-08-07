@@ -9,6 +9,7 @@
 - updating when toggled client
 - wrong resource
 - use either or
+- doing for login what i did for api - debug
 
 ## 0.7.1
 

@@ -253,6 +253,7 @@ module External
           "bytes" => megabytes * 1024 * 1024 # Convert MB to bytes
         }
         response = External::Unifi::Calls.post_json(url, body: body, headers: headers)
+        Rails.logger.error("AUTHORIZE: response: #{response.inspect}")
         response["meta"]["rc"] == "ok"
       rescue LoginError => _e
         authorize_guest_access(retry_number + 1, mac_address: mac_address, minutes: minutes, up: up, down: down, megabytes: megabytes) if retry_number < 3 && login == :logged_in
