@@ -248,6 +248,7 @@ module External
         client = clients["data"].find { |c| c["mac"] == mac_address }
         if client
           Rails.logger.error("AUTHORIZE: client found: #{client.inspect}")
+          return true
         end
         false
       rescue StandardError => e
