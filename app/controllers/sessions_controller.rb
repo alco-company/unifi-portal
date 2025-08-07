@@ -11,7 +11,18 @@ class SessionsController < ApplicationController
     load_site
     unless @site.nil?
       if device_is_authorized?
-        render redirect_to success_path and return
+        respond_to do |format|
+          format.html {
+            case params[:url]
+            when /apple/; render "success", status: 302
+            when /generate_204/; head 204
+            when /msftconnect/; render plain: "Microsoft Connect Test"
+            when /msftncsi/; render plain: "Microsoft NCSI"
+            when /gnome/; render plain: "NetworkManager is online"
+            when /check\.kde\.org/; render plain: "OK"
+            end
+          }
+        end and return
       else
         params[:sid] = @site.id
         params[:tid] = @site.tenant_id
@@ -130,20 +141,9 @@ class SessionsController < ApplicationController
       Rails.logger.error("Device authenticated successfully: #{session[:did]}")
       session.delete(:did)
 
-      # redirect_to params[:url], allow_other_host: true, status: :found
       respond_to do |format|
-        format.html {
-          case params[:url]
-          when /apple/; render "success", status: 302
-          when /generate_204/; head 204
-          when /msftconnect/; render plain: "Microsoft Connect Test"
-          when /msftncsi/; render plain: "Microsoft NCSI"
-          when /gnome/; render plain: "NetworkManager is online"
-          when /check\.kde\.org/; render plain: "OK"
-          end
-        }
-        # format.turbo_stream { render turbo_stream: turbo_stream.action(:redirect, params[:url]) }
-        # format.html { redirect_to params[:url], allow_other_host: true, status: :found }
+        format.turbo_stream { render turbo_stream: turbo_stream.action(:redirect, params[:url]) }
+        format.html { redirect_to params[:url], allow_other_host: true, status: :found }
       end
     else
       respond_to do |format|

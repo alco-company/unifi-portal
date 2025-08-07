@@ -26,6 +26,7 @@
 - no turbo on the OTP form!
 - response depends on platform
 - missing "success"
+- reverse the flow
 
 ## 0.7.1
 
