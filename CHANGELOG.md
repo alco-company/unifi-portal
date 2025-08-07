@@ -19,6 +19,7 @@
 - wait longer before redirecting
 - chasing the error
 - forgot to set up login api for checking authorization
+- important! redirect once approved!
 
 ## 0.7.1
 
