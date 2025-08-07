@@ -74,20 +74,16 @@ module External
           rxRateLimitKbps: down,
           txRateLimitKbps: up
         }
-        Rails.logger.error("AUTHORIZE_GUEST_ACCESS: #{body.inspect}")
         id = get_client_id(mac_address)
-        Rails.logger.error("AUTHORIZE_GUEST_ACCESS - Client ID for MAC address #{mac_address} is #{id}")
         if id.nil?
           err = "ERROR: UnifiApiKey - Client ID not found for MAC address: #{mac_address}"
           Rails.logger.error(err)
           return { success: false, error: err }
         end
         post_url = "#{base_url}/sites/#{site.unifi_id}/clients/#{id}/actions"
-        Rails.logger.error("AUTHORIZE_GUEST_ACCESS - POST URL: #{post_url}")
         response = External::Unifi::Calls.post_json(post_url, body: body, headers: headers)
-        Rails.logger.error("AUTHORIZE_GUEST_ACCESS - Response: #{response.inspect}")
         return { success: false, error: response["error"]["message"] } if response["error"].present?
-        { success: response["meta"]["rc"] == "ok" }
+        { success: response["grantedAuthorization"].present? }
 
       rescue StandardError => e
         Rails.logger.error "ERROR: Other error while authorizing guest access: #{e.message}"

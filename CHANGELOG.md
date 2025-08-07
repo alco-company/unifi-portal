@@ -3,6 +3,7 @@
 ## 0.7.2
 
 - better error reporting on OTP
+- fixing response test
 
 ## 0.7.1
 
