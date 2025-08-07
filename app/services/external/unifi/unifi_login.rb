@@ -272,7 +272,9 @@ module External
           "mac" => mac_address
         }
         response = External::Unifi::Calls.post_json(url, body: body, headers: headers)
-        response["meta"]["rc"] == "ok"
+        Rails.logger.error("UNAUTHORIZED: response: #{response.inspect}")
+        return { success: false, error: response["error"]["message"] } if response["error"].present?
+        { success: response["meta"]["rc"] == "ok" }
       rescue LoginError => _e
         unauthorize_guest_access(mac_address, retry_number + 1) if retry_number < 3 && login == :logged_in
       rescue StandardError => e

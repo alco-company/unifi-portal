@@ -11,6 +11,7 @@
 - use either or
 - doing for login what i did for api - debug
 - return proper success
+- return proper success on unauthorize
 
 ## 0.7.1
 
