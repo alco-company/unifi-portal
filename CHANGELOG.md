@@ -5,6 +5,7 @@
 - better error reporting on OTP
 - fixing response test
 - stab at unauthorize
+- wrong id for client
 
 ## 0.7.1
 

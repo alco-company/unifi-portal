@@ -92,13 +92,13 @@ module External
 
       # && result.dig("action").present? && result["action"] == "UNAUTHORIZE_GUEST_ACCESS" ?
       def unauthorize_guest_access(mac_address, retry_number = 0)
-        post_url = "#{base_url}/sites/#{site.unifi_id}/clients/#{mac_address}/actions"
         id = get_client_id(mac_address)
         if id.nil?
           err = "ERROR: UnifiApiKey - Client ID not found for MAC address: #{mac_address}"
           Rails.logger.error(err)
           return { success: false, error: err }
         end
+        post_url = "#{base_url}/sites/#{site.unifi_id}/clients/#{id}/actions"
         body = {
           action: "UNAUTHORIZE_GUEST_ACCESS"
         }
