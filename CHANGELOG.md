@@ -15,6 +15,7 @@
 - update device on success
 - try no help on otp input
 - full on logging
+- look for clients
 
 ## 0.7.1
 
