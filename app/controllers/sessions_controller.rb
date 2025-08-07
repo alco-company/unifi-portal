@@ -181,9 +181,18 @@ class SessionsController < ApplicationController
     def otp_valid?
       if params[:did] && session[:did] && params[:did] == session[:did].to_s
         @device = Device.find_by(id: session[:did])
-        return false if @device.nil? || @device.last_otp.nil? || !@device.client.active?
+        if @device.nil? || @device.last_otp.nil? || !@device.client.active?
+          errs = []
+          errs << "Device not found" if @device.nil?
+          errs << "User not active" if !@device&.client&.active?
+          errs << "OTP wrong" if @device&.last_otp&.nil?
+          @error = errs.join(", ")
+          return false
+        end
+        @error = "Invalid OTP code"
         @device.last_otp == params[:otp]
       else
+        @error = "Invalid device ID or session expired"
         false
       end
     end
@@ -195,7 +204,7 @@ class SessionsController < ApplicationController
         Rails.logger.info("Guest access authorized for device: #{@device.id}")
         true
       else
-        Rails.logger.error("Failed to authorize guest access: #{result[:error]}")
+        @error = result[:error]
         false
       end
     end

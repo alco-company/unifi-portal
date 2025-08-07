@@ -76,16 +76,18 @@ module External
         }
         id = get_client_id(mac_address)
         if id.nil?
-          Rails.logger.error("ERROR: UnifiApiKey - Client ID not found for MAC address: #{mac_address}")
-          return false
+          err = "ERROR: UnifiApiKey - Client ID not found for MAC address: #{mac_address}"
+          Rails.logger.error(err)
+          return { success: false, error: err }
         end
         post_url = "#{base_url}/sites/#{site.unifi_id}/clients/#{id}/actions"
         response = External::Unifi::Calls.post_json(post_url, body: body, headers: headers)
-        return false if response[:error].present?
-        response["meta"]["rc"] == "ok"
+        return { success: false, error: response["error"]["message"] } if response["error"].present?
+        { success: response["meta"]["rc"] == "ok" }
+
       rescue StandardError => e
         Rails.logger.error "ERROR: Other error while authorizing guest access: #{e.message}"
-        false
+        { success: false, error: e.message }
       end
 
       # && result.dig("action").present? && result["action"] == "UNAUTHORIZE_GUEST_ACCESS" ?

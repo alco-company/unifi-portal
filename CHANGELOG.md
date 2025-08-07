@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 0.7.2
+
+- better error reporting on OTP
+
 ## 0.7.1
 
 - fixing diffs between api and login versions

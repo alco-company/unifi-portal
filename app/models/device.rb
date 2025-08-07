@@ -38,9 +38,9 @@ class Device < ApplicationRecord
       #   guest_rx: client.guest_rx,
       #   guest_tx: client.guest_tx
       # )
-      result ?
+      result[:success] ?
         update_client_info(eu) :
-        { success: false, error: "Failed to authorize guest access" }
+        result
     end
   end
 
