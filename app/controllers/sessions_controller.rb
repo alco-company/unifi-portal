@@ -17,10 +17,10 @@ class SessionsController < ApplicationController
         respond_to do |format|
           format.html {
             case params[:url]
-            when /apple/; render "success", layout: "success", status: 302
+            when /apple/; render "success", layout: "success", status: 200
             when /generate_204/; head :no_content
             when /googleapis\.com/; head :no_content
-            when /msftconnect/; render plain: "Microsoft Connect Test"
+            when /msftconnect/; render plain: "Microsoft Connect Test", status: 200
             when /msftncsi/; render plain: "Microsoft NCSI"
             when /gnome/; render plain: "NetworkManager is online"
             when /check\.kde\.org/; render plain: "OK"

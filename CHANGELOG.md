@@ -31,6 +31,7 @@
 - log on new
 - return true if client found!
 - layout is string
+- send proper status
 
 ## 0.7.1
 
