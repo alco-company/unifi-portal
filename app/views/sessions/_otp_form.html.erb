@@ -2,7 +2,7 @@
   <div class="p-4 rounded bg-white shadow" data-controller="otp">
     <h2 class="text-lg font-semibold mb-2">Indtast koden vi har sendt til dig</h2>
 
-    <%= form_with url: session_path, method: :patch, data: { turbo_frame: "otp_input" } do |form| %>
+    <%= form_with url: session_path, method: :patch, data: { turbo: false } do |form| %>
       <div class="mb-4">
         <%= form.label :otp, "OTP adgangskode", class: "block font-medium text-gray-700" %>
         <%= form.text_field :otp,

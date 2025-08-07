@@ -14,21 +14,7 @@ class SessionsController < ApplicationController
       Rails.logger.error("GET: site found: #{@site.inspect}")
       if device_is_authorized?
         Rails.logger.error("GET: device is authorized, redirecting to success page")
-        respond_to do |format|
-          format.html {
-            case params[:url]
-            when /apple/; render "success", layout: "success", status: 200
-            when /generate_204/; head :no_content
-            when /googleapis\.com/; head :no_content
-            when /msftconnect/; render plain: "Microsoft Connect Test", status: 200
-            when /msftncsi/; render plain: "Microsoft NCSI"
-            when /gnome/; render plain: "NetworkManager is online"
-            when /check\.kde\.org/; render plain: "OK"
-            else
-               render plain: params[:url] || "No URL provided"
-            end
-          }
-        end and return
+        do_redirect and return
       else
         params[:sid] = @site.id
         params[:tid] = @site.tenant_id
@@ -147,10 +133,11 @@ class SessionsController < ApplicationController
       Rails.logger.error("Device authenticated successfully: #{session[:did]}")
       session.delete(:did)
 
-      respond_to do |format|
-        format.turbo_stream { render turbo_stream: turbo_stream.action(:redirect, params[:url]) }
-        format.html { redirect_to params[:url], allow_other_host: true, status: :found }
-      end
+      do_redirect and return
+      # respond_to do |format|
+      #   # format.turbo_stream { render turbo_stream: turbo_stream.action(:redirect, params[:url]) }
+      #   format.html { redirect_to params[:url], allow_other_host: true, status: :found }
+      # end
     else
       respond_to do |format|
         # format.turbo_stream { render turbo_stream: turbo_stream.replace("otp_input", partial: "sessions/failed") }
@@ -175,6 +162,24 @@ class SessionsController < ApplicationController
     rescue
       Rails.logger.error("Failed to load site with name: #{params['site_name']} and URL: #{request.remote_addr}")
       @site = nil
+    end
+
+    def do_redirect
+      respond_to do |format|
+        format.html {
+          case params[:url]
+          when /apple/; render "success", layout: "success", status: 200
+          when /generate_204/; head :no_content
+          when /googleapis\.com/; head :no_content
+          when /msftconnect/; render plain: "Microsoft Connect Test", status: 200
+          when /msftncsi/; render plain: "Microsoft NCSI"
+          when /gnome/; render plain: "NetworkManager is online"
+          when /check\.kde\.org/; render plain: "OK"
+          else
+              render plain: params[:url] || "No URL provided"
+          end
+        }
+      end
     end
 
     def find_or_create_user_client(user)

@@ -32,6 +32,7 @@
 - return true if client found!
 - layout is string
 - send proper status
+- try with do_redirect
 
 ## 0.7.1
 
