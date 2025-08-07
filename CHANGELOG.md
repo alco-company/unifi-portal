@@ -6,6 +6,7 @@
 - fixing response test
 - stab at unauthorize
 - wrong id for client
+- updating when toggled client
 
 ## 0.7.1
 
