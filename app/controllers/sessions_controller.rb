@@ -132,8 +132,18 @@ class SessionsController < ApplicationController
 
       # redirect_to params[:url], allow_other_host: true, status: :found
       respond_to do |format|
+        format.html {
+          case params[:url]
+          when /apple/; render success_path, status: 302
+          when /generate_204/; head 204
+          when /msftconnect/; render plain: "Microsoft Connect Test"
+          when /msftncsi/; render plain: "Microsoft NCSI"
+          when /gnome/; render plain: "NetworkManager is online"
+          when /check\.kde\.org/; render plain: "OK"
+          end
+        }
         # format.turbo_stream { render turbo_stream: turbo_stream.action(:redirect, params[:url]) }
-        format.html { redirect_to params[:url], allow_other_host: true, status: :found }
+        # format.html { redirect_to params[:url], allow_other_host: true, status: :found }
       end
     else
       respond_to do |format|
