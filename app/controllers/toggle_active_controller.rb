@@ -9,19 +9,24 @@ class ToggleActiveController < ApplicationController
     end
     if resource.is_a?(Client)
       resource.devices.each do |device|
-        result = resource.active? ? device.authorize : device.unauthorize
-        if result[:success] && resource.active?
-          device.update(
-            guest_max: @client.guest_max,
-            guest_rx: @client.guest_rx,
-            guest_tx: @client.guest_tx
-          )
-        else
-          device.update(
-            last_authenticated_at: nil,
-            authentication_expire_at: nil,
-            active: false
-          )
+        begin
+          result = resource.active? ? device.authorize : device.unauthorize
+          if result[:success] && resource.active?
+            device.update(
+              guest_max: resource.guest_max,
+              guest_rx: resource.guest_rx,
+              guest_tx: resource.guest_tx
+            )
+          else
+            device.update(
+              last_authenticated_at: nil,
+              authentication_expire_at: nil,
+              active: false
+            )
+          end
+
+        rescue StandardError => e
+          Rails.logger.error("Error updating device: #{e.message}")
         end
       end
     end

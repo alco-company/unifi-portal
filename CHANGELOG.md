@@ -7,6 +7,7 @@
 - stab at unauthorize
 - wrong id for client
 - updating when toggled client
+- wrong resource
 
 ## 0.7.1
 
