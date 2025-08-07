@@ -22,6 +22,7 @@
 - important! redirect once approved!
 - head :no_content
 - not double render - Turbo.action instead
+- address javascript file properly
 
 ## 0.7.1
 
