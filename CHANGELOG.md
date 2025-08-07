@@ -13,6 +13,7 @@
 - return proper success
 - return proper success on unauthorize
 - update device on success
+- try no help on otp input
 
 ## 0.7.1
 

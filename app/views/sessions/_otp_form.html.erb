@@ -2,7 +2,7 @@
   <div class="p-4 rounded bg-white shadow" data-controller="otp">
     <h2 class="text-lg font-semibold mb-2">Indtast koden vi har sendt til dig</h2>
 
-    <%= form_with url: session_path, method: :patch, data: { turbo_frame: "otp_input" } do |form| %>
+    <%= form_with url: session_path, method: :patch, data: { turbo: true, turbo_frame: "otp_input" } do |form| %>
       <div class="mb-4">
         <%= form.label :otp, "OTP adgangskode", class: "block font-medium text-gray-700" %>
         <%= form.text_field :otp,
@@ -14,13 +14,13 @@
               value: "#{session[:otp] if Rails.env.test?}",
               data: {
                 otp_target: "input",
-                action: "input->otp#submitIfComplete paste->otp#handlePaste"
+                #action: "input->otp#submitIfComplete paste->otp#handlePaste"
               } %>
       </div>
       <%= hidden_field_tag :did, session[:did] %>
       <%= hidden_field_tag :url, session[:url] %>
 
-      <%= form.submit "Godkend", class: "bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded" %>
+      <%= form.submit "Godkend", data: { action: "click->otp#submit" }, class: "bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded" %>
     <% end %>
   </div>
   <div data-controller="resend" data-resend-seconds-value="30" class="mt-4 text-sm text-gray-600" >
