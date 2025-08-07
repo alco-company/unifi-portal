@@ -129,7 +129,8 @@ class SessionsController < ApplicationController
       Rails.logger.error("Device authenticated successfully: #{session[:did]}")
       session.delete(:did)
 
-      redirect_to params[:url], allow_other_host: true
+      redirect_to params[:url], allow_other_host: true, status: :found
+      head :no_content if performed?
       # respond_to do |format|
       #   format.turbo_stream { render turbo_stream: turbo_stream.replace("otp_input", partial: "sessions/success") }
       #   format.html { redirect_to success_path }
