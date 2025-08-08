@@ -116,9 +116,6 @@ GIT
   remote: https://github.com/ruby/debug.git
   revision: 14c8a546242a5e88ed8f47607629ffbef7d3315d
   specs:
-    debug (1.11.0)
-      irb (~> 1.10)
-      reline (>= 0.3.8)
 
 GEM
   remote: https://rubygems.org/
