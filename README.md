@@ -1,16 +1,16 @@
 # README
 
-Heimdall is an external captive portal application bespoke built for Unifi, affording guests easy access to a guest WiFi network
-by requesting the user to supply a phone number and/or email address. Heimdall will generate an OTP - one time password -
+Unifi Portal is an external captive portal application bespoke built for Unifi, affording guests easy access to a guest WiFi network
+by requesting the user to supply a phone number and/or email address. Unifi Portal will generate an OTP - one time password -
 and forwards it on the channels (SMS/Text, email) offered by the guest.
 
-Heimdall is multi-tenant and each tenant may have multiple sites (effectively allowing tenants to run more guest networks).
+Unifi Portal is multi-tenant and each tenant may have multiple sites (effectively allowing tenants to run more guest networks).
 Tenants have many clients (network users/guests) and if a client exist (phone number known) they will get permanent access - or
 at least 1,000,000 minutes
 
 Clients have many devices and each device is registered and updated with the site currently 'attached' to when authorized.
 
-Heimdall uses [Mailersend](https://mailersend.com) for email delivery and [SMSAPI](https://smsapi.com) for sending SMS/Texts.
+Unifi Portal uses [Mailersend](https://mailersend.com) for email delivery and [SMSAPI](https://smsapi.com) for sending SMS/Texts.
 
 ## Installation
 
@@ -32,7 +32,7 @@ These are the settings that you will have to consider:
   KAMAL_REGISTRY_PASSWORD=
   SECRET_KEY_BASE=
   RAILS_MASTER_KEY=
-  HEIMDALL_VERSION=0.7.2
+  Unifi Portal_VERSION=0.7.2
   SSL_DOMAIN=
   SMTP_USER_NAME=
   MAILERSEND_API_TOKEN=
@@ -53,16 +53,16 @@ let you setup an API token. Consult the documentation!
 
 ## DISCLAIMER
 
-Heimdall probably could be deployed in an environment different from Unifi - go through the `app/services/external/unifi` files and make copies that will address
+Unifi Portal probably could be deployed in an environment different from Unifi - go through the `app/services/external/unifi` files and make copies that will address
 your environment - Cisco, Aruba, more.
 
 The amount of tests leave quite a lot to wish for.
 
-Heimdall works with Unifi gateways that offer an API_TOKEN access to the API. Heimdall even works with Unifi controllers installed on VM/Docker/more where
+Unifi Portal works with Unifi gateways that offer an API_TOKEN access to the API. Unifi Portal even works with Unifi controllers installed on VM/Docker/more where
 you will setup a user/password to use the API (define it on the site) but we found that timing issues will report the device as authorized yet not convince
 the network on the device that it has network access 🥵
 
 ## Support
 
-Heimdall is open source but if we are "guns for hire" and if your use case demands support/maintenance and a friendly face we are open to negotiate a deal
+Unifi Portal is open source but if we are "guns for hire" and if your use case demands support/maintenance and a friendly face we are open to negotiate a deal
 that will benefit both of us.
