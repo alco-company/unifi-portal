@@ -34,6 +34,7 @@
 - send proper status
 - try with do_redirect
 - one more test render
+- add README/TODO
 
 ## 0.7.1
 
