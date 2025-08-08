@@ -11,9 +11,14 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
     @device = devices(:one)
     @client_mac = @device.mac_address
     @site.unifi_id = "88f7af54-98f8-306a-a1c7-c9349722b1f6"
-    stub_unifi_client_api(@client_mac)
     stub_unifi_sites_api(@site.unifi_id)
-    stub_guest_authorization_api()
+    stub_unifi_client_api(@client_mac)
+    stub_unifi_authorize_api()
+
+    stub_unifi_sites_login(@site.unifi_id)
+    stub_unifi_client_login(@client_mac)
+    stub_unifi_authorize_login(@site.unifi_id)
+
     stub_mailersend_api()
     stub_smsapi(@client.phone.gsub("+", ""), "123456") # Stub the SMS API to return a fixed OTP code - leave out the '+'
   end

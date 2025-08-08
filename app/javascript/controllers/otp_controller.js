@@ -22,4 +22,8 @@ export default class extends Controller {
       this.submitIfComplete();
     }
   }
+
+  submit(event){
+    event.target.classList.add("opacity-50", "cursor-not-allowed");
+  }
 }

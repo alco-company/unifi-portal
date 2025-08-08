@@ -1,12 +1,14 @@
 <html>
   <head>
-    <title>Connected</title>
-    <script>
-      setTimeout(() => window.close(), 1000);
-    </script>
+    <title>success</title>
   </head>
   <body class="text-center text-white bg-white font-sans">success
-    <h1 class="text-2xl text-black mt-10">You are now connected 🎉</h1>
-    <p class="text-black">You can close this window.</p>
+    <div class="p-4 border rounded bg-green-100 text-green-800">
+      ✅ Du er nu tilsluttet. Du kan lukke dette vindue eller fortsætte med at <i>browse</i>.
+    </div>
+    <script>
+      // Redirect to a specific URL after successful connection
+      setTimeout(() => window.location.href = "<%= session[:url] %>", 2000);
+      </script>  
   </body>
 </html>

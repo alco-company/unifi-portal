@@ -2,25 +2,32 @@ module External
   module Unifi
     class UnifiLogin
       include External::Unifi::Errors
-      attr_accessor :base_url, :username, :password, :cookie, :site
+      attr_accessor :base_url, :username, :password, :cookie, :site, :site_info
       def initialize(site: site, cookie: nil)
         @base_url = site.controller_url if site
         @username = site.username if site
         @password = site.password if site
         @cookie = cookie
         @site = site
+        @site_info = nil
       end
 
       def login
-        @cookie = External::Unifi::Calls.login_with_curl(
-          url: "#{base_url.chomp("/")}/api/login",
-          username: username,
-          password: password
-        )
+        @cookie = Rails.env.test? ?
+          "test_cookie" :
+          External::Unifi::Calls.login_with_httparty(
+            url: "#{base_url.chomp("/")}/api/login",
+            username: username,
+            password: password
+          )
         return :logged_in unless @cookie.nil?
         :logged_out
       rescue StandardError => e
         raise "Error during Unifi login: #{e.message}"
+      end
+
+      def get_id
+        @site_info["_id"]
       end
 
       def get_cookie_or_key
@@ -77,7 +84,7 @@ module External
       def site_info(name: "default")
         sites = list_sites
         return nil if sites.empty?
-        sites.find { |site| site["name"] == name }
+        @site_info = sites.find { |site| site["name"] == name }
       end
 
       #   {
@@ -174,17 +181,22 @@ module External
       #         }
       #     ]
       # }
-      def get_client(mac_address, retry_number = 0)
+      def get_client_id(mac_address, retry_number = 0)
         url = "#{base_url.chomp("/")}/api/s/#{site.name}/stat/sta/#{CGI.escape(mac_address)}"
         client = External::Unifi::Calls.get_json(url, headers: headers)
-        return [] if client[:error].present?
-        return client["data"][0] if client["meta"]["rc"] == "ok"
-        []
+        return nil if client[:error].present?
+        return client["data"].first["_id"] if client["meta"]["rc"] == "ok"
+        nil
       rescue LoginError => _e
         get_client(mac_address, retry_number + 1) if retry_number < 3 && login == :logged_in
       rescue StandardError => e
         Rails.logger.error "ERROR: Other error while getting client info: #{e.message}"
-        []
+        nil
+      end
+
+      def get_client_info(mac_address, retry_number = 0)
+        url = "#{base_url.chomp("/")}/api/s/#{site.name}/stat/sta/#{CGI.escape(mac_address)}"
+        External::Unifi::Calls.get_json(url, headers: headers)
       end
 
       # {
@@ -217,20 +229,35 @@ module External
       #           "tx_bytes": 450553318,
       #           "expired": false
       #       },
-      def list_guests(retry_number = 0)
-        url = "#{base_url.chomp("/")}/api/s/default/stat/guest"
+      def list_guests(retry_number = 0, unauthorized: true)
+        url = "#{base_url.chomp("/")}/api/s/#{site.name}/stat/guest"
+        url = unauthorized ? "#{url}?filter=authorized.eq(false)" : url
         guests = External::Unifi::Calls.get_json(url, headers: headers)
         return [] if guests[:error].present?
         guests["data"] if guests["meta"]["rc"] == "ok"
       rescue LoginError => _e
-        list_guests(retry_number + 1) if retry_number < 3 && login == :logged_in
+        list_guests(retry_number + 1, unauthorized: unauthorized) if retry_number < 3 && login == :logged_in
       rescue StandardError => e
         Rails.logger.error "ERROR: Other error while listing guests: #{e.message}"
         []
       end
 
+      def is_mac_authorized?(mac_address)
+        url = "#{base_url.chomp("/")}/api/s/#{site.name}/stat/sta"
+        clients = External::Unifi::Calls.get_json(url, headers: headers)
+        client = clients["data"].find { |c| c["mac"] == mac_address }
+        if client
+          Rails.logger.error("AUTHORIZE: client found: #{client.inspect}")
+          return true
+        end
+        false
+      rescue StandardError => e
+        Rails.logger.error("ERROR: UnifiLogin - Failed to check if MAC is authorized: #{e.message}")
+        false
+      end
+
       def authorize_guest_access(retry_number = 0, mac_address:, minutes:, up:, down:, megabytes:)
-        url = "#{base_url.chomp("/")}/api/s/#{site.site}/cmd/stamgr"
+        url = "#{base_url.chomp("/")}/api/s/#{site.name}/cmd/stamgr"
         body = {
           "cmd" => "authorize-guest",
           "mac" => mac_address,
@@ -239,8 +266,18 @@ module External
           "down" => down,
           "bytes" => megabytes * 1024 * 1024 # Convert MB to bytes
         }
+        Rails.logger.error("Authorizing guest access on #{url} for MAC address: #{mac_address} with body: #{body.inspect}")
         response = External::Unifi::Calls.post_json(url, body: body, headers: headers)
-        response["meta"]["rc"] == "ok"
+        Rails.logger.error("AUTHORIZE: response: #{response.inspect}")
+        # response: {"meta" => {"rc" => "ok"}, "data" => [{"mac" => "76:45:ed:60:c9:84", "ap_mac" => "68:d7:9a:62:85:2f", "start" => 1754551678, "site_id" => "6803b1a107ae330ef4d6f5b8", "authorized_by" => "api", "_id" => "6894557e340bd477ed714abd", "end" => 1814551678, "qos_rate_max_up" => 100, "qos_rate_max_down" => 100, "qos_usage_quota" => 104857600, "qos_overwrite" => true}]}
+        return { success: false, error: "Failed to authorize guest access" } if response[:error].present?
+        url = "#{base_url.chomp("/")}/api/s/#{site.name}/stat/sta"
+        clients = External::Unifi::Calls.get_json(url, headers: headers)
+        client = clients["data"].find { |c| c["mac"] == mac_address }
+        if client
+          Rails.logger.error("AUTHORIZE: client found: #{client.inspect}")
+        end
+        { success: response["meta"].present? && response["meta"]["rc"] == "ok" && response["data"].present? && response["data"].any?, data: response["data"]&.first }
       rescue LoginError => _e
         authorize_guest_access(retry_number + 1, mac_address: mac_address, minutes: minutes, up: up, down: down, megabytes: megabytes) if retry_number < 3 && login == :logged_in
       rescue StandardError => e
@@ -248,14 +285,17 @@ module External
         false
       end
 
+      # && result.dig("action").present? && result["action"] == "UNAUTHORIZE_GUEST_ACCESS" ?
       def unauthorize_guest_access(mac_address, retry_number = 0)
-        url = "#{base_url.chomp("/")}/api/s/#{site.site}/cmd/stamgr"
+        url = "#{base_url.chomp("/")}/api/s/#{site.name}/cmd/stamgr"
         body = {
           "cmd" => "unauthorize-guest",
           "mac" => mac_address
         }
         response = External::Unifi::Calls.post_json(url, body: body, headers: headers)
-        response["meta"]["rc"] == "ok"
+        Rails.logger.error("UNAUTHORIZED: response: #{response.inspect}")
+        return { success: false, error: response["error"]["message"] } if response["error"].present?
+        { success: response["meta"]["rc"] == "ok" }
       rescue LoginError => _e
         unauthorize_guest_access(mac_address, retry_number + 1) if retry_number < 3 && login == :logged_in
       rescue StandardError => e
@@ -269,7 +309,7 @@ module External
           {
             "Accept" => "application/json",
             "Content-Type" => "application/json",
-            "Cookie" => cookie
+            "Cookie" => @cookie
           }
         end
     end

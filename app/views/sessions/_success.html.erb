@@ -4,6 +4,6 @@
   </div>
    <script>
      // Redirect to a specific URL after successful connection
-     setTimeout(() => window.location.href = "http://captive.apple.com", 5000);
+     setTimeout(() => window.location.href = "<%= session[:url] %>", 2000);
     </script>  
 </turbo-frame>

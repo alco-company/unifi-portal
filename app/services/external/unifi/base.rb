@@ -18,6 +18,10 @@ module External
         @site_info = nil
       end
 
+      def get_id
+        unifi_get_id
+      end
+
       def site_info
         @site_info ||= unifi_get_site_info(name: site.name)
       end
@@ -26,10 +30,21 @@ module External
         @cookie_key ||= unifi_get_cookie_or_key
       end
 
-      def client_info(mac_address)
-        unifi_client_info(mac_address)
+      def list_sites
+        unifi_list_sites
       end
 
+      def list_guests(unauthorized: true)
+        unifi_list_guests(unauthorized: unauthorized)
+      end
+
+      def get_client_id(mac_address)
+        unifi_get_client_id(mac_address)
+      end
+
+      def is_mac_authorized?(mac_address)
+        unifi_is_mac_authorized?(mac_address)
+      end
       #
       # Authorizes guest access for a given MAC address.
       # @param mac_address [String] The MAC address of the guest device.
@@ -63,17 +78,33 @@ module External
           state == :logged_in
         end
 
+        def unifi_get_id
+          unifi.get_id if logged_in?
+        end
+
         def unifi_get_cookie_or_key
           unifi.get_cookie_or_key if logged_in?
+        end
+
+        def unifi_list_sites
+          unifi.list_sites if logged_in?
         end
 
         def unifi_get_site_info(name: nil)
           unifi.site_info(name: name) if logged_in?
         end
 
+        def unifi_list_guests(unauthorized: true)
+          unifi.list_guests(0, unauthorized: unauthorized) if logged_in?
+        end
+
         # named values array or empty array
-        def unifi_client_info(mac_address)
-          unifi.get_client(mac_address) if logged_in?
+        def unifi_get_client_id(mac_address)
+          unifi.get_client_id(mac_address) if logged_in?
+        end
+
+        def unifi_is_mac_authorized?(mac_address)
+          unifi.is_mac_authorized?(mac_address) if logged_in?
         end
 
         # return true|false

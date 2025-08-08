@@ -2,7 +2,7 @@
 
 one:
   tenant: one
-  name: MyString
+  name: default
   url: "https://heimdall.test"
   ssid: thisted-guest
   controller_url: "https://heimdall.test"

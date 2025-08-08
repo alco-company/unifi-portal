@@ -11,8 +11,8 @@ module ActionMailer
         # Convert ActionMailer::Mail object to Mailersend format
         payload = {
           "from" => {
-            "email" => mail.from.first,
-            "name" => mail.header["from"].display_names.first
+            "email" => mail.from&.first || ENV["SMTP_USER_NAME"],
+            "name" => mail.header["from"]&.display_names&.first || "Unifi Portal Service"
           },
           "to" => mail.to.map { |email| { "email" => email } },
           "subject" => mail.subject,

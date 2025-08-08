@@ -41,7 +41,7 @@ Rails.application.routes.draw do
   get "/check_phone", to: "pnumber#check_phone", as: :check_phone
 
   resource :session, only: [ :create, :update ]
-  get "/guest/s/default/", to: "sessions#new", as: :new_session, constraints: { format: "html" }
+  get "/guest/s/:site_name", to: "sessions#new", as: :new_session, constraints: { format: "html" }
   resolve("Session") { [ :session ] }
   get "otp", to: "sessions#otp", as: :otp
   get "success", to: "sessions#success", as: :success

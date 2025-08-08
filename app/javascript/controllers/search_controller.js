@@ -2,12 +2,24 @@ import { Controller } from "@hotwired/stimulus"
 
 // Connects to data-controller="search"
 export default class extends Controller {
+  static targets = [
+    "input"
+  ]
+
   static values = {
     delay: { type: Number, default: 300 } // ms
   }
 
   connect() {
     this.timeout = null
+   if (this.hasInputTarget) {
+     const input = this.inputTarget;
+     const length = input.value.length;
+
+     // Set focus and move caret to the end
+     input.focus();
+     input.setSelectionRange(length, length);
+   }    
   }
 
   disconnect() {

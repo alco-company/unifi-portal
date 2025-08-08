@@ -21,9 +21,9 @@
         </div>
         <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
           <dt class="text-sm/6 font-medium text-yellow-600">url</dt>
-          <dd class="mt-1 text-sm/6 text-yellow-200 sm:col-span-2 sm:mt-0">domænenavnet på den organisation, der har indgået aftalen med os - fx thisted-gymnasium.dk
+          <dd class="mt-1 text-sm/6 text-yellow-200 sm:col-span-2 sm:mt-0">Den offentlige IP adresse på den organisation, der har indgået aftalen med os - fx 1.2.3.4
             <br>
-            <span class="font-medium text-yellow-100">[ <%= params[:url] %> ]</span>
+            <span class="font-medium text-yellow-100">[ <%= request.remote_addr %> ]</span>
           </dd>
         </div>
         <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">

@@ -11,12 +11,12 @@ class SmsSender
 
     normalized_phone = normalize_phone(phone)
     raise "SMS sending failed: bad phone number" if normalized_phone.nil?
-    
+
     url = URI(API_URL)
     params = {
       to: normalized_phone,
       message: "Din engangskode er: #{code}",
-      from: "Mortimer",
+      from: "unifiportal",
       format: "json"
     }
 
@@ -34,7 +34,7 @@ class SmsSender
   def self.normalize_phone(phone)
     phone = phone.strip
     # phone = phone.gsub(/\D/, "") # fjerner alt andet end cifre
-  
+
     # Hvis det starter med 0 og derefter er 8 cifre → dansk mobil
     if phone.match?(/^0\d{8}$/)
       phone.sub(/^0/, "+45")
@@ -43,7 +43,7 @@ class SmsSender
     elsif phone.start_with?("+45") and phone.length == 11
       phone
     else
-      nil #"+#{phone}" # fallback, men pas på
+      nil # "+#{phone}" # fallback, men pas på
     end
   end
 end

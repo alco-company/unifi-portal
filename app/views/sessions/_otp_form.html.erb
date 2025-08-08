@@ -2,7 +2,7 @@
   <div class="p-4 rounded bg-white shadow" data-controller="otp">
     <h2 class="text-lg font-semibold mb-2">Indtast koden vi har sendt til dig</h2>
 
-    <%= form_with url: session_path, method: :patch, data: { turbo_frame: "otp_input" } do |form| %>
+    <%= form_with url: session_path, method: :patch, data: { turbo: false } do |form| %>
       <div class="mb-4">
         <%= form.label :otp, "OTP adgangskode", class: "block font-medium text-gray-700" %>
         <%= form.text_field :otp,
@@ -18,6 +18,15 @@
               } %>
       </div>
       <%= hidden_field_tag :did, session[:did] %>
+      <%= hidden_field_tag :url, session[:url] %>
+      <%= hidden_field_tag :site_id, site_id %>
+      <%= hidden_field_tag :ap, params[:ap] %>
+      <%= hidden_field_tag :ssid, params[:ssid] %>
+      <%= hidden_field_tag :tid, params[:tid] %>
+      <%= hidden_field_tag :sid, params[:sid] %>
+      <%= hidden_field_tag :id, params[:id] %>
+      <%= hidden_field_tag :url, params[:url] %>
+      <%= hidden_field_tag :t, params[:t] %>
 
       <%= form.submit "Godkend", class: "bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded" %>
     <% end %>

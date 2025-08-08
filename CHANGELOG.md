@@ -1,6 +1,79 @@
 # CHANGELOG
 
+## 0.7.2
+
+- better error reporting on OTP
+- fixing response test
+- stab at unauthorize
+- wrong id for client
+- updating when toggled client
+- wrong resource
+- use either or
+- doing for login what i did for api - debug
+- return proper success
+- return proper success on unauthorize
+- update device on success
+- try no help on otp input
+- full on logging
+- look for clients
+- wait longer before redirecting
+- chasing the error
+- forgot to set up login api for checking authorization
+- important! redirect once approved!
+- head :no_content
+- not double render - Turbo.action instead
+- address javascript file properly
+- no turbo on the OTP form!
+- response depends on platform
+- missing "success"
+- reverse the flow
+- check device and layout
+- log on new
+- return true if client found!
+- layout is string
+- send proper status
+- try with do_redirect
+- one more test render
+- add README/TODO
+
+## 0.7.1
+
+- fixing diffs between api and login versions
+- fixing authorize for api version
+- fix sending emails with Mailersend
+- fighting Mailersend unauthenticated
+- fighting Mailersend unauthenticated 2 & SMS
+
+## 0.6.3
+
+- adjust success redirect
+- trying to sync with UnifiOS on authorize
+- more trying to sync
+- add helper
+- setting ENV to unifi(-)portal for email / SMS
+
+## 0.6.2
+
+- unauthorize
+- always do bundle exec now!
+- bundle lock --add-platform aarch64-linux
+- fix search issue
+- fix load_site issue
+- short-circuit Site search - use site.first
+- change mailersend API token and sending address
+- fix site search
+- fix site search 2
+- fix site search 3
+- testing guest session once more
+- use httparty to login
+- store cookie in tmp
+- use mortimer.pro mailersend API key
+
+## 0.6.1
+
 - hide name/email
+- fix Unifi API calls
+- add base64
 
 ## 0.6.0
 

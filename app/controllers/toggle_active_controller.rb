@@ -7,15 +7,26 @@ class ToggleActiveController < ApplicationController
     else
       render json: { success: false, error: "Resource not found" }, status: :not_found
     end
-    if resource.is_a?(Client) and !resource.active?
+    if resource.is_a?(Client)
       resource.devices.each do |device|
-        result = device.unauthorize
-        if result[:success]
-          device.update!(
-            last_authenticated_at: nil,
-            authentication_expire_at: nil,
-            active: false
-          )
+        begin
+          result = resource.active? ? device.authorize : device.unauthorize
+          if result[:success] && resource.active?
+            device.update(
+              guest_max: resource.guest_max,
+              guest_rx: resource.guest_rx,
+              guest_tx: resource.guest_tx
+            )
+          else
+            device.update(
+              last_authenticated_at: nil,
+              authentication_expire_at: nil,
+              active: false
+            )
+          end
+
+        rescue StandardError => e
+          Rails.logger.error("Error updating device: #{e.message}")
         end
       end
     end

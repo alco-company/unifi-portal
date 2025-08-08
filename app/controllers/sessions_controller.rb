@@ -8,11 +8,18 @@ class SessionsController < ApplicationController
   # for 188.228.84.87
   # at 2025-06-24 13:22:10 +0200
   def new
+    Rails.logger.error("GET: with these parameters #{params.inspect}")
     load_site
     unless @site.nil?
-      params[:sid] = @site.id
-      params[:tid] = @site.tenant_id
-      render :new
+      Rails.logger.error("GET: site found: #{@site.inspect}")
+      if device_is_authorized?
+        Rails.logger.error("GET: device is authorized, redirecting to success page")
+        do_redirect and return
+      else
+        params[:sid] = @site.id
+        params[:tid] = @site.tenant_id
+        render :new
+      end
     else
       render :error, status: :not_found
     end
@@ -26,8 +33,10 @@ class SessionsController < ApplicationController
 
     if valid_user_input?(user)
       device = find_or_create_user_client(user)
+      Rails.logger.info("Device found or created: #{device.client.inspect}") if device
       if !device.nil? and device.client.active?
         session[:did] = device.id
+        session[:url] = user[:url].present? ? user[:url] : "http://captive.apple.com"
         begin
 
           result = OtpMailer.send_otp(device.client.email, device.last_otp).deliver_later if email_available?(device)
@@ -38,7 +47,7 @@ class SessionsController < ApplicationController
             respond_to do |format|
               format.turbo_stream {
                 render turbo_stream: [
-                  turbo_stream.replace("otp_input", partial: "sessions/otp_form"),
+                  turbo_stream.replace("otp_input", partial: "sessions/otp_form", locals: { site_id: params[:sid] }),
                   turbo_stream.append("flash_toasts", partial: "shared/toast", locals: {
                     message: "Code sent successfully",
                     type: :success
@@ -111,23 +120,36 @@ class SessionsController < ApplicationController
   end
 
   def update
-    if otp_valid? && authorize_guest!
-      expire_at = @device.client.created_at < 5.minute.ago ? 24.hours.from_now : 10.years.from_now
+    Rails.logger.error("PATCH: with these parameters #{params.inspect}")
+    @site = Site.find_by(id: params[:sid]) if params[:site_id].present?
+    if otp_valid? && authorize_guest?
+      expire_at = @device.client.created_at < 5.minute.ago ? 10.years.from_now : 24.hours.from_now
+      Rails.logger.error("PATCH: will expire this device at #{expire_at}")
       Device.find(session[:did]).update!(
         last_authenticated_at: Time.current,
         authentication_expire_at: expire_at,
         active: true
       )
+      Rails.logger.error("Device authenticated successfully: #{session[:did]}")
       session.delete(:did)
 
-      respond_to do |format|
-        format.turbo_stream { render turbo_stream: turbo_stream.replace("otp_input", partial: "sessions/success") }
-        format.html { redirect_to success_path }
-      end
+      do_redirect and return
+      # respond_to do |format|
+      #   # format.turbo_stream { render turbo_stream: turbo_stream.action(:redirect, params[:url]) }
+      #   format.html { redirect_to params[:url], allow_other_host: true, status: :found }
+      # end
     else
       respond_to do |format|
-        format.turbo_stream { render turbo_stream: turbo_stream.replace("otp_input", partial: "sessions/failed") }
-        format.html { redirect_to otp_path, alert: "Invalid code" }
+        # format.turbo_stream { render turbo_stream: turbo_stream.replace("otp_input", partial: "sessions/failed") }
+        format.html { redirect_to new_session_path(site_name: @site.name,
+          phone: @device&.client&.phone,
+          ap: params[:ap],
+          ssid: params[:ssid],
+          tid: params[:tid],
+          sid: params[:sid],
+          id: params[:id],
+          url: params[:url],
+          t: params[:t]), alert: @error }
       end
     end
   end
@@ -136,15 +158,36 @@ class SessionsController < ApplicationController
 
     def load_site
       @client = nil
-      @site = Site.where(url: params[:url]).or(Site.where(ssid: params[:ssid])).first
+      @site = Site.where(ssid: params["ssid"], url: request.remote_addr, active: true).first# , ssid: params["ssid"], name: params["site_name"], ).first
     rescue
+      Rails.logger.error("Failed to load site with name: #{params['site_name']} and URL: #{request.remote_addr}")
       @site = nil
     end
 
+    def do_redirect
+      respond_to do |format|
+        format.html {
+          case params[:url]
+          when /apple/; render plain: "Success", status: :ok
+          when /generate_204/; head :no_content
+          when /google\.com/; head :no_content
+          when /googleapis\.com/; head :no_content
+          when /msftconnect/; render plain: "Microsoft Connect Test", status: 200
+          when /msftncsi/; render plain: "Microsoft NCSI"
+          when /gnome/; render plain: "NetworkManager is online"
+          when /check\.kde\.org/; render plain: "OK"
+          else
+              render :success, layout: "success", status: :ok
+          end
+        }
+      end
+    end
+
     def find_or_create_user_client(user)
-      @client = Client.where(tenant_id: user[:tid]).or(Client.where(email: user[:email])).or(Client.where(phone: user[:phone])).first_or_initialize
+      @client = Client.where(tenant_id: user[:tid], phone: user[:phone]).first_or_initialize
       @client.update!(name: user[:name], active: true) if @client.name != user[:name] && user[:name].present? && user[:name] != ""
-      expire_at = @client.created_at < 5.minute.ago ? 24.hours.from_now : 10.years.from_now
+      @client.update!(email: user[:email]) if @client.email != user[:email] && user[:email].present? && user[:email] != ""
+      expire_at = @client.created_at < 5.minute.ago ? 10.years.from_now : 24.hours.from_now
       device = Device.find_or_create_by!(client_id: @client.id, mac_address: user[:id])
       device.update!(
         last_ap: user[:ap],
@@ -175,17 +218,41 @@ class SessionsController < ApplicationController
     end
 
     def otp_valid?
+      Rails.logger.error("PATCH: testing the OTP validity: #{params[:otp]} ")
+
       if params[:did] && session[:did] && params[:did] == session[:did].to_s
+        Rails.logger.error("PATCH: did matches session did, more")
         @device = Device.find_by(id: session[:did])
-        return false if @device.nil? || @device.last_otp.nil? || !@device.client.active?
+        Rails.logger.error("PATCH: device found: #{@device.inspect}")
+        if @device.nil? || @device.last_otp.nil? || !@device.client.active?
+          errs = []
+          errs << "Device not found" if @device.nil?
+          errs << "User not active" if !@device&.client&.active?
+          errs << "OTP wrong" if @device&.last_otp&.nil?
+          @error = errs.join(", ")
+          return false
+        end
+        @error = "Invalid OTP code"
         @device.last_otp == params[:otp]
       else
+        @error = "Invalid device ID or session expired"
         false
       end
     end
 
-    def authorize_guest!
+    def authorize_guest?
       return false if @device.nil?
-      @device.authorize
+      result = @device.authorize
+      if result[:success]
+        Rails.logger.info("Guest access authorized for device: #{@device.id}")
+        true
+      else
+        @error = result[:error]
+        false
+      end
+    end
+
+    def device_is_authorized?
+      Device.authorized?(params[:id])
     end
 end

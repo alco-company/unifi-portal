@@ -3,12 +3,13 @@ module External
     # Unifi API Key service for managing API keys.
     # This service provides methods to retrieve and manage API keys for Unifi Network Integration.
     class UnifiApiKey
-      attr_accessor :base_url, :api_key, :headers, :site
+      attr_accessor :base_url, :api_key, :headers, :site, :site_info
 
       def initialize(site: nil)
         @base_url = "#{site&.controller_url&.chomp("/")}/proxy/network/integration/v1"
         @api_key = site&.api_key
         @site = site
+        @site_info = nil
         @headers = {
           "X-API-KEY" => api_key,
           "Accept" => "application/json",
@@ -24,6 +25,10 @@ module External
         :logged_out
       end
 
+      def get_id
+        @site_info.first["id"]
+      end
+
       # Retrieves the API key for the Unifi Network Integration.
       # @return [String] The API key.
       def get_cookie_or_key
@@ -37,15 +42,40 @@ module External
         { error: e.message }
       end
 
-      def site_info(name:)
-        list_sites.find { |site| site["name"] == name }
-      end
-
-      def get_client(mac_address)
-        url = "#{base_url}/sites/#{site.site_unifi_id}/clients?filter=macAddress.eq('#{CGI.escape(mac_address)}')"
+      def list_guests(retry_number = 0, unauthorized: false)
+        url = "#{base_url}/sites/#{site.unifi_id}/clients?filter=guest.eq(true)"
+        url += "&filter=unauthorized.eq(true)" if unauthorized
         External::Unifi::Calls.get_json(url, headers: headers)
+      rescue StandardError => e
+        Rails.logger.error("ERROR: UnifiApiKey - Failed to list guests: #{e.message}")
+        { error: e.message }
       end
 
+      def site_info(name:)
+        sites = list_sites
+        return nil if sites.empty?
+        @site_info = sites.find { |site| site["name"] == name } rescue nil
+        @site_info = sites["data"] if @site_info.nil?
+      end
+
+      def get_client_id(mac_address)
+        url = "#{base_url}/sites/#{site.unifi_id}/clients?filter=macAddress.eq('#{CGI.escape(mac_address)}')"
+        ci = External::Unifi::Calls.get_json(url, headers: headers)
+        return ci["data"].first["id"] if ci && ci["data"].present? && ci["count"] == 1
+        nil
+      end
+
+      def is_mac_authorized?(mac_address)
+        url = "#{base_url}/sites/#{site.unifi_id}/clients?filter=macAddress.eq('#{CGI.escape(mac_address)}')&filter=authorized.eq(true)"
+        response = External::Unifi::Calls.get_json(url, headers: headers)
+        return response["data"].present? && response["data"].any? if response && response["data"].present?
+        false
+      rescue StandardError => e
+        Rails.logger.error("ERROR: UnifiApiKey - Failed to check if MAC is authorized: #{e.message}")
+        false
+      end
+
+      # result.dig("action").present? && result["action"] == "AUTHORIZE_GUEST_ACCESS"
       def authorize_guest_access(retry_number = 0, mac_address:, minutes:, up:, down:, megabytes:)
         body = {
           action: "AUTHORIZE_GUEST_ACCESS",
@@ -54,33 +84,46 @@ module External
           rxRateLimitKbps: down,
           txRateLimitKbps: up
         }
-        post_url = "#{base_url}/sites/#{site.site_unifi_id}/clients/#{mac_address}/actions"
+        Rails.logger.error("Authorizing guest access for MAC address: #{mac_address} with body: #{body.inspect}")
+        id = get_client_id(mac_address)
+        if id.nil?
+          err = "ERROR: UnifiApiKey - Client ID not found for MAC address: #{mac_address}"
+          Rails.logger.error(err)
+          return { success: false, error: err }
+        end
+        post_url = "#{base_url}/sites/#{site.unifi_id}/clients/#{id}/actions"
+        Rails.logger.error("POST URL: #{post_url} with body, and headers: #{headers.inspect}")
         response = External::Unifi::Calls.post_json(post_url, body: body, headers: headers)
-        return false if response[:error].present?
-        response["meta"]["rc"] == "ok"
+        Rails.logger.error("Response: #{response.inspect}")
+        return { success: false, error: response["error"]["message"] } if response["error"].present?
+        { success: response["grantedAuthorization"].present? }
+
       rescue StandardError => e
         Rails.logger.error "ERROR: Other error while authorizing guest access: #{e.message}"
-        false
+        { success: false, error: e.message }
       end
 
+      # && result.dig("action").present? && result["action"] == "UNAUTHORIZE_GUEST_ACCESS" ?
       def unauthorize_guest_access(mac_address, retry_number = 0)
-        post_url = "#{base_url}/sites/#{site.site_unifi_id}/clients/#{mac_address}/actions"
+        id = get_client_id(mac_address)
+        if id.nil?
+          err = "ERROR: UnifiApiKey - Client ID not found for MAC address: #{mac_address}"
+          Rails.logger.error(err)
+          return { success: false, error: err }
+        end
+        post_url = "#{base_url}/sites/#{site.unifi_id}/clients/#{id}/actions"
         body = {
           action: "UNAUTHORIZE_GUEST_ACCESS"
         }
         response = External::Unifi::Calls.post_json(post_url, body: body, headers: headers)
-        return false if response[:error].present?
-        response["meta"]["rc"] == "ok"
+        return { success: false, error: response["error"]["message"] } if response["error"].present?
+        Rails.logger.error("UNAUTHORIZED: response: #{response.inspect}")
+        { success: response["revokedAuthorization"].present? }
+
       rescue StandardError => e
         Rails.logger.error "ERROR: Other error while unauthorizing guest access: #{e.message}"
-        false
+        { success: false, error: e.message }
       end
-
-      private
-
-        def set_site_id
-          site.site_unifi_id ||= site_info(site.name)["id"]
-        end
     end
   end
 end

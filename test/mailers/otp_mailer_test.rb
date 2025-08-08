@@ -14,8 +14,8 @@ class OtpMailerTest < ActionMailer::TestCase
     end
 
     # Check the basic headers
-    assert_equal ["info@mortimer.pro"], email.from
-    assert_equal [user_email], email.to
+    assert_equal [ "info@unifi-portal.site" ], email.from
+    assert_equal [ user_email ], email.to
     assert_equal "Din OTP-kode til adgang til netværket", email.subject
 
     # Check the body content

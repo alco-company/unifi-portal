@@ -6,8 +6,8 @@ if [ -n "$1" ]; then
 fi
 git checkout main
 git pull
-kamal deploy 
-kamal app exec --interactive --reuse "bin/rails db:migrate"
+bundle exec kamal deploy 
+bundle exec kamal app exec --interactive --reuse "bin/rails db:migrate"
 git checkout development
 #
 # clean up ssh's
