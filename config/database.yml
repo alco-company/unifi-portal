@@ -30,6 +30,13 @@ development:
     database: storage/development_queue.sqlite3
     migrations_paths: db/queue_migrate
 
+  # freeradius:
+  #   adapter: mysql2
+  #   encoding: utf8
+  #   database: freeradius_db_name
+  #   username: freeradius_user
+  #   password: freeradius_password
+  #   host: freeradius_host
 # Warning: The database defined as "test" will be erased and
 # re-generated from your development database when you run "rake".
 # Do not set this db to the same as development or production.
@@ -60,3 +67,11 @@ production:
     <<: *default
     database: storage/production_cable.sqlite3
     migrations_paths: db/cable_migrate
+
+  # freeradius:
+  #   adapter: mysql2
+  #   encoding: utf8
+  #   database: freeradius_db_name
+  #   username: freeradius_user
+  #   password: freeradius_password
+  #   host: freeradius_host

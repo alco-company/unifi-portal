@@ -1,0 +1,63 @@
+<%= form_with(model: @nas, url: @nas.persisted? ? admin_tenant_site_nas_path(@tenant, @site, @nas) : admin_tenant_site_nas_index_path(@tenant, @site), class: "contents") do |form| %>
+  <% if @nas.errors.any? %>
+    <div id="error_explanation" class="bg-red-50 text-red-500 px-3 py-2 font-medium rounded-md mt-3">
+  <h2><%= pluralize(@nas.errors.count, "error") %> prohibited this nas from being saved:</h2>
+
+      <ul class="list-disc ml-6">
+  <% @nas.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="my-5">
+    <%= form.label :site %>
+    <p><%= @site.name %></p>
+    <%= form.hidden_field :site_id, value: @site.id %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :nasname %>
+  <%= form.text_field :nasname, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": @nas.errors[:nasname].none?, "border-red-400 focus:outline-red-600": @nas.errors[:nasname].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :shortname %>
+  <%= form.text_field :shortname, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": @nas.errors[:shortname].none?, "border-red-400 focus:outline-red-600": @nas.errors[:shortname].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :type %>
+  <%= form.text_field :type, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": @nas.errors[:type].none?, "border-red-400 focus:outline-red-600": @nas.errors[:type].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :ports %>
+  <%= form.text_field :ports, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": @nas.errors[:ports].none?, "border-red-400 focus:outline-red-600": @nas.errors[:ports].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :secret %>
+  <%= form.text_field :secret, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": @nas.errors[:secret].none?, "border-red-400 focus:outline-red-600": @nas.errors[:secret].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :server %>
+  <%= form.text_field :server, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": @nas.errors[:server].none?, "border-red-400 focus:outline-red-600": @nas.errors[:server].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :community %>
+  <%= form.text_field :community, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": @nas.errors[:community].none?, "border-red-400 focus:outline-red-600": @nas.errors[:community].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :description %>
+  <%= form.text_field :description, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": @nas.errors[:description].none?, "border-red-400 focus:outline-red-600": @nas.errors[:description].any?}] %>
+  </div>
+
+  <div class="inline">
+    <%= form.submit class: "w-full sm:w-auto rounded-md px-3.5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white inline-block font-medium cursor-pointer" %>
+  </div>
+<% end %>

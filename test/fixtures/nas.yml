@@ -1,0 +1,23 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  site: one
+  nasname: MyString
+  shortname: MyString
+  type: 
+  ports: MyString
+  secret: MyString
+  server: MyString
+  community: MyString
+  description: MyString
+
+two:
+  site: two
+  nasname: MyString
+  shortname: MyString
+  type: 
+  ports: MyString
+  secret: MyString
+  server: MyString
+  community: MyString
+  description: MyString

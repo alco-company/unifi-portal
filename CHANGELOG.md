@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 0.7.3
+
+- add radius og nas (network_access_servers)
+
 ## 0.7.2
 
 - better error reporting on OTP

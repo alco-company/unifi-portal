@@ -1,0 +1,10 @@
+<% content_for :title, "Editing nas" %>
+
+<div class="md:w-2/3 w-full">
+  <h1 class="font-bold text-4xl">Editing nas</h1>
+
+  <%= render "form" %>
+
+  <%= link_to "Show this nas", admin_tenant_site_nas_path(@tenant, @site, @nas), class: "w-full sm:w-auto text-center mt-2 sm:mt-0 sm:ml-2 rounded-md px-3.5 py-2.5 bg-gray-100 hover:bg-gray-50 inline-block font-medium" %>
+  <%= link_to "Back to nas", admin_tenant_site_nas_index_path(@tenant, @site), class: "w-full sm:w-auto text-center mt-2 sm:mt-0 sm:ml-2 rounded-md px-3.5 py-2.5 bg-gray-100 hover:bg-gray-50 inline-block font-medium" %>
+</div>

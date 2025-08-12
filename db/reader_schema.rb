@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_07_04_211722) do
+ActiveRecord::Schema[8.1].define(version: 2025_08_12_193000) do
   create_table "clients", force: :cascade do |t|
     t.boolean "active", default: true
     t.datetime "created_at", null: false
@@ -43,6 +43,22 @@ ActiveRecord::Schema[8.1].define(version: 2025_07_04_211722) do
     t.datetime "updated_at", null: false
     t.index ["client_id"], name: "index_devices_on_client_id"
     t.index ["site_id"], name: "index_devices_on_site_id"
+  end
+
+  create_table "nas", force: :cascade do |t|
+    t.string "community"
+    t.datetime "created_at", null: false
+    t.string "description"
+    t.string "nasname"
+    t.string "ports"
+    t.string "secret"
+    t.string "server"
+    t.string "shortname"
+    t.integer "site_id", null: false
+    t.string "type"
+    t.datetime "updated_at", null: false
+    t.index ["site_id", "nasname"], name: "index_nas_on_site_id_and_nasname", unique: true
+    t.index ["site_id"], name: "index_nas_on_site_id"
   end
 
   create_table "sites", force: :cascade do |t|
@@ -93,6 +109,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_07_04_211722) do
   add_foreign_key "clients", "tenants"
   add_foreign_key "devices", "clients"
   add_foreign_key "devices", "sites"
+  add_foreign_key "nas", "sites"
   add_foreign_key "sites", "tenants"
   add_foreign_key "users", "tenants"
 end
