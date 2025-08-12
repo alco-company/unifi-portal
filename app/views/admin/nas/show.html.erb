@@ -51,7 +51,8 @@
     <%= link_to "Edit", edit_admin_tenant_site_nas_path(@tenant, @site, @nas), class: "heimdall_button" %>
     <%= button_to "Delete", "#", method: :delete, data: {
           action: "click->modal#show",
-          action_url: admin_tenant_site_nas_path(@site.tenant, @site, @nas)
+          action_url: admin_tenant_site_nas_path(@site.tenant, @site, @nas),
+          testid: "nas-delete-trigger"
         },
         form: { data: { turbo: false } }, # prevent button_to from wrapping a real form
         class: "heimdall_delete_button" %>

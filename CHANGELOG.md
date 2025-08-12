@@ -4,6 +4,7 @@
 
 - add radius og nas (network_access_servers)
 - add nas CRUD
+- make nas CRUD tests green
 
 ## 0.7.2
 
