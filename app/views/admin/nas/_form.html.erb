@@ -28,8 +28,8 @@
   </div>
 
   <div class="my-5">
-    <%= form.label :type %>
-  <%= form.text_field :type, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": @nas.errors[:type].none?, "border-red-400 focus:outline-red-600": @nas.errors[:type].any?}] %>
+    <%= form.label :nas_type %>
+  <%= form.text_field :nas_type, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": @nas.errors[:type].none?, "border-red-400 focus:outline-red-600": @nas.errors[:type].any?}] %>
   </div>
 
   <div class="my-5">

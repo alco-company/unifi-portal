@@ -3,6 +3,7 @@
 ## 0.7.3
 
 - add radius og nas (network_access_servers)
+- add nas CRUD
 
 ## 0.7.2
 

@@ -6,7 +6,7 @@ class Admin::NasController < Admin::BaseController
   # GET /admin/nas or /admin/nas.json
   def index
     @nas = @site.nas
-    @nas = case_insensitive_match(@nas, [ :nasname, :shortname, :type, :ports, :community, :description ])
+    @nas = case_insensitive_match(@nas, [ :nasname, :shortname, :nas_type, :ports, :community, :description ])
   end
 
   # GET /admin/nas/1 or /admin/nas/1.json
@@ -58,6 +58,16 @@ class Admin::NasController < Admin::BaseController
     end
   end
 
+  def delete_all
+    @nas = current_user.superuser? ? Nas.all : Nas.where(site_id: params[:site_id])
+    case_insensitive_match(@nas, [ :nasname, :shortname, :nas_type, :ports, :community, :description ]).destroy_all
+
+    respond_to do |format|
+      format.html { redirect_to admin_tenant_site_nas_index_path(@tenant, @site), status: :see_other, notice: "All nas were successfully deleted." }
+      format.json { head :no_content }
+    end
+  end
+
   private
 
     def set_site
@@ -71,6 +81,6 @@ class Admin::NasController < Admin::BaseController
 
     # Only allow a list of trusted parameters through.
     def nas_params
-      params.require(:nas).permit(:nasname, :shortname, :type, :ports, :secret, :server, :community, :description)
+      params.require(:nas).permit(:nasname, :shortname, :nas_type, :ports, :secret, :server, :community, :description)
     end
 end

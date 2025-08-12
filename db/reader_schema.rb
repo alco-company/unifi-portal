@@ -49,13 +49,13 @@ ActiveRecord::Schema[8.1].define(version: 2025_08_12_193000) do
     t.string "community"
     t.datetime "created_at", null: false
     t.string "description"
+    t.string "nas_type"
     t.string "nasname"
     t.string "ports"
     t.string "secret"
     t.string "server"
     t.string "shortname"
     t.integer "site_id", null: false
-    t.string "type"
     t.datetime "updated_at", null: false
     t.index ["site_id", "nasname"], name: "index_nas_on_site_id_and_nasname", unique: true
     t.index ["site_id"], name: "index_nas_on_site_id"

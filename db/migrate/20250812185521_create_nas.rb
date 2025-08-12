@@ -4,7 +4,7 @@ class CreateNas < ActiveRecord::Migration[8.1]
       t.references :site, null: false, foreign_key: true
       t.string :nasname
       t.string :shortname
-      t.string :type
+      t.string :nas_type
       t.string :ports
       t.string :secret
       t.string :server

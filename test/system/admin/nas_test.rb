@@ -2,55 +2,60 @@ require "application_system_test_case"
 
 class Admin::NasTest < ApplicationSystemTestCase
   setup do
-    @admin_na = admin_nas(:one)
+  @nas = nas(:one)
+  @site = @nas.site
+  @tenant = @site.tenant
+  @user = users(:one)
+  # Ensure password matches system test helper expectation
+  # users.yml already creates digest from "password"; system helper uses "secret" so override quickly:
+  @user.update(password: "secret")
+  login_as(@user)
   end
 
   test "visiting the index" do
-    visit admin_nas_url
-    assert_selector "h1", text: "Nas"
+  visit admin_tenant_site_nas_index_path(@tenant, @site)
+  assert_selector "h1", text: "Nas"
   end
 
   test "should create nas" do
-    visit admin_nas_url
+  visit admin_tenant_site_nas_index_path(@tenant, @site)
     click_on "New nas"
 
-    fill_in "Community", with: @admin_na.community
-    fill_in "Description", with: @admin_na.description
-    fill_in "Nasname", with: @admin_na.nasname
-    fill_in "Ports", with: @admin_na.ports
-    fill_in "Secret", with: @admin_na.secret
-    fill_in "Server", with: @admin_na.server
-    fill_in "Shortname", with: @admin_na.shortname
-    fill_in "Site", with: @admin_na.site_id
-    fill_in "Type", with: @admin_na.type
-    click_on "Create Nas"
+    fill_in "Community", with: @nas.community
+    fill_in "Description", with: @nas.description
+  fill_in "Nasname", with: "unique-test-nas"
+    fill_in "Ports", with: @nas.ports
+    fill_in "Secret", with: @nas.secret
+    fill_in "Server", with: @nas.server
+    fill_in "Shortname", with: @nas.shortname
+  fill_in "Type", with: @nas.nas_type
+  click_on "Create"
 
     assert_text "Nas was successfully created"
-    click_on "Back"
+  click_on "Back"
   end
 
   test "should update Nas" do
-    visit admin_na_url(@admin_na)
-    click_on "Edit this nas", match: :first
+  visit admin_tenant_site_nas_path(@tenant, @site, @nas)
+  click_on "Edit", match: :first
 
-    fill_in "Community", with: @admin_na.community
-    fill_in "Description", with: @admin_na.description
-    fill_in "Nasname", with: @admin_na.nasname
-    fill_in "Ports", with: @admin_na.ports
-    fill_in "Secret", with: @admin_na.secret
-    fill_in "Server", with: @admin_na.server
-    fill_in "Shortname", with: @admin_na.shortname
-    fill_in "Site", with: @admin_na.site_id
-    fill_in "Type", with: @admin_na.type
-    click_on "Update Nas"
+    fill_in "Community", with: @nas.community
+    fill_in "Description", with: @nas.description
+    fill_in "Nasname", with: @nas.nasname
+    fill_in "Ports", with: @nas.ports
+    fill_in "Secret", with: @nas.secret
+    fill_in "Server", with: @nas.server
+    fill_in "Shortname", with: @nas.shortname
+    fill_in "Type", with: @nas.nas_type
+  click_on "Update"
 
     assert_text "Nas was successfully updated"
-    click_on "Back"
+  click_on "Back"
   end
 
   test "should destroy Nas" do
-    visit admin_na_url(@admin_na)
-    accept_confirm { click_on "Destroy this nas", match: :first }
+  visit admin_tenant_site_nas_path(@tenant, @site, @nas)
+  accept_confirm { click_on "Destroy", match: :first }
 
     assert_text "Nas was successfully destroyed"
   end

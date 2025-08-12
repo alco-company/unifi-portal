@@ -63,6 +63,7 @@
   </div>
 
   <div class="md:flex gap-2">
+    <%= link_to "Network Access Points", admin_tenant_site_nas_index_path(@tenant, @site), class: "heimdall_button" %>
     <%= link_to "Edit this site", edit_admin_tenant_site_path(@site.tenant, @site), class: "heimdall_button" %>
     <%= button_to "Delete", "#", method: :delete, data: {
           action: "click->modal#show",

@@ -4,7 +4,7 @@ one:
   site: one
   nasname: MyString
   shortname: MyString
-  type: 
+  nas_type: MyString
   ports: MyString
   secret: MyString
   server: MyString
@@ -15,7 +15,7 @@ two:
   site: two
   nasname: MyString
   shortname: MyString
-  type: 
+  nas_type: MyString
   ports: MyString
   secret: MyString
   server: MyString

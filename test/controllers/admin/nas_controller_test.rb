@@ -20,7 +20,7 @@ class Admin::NasControllerTest < ActionDispatch::IntegrationTest
 
   test "should create nas" do
     assert_difference("Nas.count") do
-      post admin_tenant_site_nas_index_url(@tenant, @site), params: { nas: { community: @nas.community, description: @nas.description, nasname: "UniqueNasName", ports: @nas.ports, secret: @nas.secret, server: @nas.server, shortname: @nas.shortname, type: @nas.type } }
+      post admin_tenant_site_nas_index_url(@tenant, @site), params: { nas: { community: @nas.community, description: @nas.description, nasname: "UniqueNasName", ports: @nas.ports, secret: @nas.secret, server: @nas.server, shortname: @nas.shortname, nas_type: @nas.nas_type } }
     end
     assert_redirected_to admin_tenant_site_nas_url(@tenant, @site, Nas.last)
   end
@@ -36,7 +36,7 @@ class Admin::NasControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should update nas" do
-    patch admin_tenant_site_nas_url(@tenant, @site, @nas), params: { nas: { community: @nas.community, description: @nas.description, nasname: @nas.nasname, ports: @nas.ports, secret: @nas.secret, server: @nas.server, shortname: @nas.shortname, site_id: @nas.site_id, type: @nas.type } }
+    patch admin_tenant_site_nas_url(@tenant, @site, @nas), params: { nas: { community: @nas.community, description: @nas.description, nasname: @nas.nasname, ports: @nas.ports, secret: @nas.secret, server: @nas.server, shortname: @nas.shortname, site_id: @nas.site_id, nas_type: @nas.nas_type } }
     assert_redirected_to admin_tenant_site_nas_url(@tenant, @site, @nas)
   end
 

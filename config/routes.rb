@@ -13,7 +13,11 @@ Rails.application.routes.draw do
         collection do
           delete :delete_all, to: "sites#delete_all", as: :delete_all
         end
-        resources :nas
+        resources :nas do
+          collection do
+            delete :delete_all, to: "nas#delete_all", as: :delete_all
+          end
+        end
       end
       resources :clients do
         collection do
