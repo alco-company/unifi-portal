@@ -16,7 +16,7 @@ WORKDIR /rails
 
 # Install base packages
 RUN apt-get update -qq && \
-    apt-get install --no-install-recommends -y curl libjemalloc2 libvips ca-certificates tzdata libmariadb3 && \
+    apt-get install --no-install-recommends -y curl libjemalloc2 libvips ca-certificates tzdata libmariadb3 curl && \
     rm -rf /var/lib/apt/lists /var/cache/apt/archives
 
 # Set production environment

@@ -6,6 +6,7 @@
 - redo mkcert for localhost
 - trying other Dockerfile
 - removed old app + add image_processing gem
+- working the Dockerfile, more
 
 ## 0.7.3
 

@@ -45,7 +45,7 @@ env:
     PORT: 3001
     RAILS_ENV: production
     SSL_DOMAIN: staging.unifi-portal.site
-    DB_HOST: heimdall-db
+    DB_HOST: db
 
 # Aliases are triggered with "bin/kamal <alias>". You can overwrite arguments on invocation:
 # "bin/kamal logs -r job" will tail logs from the first server in the job section.
@@ -89,18 +89,21 @@ builder:
 # Use accessory services (secrets come from .kamal/secrets).
 accessories:
   db:
-    image: mysql:8.0
-    host: 135.181.202.106
+    image: mysql:latest
+    # host: 135.181.202.106
+    roles:
+    - web
     # Change to 3306 to expose port to the world instead of just local network.
     port: "127.0.0.1:3306:3306"
     env:
       clear:
         MYSQL_ROOT_HOST: '%'
+        MYSQL_DATABASE: heimdall_production
       secret:
-        - HEIMDALL_DATABASE_PASSWORD
-    files:
-      - config/mysql/production.cnf:/etc/mysql/my.cnf
-      - db/production.sql:/docker-entrypoint-initdb.d/setup.sql
+        - MYSQL_ROOT_PASSWORD
+    # files:
+    #   - config/mysql/production.cnf:/etc/mysql/my.cnf
+    #   - db/production.sql:/docker-entrypoint-initdb.d/setup.sql
     directories:
       - data:/var/lib/mysql
 #   redis:
