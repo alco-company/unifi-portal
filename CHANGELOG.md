@@ -4,6 +4,7 @@
 
 - move db to mysql (prepare for freeradius connection)
 - redo mkcert for localhost
+- trying other Dockerfile
 
 ## 0.7.3
 
