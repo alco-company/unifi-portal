@@ -5,6 +5,7 @@
 - move db to mysql (prepare for freeradius connection)
 - redo mkcert for localhost
 - trying other Dockerfile
+- removed old app + add image_processing gem
 
 ## 0.7.3
 
