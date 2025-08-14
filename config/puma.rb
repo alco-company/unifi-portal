@@ -37,8 +37,21 @@
 threads_count = ENV.fetch("RAILS_MAX_THREADS", 3)
 threads threads_count, threads_count
 
-# Specifies the `port` that Puma will listen on to receive requests; default is 3000.
-port ENV.fetch("PORT", 3000)
+  # Specifies the `port` that Puma will listen on to receive requests; default is 3000.
+  # if Rails.env.development?
+  #   # Serve HTTPS on localhost:3000 with dev certs
+  #   ssl_bind "127.0.0.1", ENV.fetch("PORT", 3000), {
+  #     cert: "config/certs/Walthers-Bluebox.local+3.pem",
+  #     key:  "config/certs/Walthers-Bluebox.local+3-key.pem",
+  #     # In dev, do not require/verify client certificates
+  #     verify_mode: "none",
+  #     min_tls_version: "TLS1.2",
+  #     max_tls_version: "TLS1.3",
+  #     alpn_protocols: [ "h2", "http/1.1" ]
+  #   }
+  # else
+  port ENV.fetch("PORT", 3000)
+# end
 
 # Allow puma to be restarted by `bin/rails restart` command.
 plugin :tmp_restart

@@ -3,6 +3,7 @@
 ## 0.7.4
 
 - move db to mysql (prepare for freeradius connection)
+- redo mkcert for localhost
 
 ## 0.7.3
 
