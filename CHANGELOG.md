@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 0.7.4
+
+- move db to mysql (prepare for freeradius connection)
+
 ## 0.7.3
 
 - add radius og nas (network_access_servers)

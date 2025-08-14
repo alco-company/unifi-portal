@@ -11,7 +11,7 @@
 # It's strongly recommended that you check this file into your version control system.
 
 ActiveRecord::Schema[8.1].define(version: 2025_08_12_193000) do
-  create_table "clients", force: :cascade do |t|
+  create_table "clients", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.boolean "active", default: true
     t.datetime "created_at", null: false
     t.string "email"
@@ -21,15 +21,15 @@ ActiveRecord::Schema[8.1].define(version: 2025_08_12_193000) do
     t.string "name"
     t.text "note"
     t.string "phone"
-    t.integer "tenant_id", null: false
+    t.bigint "tenant_id", null: false
     t.datetime "updated_at", null: false
     t.index ["tenant_id"], name: "index_clients_on_tenant_id"
   end
 
-  create_table "devices", force: :cascade do |t|
+  create_table "devices", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.boolean "active", default: true
     t.datetime "authentication_expire_at"
-    t.integer "client_id", null: false
+    t.bigint "client_id", null: false
     t.datetime "created_at", null: false
     t.integer "guest_max", default: 0
     t.integer "guest_rx", default: 0
@@ -38,14 +38,14 @@ ActiveRecord::Schema[8.1].define(version: 2025_08_12_193000) do
     t.datetime "last_authenticated_at"
     t.string "last_otp"
     t.string "mac_address"
-    t.integer "site_id"
+    t.bigint "site_id"
     t.string "unifi_id"
     t.datetime "updated_at", null: false
     t.index ["client_id"], name: "index_devices_on_client_id"
     t.index ["site_id"], name: "index_devices_on_site_id"
   end
 
-  create_table "nas", force: :cascade do |t|
+  create_table "nas", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "community"
     t.datetime "created_at", null: false
     t.string "description"
@@ -55,13 +55,13 @@ ActiveRecord::Schema[8.1].define(version: 2025_08_12_193000) do
     t.string "secret"
     t.string "server"
     t.string "shortname"
-    t.integer "site_id", null: false
+    t.bigint "site_id", null: false
     t.datetime "updated_at", null: false
     t.index ["site_id", "nasname"], name: "index_nas_on_site_id_and_nasname", unique: true
     t.index ["site_id"], name: "index_nas_on_site_id"
   end
 
-  create_table "sites", force: :cascade do |t|
+  create_table "sites", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.boolean "active", default: true
     t.string "api_key"
     t.integer "controller_type", default: 0, null: false
@@ -73,7 +73,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_08_12_193000) do
     t.string "name"
     t.string "password"
     t.string "ssid"
-    t.integer "tenant_id", null: false
+    t.bigint "tenant_id", null: false
     t.string "unifi_id"
     t.datetime "updated_at", null: false
     t.string "url"
@@ -81,7 +81,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_08_12_193000) do
     t.index ["tenant_id"], name: "index_sites_on_tenant_id"
   end
 
-  create_table "tenants", force: :cascade do |t|
+  create_table "tenants", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.boolean "active", default: true
     t.datetime "created_at", null: false
     t.integer "guest_max", default: 0
@@ -93,7 +93,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_08_12_193000) do
     t.string "url"
   end
 
-  create_table "users", force: :cascade do |t|
+  create_table "users", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.boolean "active", default: true
     t.datetime "created_at", null: false
     t.string "email"
@@ -101,7 +101,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_08_12_193000) do
     t.string "password_digest"
     t.string "phone"
     t.boolean "superuser"
-    t.integer "tenant_id", null: false
+    t.bigint "tenant_id", null: false
     t.datetime "updated_at", null: false
     t.index ["tenant_id"], name: "index_users_on_tenant_id"
   end
