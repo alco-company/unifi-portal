@@ -3,6 +3,7 @@
 ## 0.7.5
 
 - adding env to staging deploy
+- prepare MySQL DB + setting PORT
 
 ## 0.7.4
 

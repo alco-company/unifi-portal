@@ -44,7 +44,7 @@ env:
   clear:
     SOLID_QUEUE_IN_PUMA: true
     WEB_HOST: app.unifi-portal.site
-    PORT: 3000
+    PORT: 3001
     RAILS_ENV: production
     SSL_DOMAIN: app.unifi-portal.site
 

@@ -7,7 +7,7 @@ if ! `gem list foreman -i --silent`;
 end
 
 # Default to port 3000 if not specified
-ENV["PORT"] ||= "3000"
+ENV["PORT"] ||= "3001"
 
 # Let the debug gem allow remote connections,
 # but avoid loading until `debug-ger` is called

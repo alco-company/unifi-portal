@@ -50,7 +50,7 @@ threads threads_count, threads_count
   #     alpn_protocols: [ "h2", "http/1.1" ]
   #   }
   # else
-  port ENV.fetch("PORT", 3000)
+  port ENV.fetch("PORT", 3001)
 # end
 
 # Allow puma to be restarted by `bin/rails restart` command.
