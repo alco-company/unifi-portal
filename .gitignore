@@ -39,3 +39,6 @@
 # ignore Mac artifacts
 .DS_Store
 cookie.txt
+
+# ignore WARP
+WARP.md

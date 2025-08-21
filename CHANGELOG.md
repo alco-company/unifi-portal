@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 0.7.5
+
+- adding env to staging deploy
+
 ## 0.7.4
 
 - move db to mysql (prepare for freeradius connection)

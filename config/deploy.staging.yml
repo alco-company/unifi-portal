@@ -9,6 +9,7 @@ servers:
   web:
     - 135.181.202.106
 
+
 # Enable SSL auto certification via Let's Encrypt and allow for multiple apps on a single web server.
 # Remove this section when using multiple web servers and ensure you terminate SSL at your load balancer.
 #
@@ -39,13 +40,15 @@ env:
     - HEIMDALL_VERSION
     - SMSAPI_API_TOKEN
     - SMTP_USER_NAME
+    - MYSQL_PASSWORD
   clear:
+    MYSQL_USER: heimdall
     SOLID_QUEUE_IN_PUMA: true
     WEB_HOST: staging.unifi-portal.site
     PORT: 3001
     RAILS_ENV: production
     SSL_DOMAIN: staging.unifi-portal.site
-    DB_HOST: db
+    DB_HOST: heimdall-db
 
 # Aliases are triggered with "bin/kamal <alias>". You can overwrite arguments on invocation:
 # "bin/kamal logs -r job" will tail logs from the first server in the job section.
@@ -99,11 +102,13 @@ accessories:
       clear:
         MYSQL_ROOT_HOST: '%'
         MYSQL_DATABASE: heimdall_production
+        MYSQL_USER: heimdall
       secret:
         - MYSQL_ROOT_PASSWORD
-    # files:
-    #   - config/mysql/production.cnf:/etc/mysql/my.cnf
-    #   - db/production.sql:/docker-entrypoint-initdb.d/setup.sql
+        - MYSQL_PASSWORD
+    files:
+      # - config/mysql/production.cnf:/etc/mysql/my.cnf
+      - config/mysql/init.sql:/docker-entrypoint-initdb.d/setup.sql
     directories:
       - data:/var/lib/mysql
 #   redis:
