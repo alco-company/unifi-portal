@@ -75,7 +75,7 @@ production:
     <<: *default
     database: heimdall_production
     username: heimdall
-    password: <%= ENV["MYSQL_ROOT_PASSWORD"] %>
+    password: <%= ENV["MYSQL_PASSWORD"] %>
   cache:
     <<: *primary_production
     database: heimdall_production_cache
