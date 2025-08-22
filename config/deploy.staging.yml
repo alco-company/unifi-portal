@@ -112,7 +112,7 @@ accessories:
     directories:
       - data:/var/lib/mysql
   freeradius:
-    image: freeradius/freeradius-server:latest
+    image: alpine:latest
     roles:
     - web
     # Expose RADIUS authentication (1812), accounting (1813) and status (18120) ports
@@ -128,10 +128,16 @@ accessories:
         MYSQL_USER: heimdall
       secret:
         - MYSQL_PASSWORD
+    cmd: >
+      sh -c '
+      apk add --no-cache freeradius freeradius-mysql mysql-client &&
+      mkdir -p /etc/raddb/mods-enabled /etc/raddb/sites-enabled &&
+      radiusd -X
+      '
     files:
-      - config/freeradius/radiusd.conf:/etc/freeradius/radiusd.conf
-      - config/freeradius/mods-enabled/sql:/etc/freeradius/mods-enabled/sql
-      - config/freeradius/sites-enabled/default:/etc/freeradius/sites-enabled/default
+      - config/freeradius/radiusd.conf:/etc/raddb/radiusd.conf
+      - config/freeradius/mods-enabled/sql:/etc/raddb/mods-enabled/sql
+      - config/freeradius/sites-enabled/default:/etc/raddb/sites-enabled/default
     directories:
       - freeradius_data:/var/log/freeradius
 #   redis:
