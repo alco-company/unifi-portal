@@ -1,0 +1,234 @@
+#!/usr/bin/env ruby
+
+# Test script for validating Heimdall + FreeRADIUS integration
+# This script allows testing the complete authentication flow without SMS/email OTP
+
+require 'mysql2'
+require 'digest'
+require 'securerandom'
+
+puts "🧪 Heimdall + FreeRADIUS Testing Suite"
+puts "=" * 50
+
+# Configuration
+STAGING_HOST = '135.181.202.106'
+DB_NAME = 'freeradius'
+
+def db_connection
+  @db ||= Mysql2::Client.new(
+    host: STAGING_HOST,
+    username: 'heimdall',
+    password: ENV['MYSQL_PASSWORD'] || prompt_password,
+    database: DB_NAME,
+    port: 3306
+  )
+end
+
+def prompt_password
+  print "Enter MySQL password for heimdall user: "
+  system("stty -echo")
+  password = STDIN.gets.chomp
+  system("stty echo")
+  puts
+  password
+end
+
+def create_test_user(username, password)
+  puts "\n📝 Creating test user: #{username}"
+  
+  # Clear any existing user
+  db_connection.query("DELETE FROM radcheck WHERE username = '#{username}'")
+  db_connection.query("DELETE FROM radreply WHERE username = '#{username}'")
+  db_connection.query("DELETE FROM radpostauth WHERE username = '#{username}'")
+  
+  # Insert user credentials
+  db_connection.query(%{
+    INSERT INTO radcheck (username, attribute, op, value) 
+    VALUES ('#{username}', 'Cleartext-Password', ':=', '#{password}')
+  })
+  
+  # Set session timeout (24 hours = 86400 seconds)
+  db_connection.query(%{
+    INSERT INTO radreply (username, attribute, op, value)
+    VALUES ('#{username}', 'Session-Timeout', '=', '86400')
+  })
+  
+  puts "✅ Test user '#{username}' created with password '#{password}'"
+end
+
+def create_test_nas_client(name, ip, secret)
+  puts "\n🌐 Creating test NAS client: #{name}"
+  
+  # Use Heimdall database for NAS table
+  heimdall_db = Mysql2::Client.new(
+    host: STAGING_HOST,
+    username: 'heimdall',
+    password: ENV['MYSQL_PASSWORD'] || @mysql_password,
+    database: 'heimdall_production',
+    port: 3306
+  )
+  
+  # Find a site to associate with (or create a test one)
+  site_result = heimdall_db.query("SELECT id FROM sites LIMIT 1")
+  if site_result.first.nil?
+    puts "⚠️  No sites found in Heimdall. You'll need to create a site first through the admin interface."
+    return false
+  end
+  
+  site_id = site_result.first['id']
+  
+  # Clear existing NAS entry
+  heimdall_db.query("DELETE FROM nas WHERE nasname = '#{ip}'")
+  
+  # Insert NAS client
+  heimdall_db.query(%{
+    INSERT INTO nas (site_id, nasname, shortname, nas_type, secret, server, description, created_at, updated_at)
+    VALUES (#{site_id}, '#{ip}', '#{name}', 'other', '#{secret}', '', 'Test NAS client', NOW(), NOW())
+  })
+  
+  puts "✅ NAS client '#{name}' created at #{ip} with secret '#{secret}'"
+  heimdall_db.close
+  true
+end
+
+def test_radius_authentication(username, password, nas_ip, nas_secret)
+  puts "\n🔐 Testing RADIUS authentication for #{username}..."
+  
+  # Create radtest command
+  cmd = %{
+    docker exec heimdall-freeradius sh -c "
+      echo 'User-Name = \"#{username}\", User-Password = \"#{password}\"' | radclient -x #{nas_ip}:1812 auth #{nas_secret}
+    "
+  }
+  
+  puts "Executing: #{cmd}"
+  
+  # Execute on staging server
+  result = `ssh root@#{STAGING_HOST} '#{cmd}' 2>&1`
+  
+  if result.include?("Access-Accept")
+    puts "✅ Authentication SUCCESSFUL!"
+    puts "🎉 User #{username} was authenticated by FreeRADIUS"
+  elsif result.include?("Access-Reject")
+    puts "❌ Authentication FAILED - Access rejected"
+    puts "Reason: Invalid credentials or user not found"
+  else
+    puts "⚠️  Test inconclusive. Raw output:"
+    puts result
+  end
+  
+  result
+end
+
+def test_database_connectivity
+  puts "\n🔌 Testing database connectivity..."
+  
+  begin
+    result = db_connection.query("SELECT COUNT(*) as count FROM radcheck")
+    count = result.first['count']
+    puts "✅ Database connection successful! Found #{count} users in radcheck table"
+    true
+  rescue => e
+    puts "❌ Database connection failed: #{e.message}"
+    false
+  end
+end
+
+def test_freeradius_container
+  puts "\n📦 Testing FreeRADIUS container status..."
+  
+  result = `ssh root@#{STAGING_HOST} 'docker ps --filter name=heimdall-freeradius --format "table {{.Names}}\\t{{.Status}}"' 2>&1`
+  
+  if result.include?("heimdall-freeradius") && result.include?("Up")
+    puts "✅ FreeRADIUS container is running"
+    true
+  else
+    puts "❌ FreeRADIUS container is not running properly"
+    puts "Status: #{result}"
+    false
+  end
+end
+
+def show_test_user_data(username)
+  puts "\n📊 User data in database:"
+  
+  # Check radcheck
+  result = db_connection.query("SELECT * FROM radcheck WHERE username = '#{username}'")
+  puts "radcheck entries:"
+  result.each { |row| puts "  #{row['attribute']} #{row['op']} #{row['value']}" }
+  
+  # Check radreply  
+  result = db_connection.query("SELECT * FROM radreply WHERE username = '#{username}'")
+  puts "radreply entries:"
+  result.each { |row| puts "  #{row['attribute']} #{row['op']} #{row['value']}" }
+end
+
+def cleanup_test_data(username)
+  puts "\n🧹 Cleaning up test data..."
+  
+  db_connection.query("DELETE FROM radcheck WHERE username = '#{username}'")
+  db_connection.query("DELETE FROM radreply WHERE username = '#{username}'")
+  db_connection.query("DELETE FROM radpostauth WHERE username = '#{username}'")
+  
+  puts "✅ Test data cleaned up"
+end
+
+# Main testing flow
+def main
+  puts "Starting comprehensive FreeRADIUS testing...\n"
+  
+  # Store password for reuse
+  @mysql_password = ENV['MYSQL_PASSWORD'] || prompt_password
+  ENV['MYSQL_PASSWORD'] = @mysql_password
+  
+  # Test 1: Database connectivity
+  return unless test_database_connectivity
+  
+  # Test 2: FreeRADIUS container status
+  return unless test_freeradius_container
+  
+  # Test 3: Create test data
+  test_username = "testuser_#{Time.now.to_i}"
+  test_password = "testpass123"
+  nas_ip = "127.0.0.1"
+  nas_secret = "testing123"
+  
+  create_test_user(test_username, test_password)
+  create_test_nas_client("test-nas", nas_ip, nas_secret)
+  
+  # Test 4: Show created data
+  show_test_user_data(test_username)
+  
+  # Test 5: Perform RADIUS authentication test
+  test_radius_authentication(test_username, test_password, nas_ip, nas_secret)
+  
+  # Test 6: Test with wrong password
+  puts "\n🔐 Testing authentication with WRONG password..."
+  test_radius_authentication(test_username, "wrongpassword", nas_ip, nas_secret)
+  
+  puts "\n" + "=" * 50
+  puts "🎯 Testing Complete!"
+  puts "=" * 50
+  
+  print "\nClean up test data? [y/N]: "
+  if STDIN.gets.chomp.downcase == 'y'
+    cleanup_test_data(test_username)
+  else
+    puts "Test user '#{test_username}' left in database for manual testing"
+  end
+  
+ensure
+  db_connection&.close if @db
+end
+
+# Additional utility methods for manual testing
+def self.create_heimdall_test_client
+  puts "\n👤 Creating test client in Heimdall..."
+  
+  # This would integrate with Heimdall's client creation process
+  # bypassing the OTP requirement for testing
+end
+
+if __FILE__ == $0
+  main
+end
