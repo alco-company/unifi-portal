@@ -131,8 +131,11 @@ accessories:
     cmd: >
       sh -c '
       apk add --no-cache freeradius freeradius-mysql mysql-client &&
-      mkdir -p /etc/raddb/mods-enabled /etc/raddb/sites-enabled &&
-      radiusd -X
+      rm -f /etc/raddb/mods-enabled/sql.apk-new &&
+      rm -f /etc/raddb/mods-config/sql/main/sqlite/queries.conf &&
+      mkdir -p /var/log/freeradius &&
+      chown nobody:nobody /var/log/freeradius &&
+      radiusd -X -f
       '
     files:
       - config/freeradius/radiusd.conf:/etc/raddb/radiusd.conf

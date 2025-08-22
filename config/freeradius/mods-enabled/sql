@@ -1,23 +1,24 @@
 # -*- text -*-
 ##
 ## SQL module configuration for Heimdall MySQL integration
+## Fixed configuration with hardcoded values for Alpine FreeRADIUS
 ##
 
 sql {
-    # Database driver (mysql, postgresql, sqlite, etc.)
+    # Database driver
     driver = "rlm_sql_mysql"
-
-    # Database connection info
+    
+    # Database connection info  
     dialect = "mysql"
     
-    # Connection parameters using environment variables
-    server = "${ENV:DB_HOST}"
-    port = ${ENV:DB_PORT}
-    login = "${ENV:DB_USER}"
-    password = "${ENV:MYSQL_PASSWORD}"
+    # Connection parameters - hardcoded for reliability
+    server = "heimdall-db"
+    port = 3306
+    login = "heimdall"
+    password = "U2FsdGVkX19fY2F0YWxvZ2luX3Bhc3N!!Jk"
     
-    # Database and table names
-    radius_db = "${ENV:DB_NAME}"
+    # Database name
+    radius_db = "freeradius"
     
     # Connection pool configuration
     pool {
@@ -31,54 +32,47 @@ sql {
         idle_timeout = 60
     }
 
-    # SQL queries for authentication and accounting
-    # These work with the standard Heimdall database schema
+    # SQL queries with hardcoded database name
     
     # User authentication query
-    authorize_check_query = "SELECT id, username, attribute, value, op FROM ${radius_db}.radcheck WHERE username = '%{SQL-User-Name}' ORDER BY id"
+    authorize_check_query = "SELECT id, username, attribute, value, op FROM freeradius.radcheck WHERE username = '%{SQL-User-Name}' ORDER BY id"
     
     # User reply attributes query  
-    authorize_reply_query = "SELECT id, username, attribute, value, op FROM ${radius_db}.radreply WHERE username = '%{SQL-User-Name}' ORDER BY id"
+    authorize_reply_query = "SELECT id, username, attribute, value, op FROM freeradius.radreply WHERE username = '%{SQL-User-Name}' ORDER BY id"
     
     # Group check query
-    authorize_group_check_query = "SELECT id, groupname, attribute, value, op FROM ${radius_db}.radgroupcheck WHERE groupname = '%{Sql-Group}' ORDER BY id"
+    authorize_group_check_query = "SELECT id, groupname, attribute, value, op FROM freeradius.radgroupcheck WHERE groupname = '%{Sql-Group}' ORDER BY id"
     
     # Group reply query
-    authorize_group_reply_query = "SELECT id, groupname, attribute, value, op FROM ${radius_db}.radgroupreply WHERE groupname = '%{Sql-Group}' ORDER BY id"
+    authorize_group_reply_query = "SELECT id, groupname, attribute, value, op FROM freeradius.radgroupreply WHERE groupname = '%{Sql-Group}' ORDER BY id"
     
     # User group membership query
-    group_membership_query = "SELECT groupname FROM ${radius_db}.radusergroup WHERE username='%{SQL-User-Name}' ORDER BY priority"
+    group_membership_query = "SELECT groupname FROM freeradius.radusergroup WHERE username='%{SQL-User-Name}' ORDER BY priority"
     
     # Accounting queries
-    accounting_onoff_query = "UPDATE ${radius_db}.radacct SET acctstoptime = NOW(), acctsessiontime = unix_timestamp(now()) - unix_timestamp(acctstarttime), acctterminatecause = '%{Acct-Terminate-Cause}', acctstopdelay = %{%{Acct-Delay-Time}:-0} WHERE acctstoptime IS NULL AND nasipaddress = '%{NAS-IP-Address}' AND username = '%{SQL-User-Name}'"
+    accounting_onoff_query = "UPDATE freeradius.radacct SET acctstoptime = NOW(), acctsessiontime = unix_timestamp(now()) - unix_timestamp(acctstarttime), acctterminatecause = '%{Acct-Terminate-Cause}', acctstopdelay = %{%{Acct-Delay-Time}:-0} WHERE acctstoptime IS NULL AND nasipaddress = '%{NAS-IP-Address}' AND username = '%{SQL-User-Name}'"
     
-    accounting_update_query = "UPDATE ${radius_db}.radacct SET framedipaddress = '%{Framed-IP-Address}', acctsessiontime = '%{Acct-Session-Time}', acctinputoctets = '%{Acct-Input-Octets}', acctoutputoctets = '%{Acct-Output-Octets}' WHERE acctsessionid = '%{Acct-Session-Id}' AND username = '%{SQL-User-Name}' AND nasipaddress = '%{NAS-IP-Address}'"
+    accounting_update_query = "UPDATE freeradius.radacct SET framedipaddress = '%{Framed-IP-Address}', acctsessiontime = '%{Acct-Session-Time}', acctinputoctets = '%{Acct-Input-Octets}', acctoutputoctets = '%{Acct-Output-Octets}' WHERE acctsessionid = '%{Acct-Session-Id}' AND username = '%{SQL-User-Name}' AND nasipaddress = '%{NAS-IP-Address}'"
     
-    accounting_start_query = "INSERT INTO ${radius_db}.radacct (acctsessionid, acctuniqueid, username, nasipaddress, nasportid, nasporttype, acctstarttime, acctupdatetime, acctstoptime, acctsessiontime, acctauthentic, connectinfo_start, connectinfo_stop, acctinputoctets, acctoutputoctets, calledstationid, callingstationid, acctterminatecause, servicetype, framedprotocol, framedipaddress) VALUES ('%{Acct-Session-Id}', '%{Acct-Unique-Session-Id}', '%{SQL-User-Name}', '%{NAS-IP-Address}', '%{NAS-Port}', '%{NAS-Port-Type}', NOW(), NOW(), NULL, '0', '%{Acct-Authentic}', '%{Connect-Info}', '', '0', '0', '%{Called-Station-Id}', '%{Calling-Station-Id}', '', '%{Service-Type}', '%{Framed-Protocol}', '%{Framed-IP-Address}')"
+    accounting_start_query = "INSERT INTO freeradius.radacct (acctsessionid, acctuniqueid, username, nasipaddress, nasportid, nasporttype, acctstarttime, acctupdatetime, acctstoptime, acctsessiontime, acctauthentic, connectinfo_start, connectinfo_stop, acctinputoctets, acctoutputoctets, calledstationid, callingstationid, acctterminatecause, servicetype, framedprotocol, framedipaddress) VALUES ('%{Acct-Session-Id}', '%{Acct-Unique-Session-Id}', '%{SQL-User-Name}', '%{NAS-IP-Address}', '%{NAS-Port}', '%{NAS-Port-Type}', NOW(), NOW(), NULL, '0', '%{Acct-Authentic}', '%{Connect-Info}', '', '0', '0', '%{Called-Station-Id}', '%{Calling-Station-Id}', '', '%{Service-Type}', '%{Framed-Protocol}', '%{Framed-IP-Address}')"
     
-    accounting_stop_query = "UPDATE ${radius_db}.radacct SET acctstoptime = NOW(), acctsessiontime = '%{Acct-Session-Time}', acctinputoctets = '%{Acct-Input-Octets}', acctoutputoctets = '%{Acct-Output-Octets}', acctterminatecause = '%{Acct-Terminate-Cause}', acctstopdelay = %{%{Acct-Delay-Time}:-0}, connectinfo_stop = '%{Connect-Info}' WHERE acctsessionid = '%{Acct-Session-Id}' AND username = '%{SQL-User-Name}' AND nasipaddress = '%{NAS-IP-Address}'"
+    accounting_stop_query = "UPDATE freeradius.radacct SET acctstoptime = NOW(), acctsessiontime = '%{Acct-Session-Time}', acctinputoctets = '%{Acct-Input-Octets}', acctoutputoctets = '%{Acct-Output-Octets}', acctterminatecause = '%{Acct-Terminate-Cause}', acctstopdelay = %{%{Acct-Delay-Time}:-0}, connectinfo_stop = '%{Connect-Info}' WHERE acctsessionid = '%{Acct-Session-Id}' AND username = '%{SQL-User-Name}' AND nasipaddress = '%{NAS-IP-Address}'"
     
     # Set to 'yes' to read radius clients from the database ('nas' table)
     read_clients = yes
     client_table = "nas"
     
     # Client table schema mapping for Heimdall's 'nas' table
-    client_query = "SELECT id, nasname, shortname, secret, nas_type as type, server, community, description FROM ${radius_db}.nas"
+    client_query = "SELECT id, nasname, shortname, secret, nas_type as type, server, community, description FROM freeradius.nas"
     
     # Logfile for SQL errors
-    logfile = ${logdir}/sqllog.sql
+    logfile = /var/log/freeradius/sqllog.sql
     
-    # If you want both stop and start records logged to the
-    # same SQL table, leave this as is.  If you want them in
-    # different tables, put the start table in acct_table1
-    # and stop table in acct_table2
+    # Accounting tables
     acct_table1 = "radacct"
     acct_table2 = "radacct"
     
     # Allow for storing data after authentication
     postauth_table = "radpostauth"
-    postauth_query = "INSERT INTO ${radius_db}.radpostauth (username, pass, reply, authdate) VALUES ('%{User-Name}', '%{%{User-Password}:-%{Chap-Password}}', '%{reply:Packet-Type}', NOW())"
-    
-    # Stored procedures for advanced logic (optional)
-    # safe_characters = "@abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.-_: /"
+    postauth_query = "INSERT INTO freeradius.radpostauth (username, pass, reply, authdate) VALUES ('%{User-Name}', '%{%{User-Password}:-%{Chap-Password}}', '%{reply:Packet-Type}', NOW())"
 }
