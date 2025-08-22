@@ -111,6 +111,29 @@ accessories:
       - config/mysql/init.sql:/docker-entrypoint-initdb.d/setup.sql
     directories:
       - data:/var/lib/mysql
+  freeradius:
+    image: freeradius/freeradius-server:latest
+    roles:
+    - web
+    # Expose RADIUS authentication (1812), accounting (1813) and status (18120) ports
+    port: "1812:1812/udp"
+    env:
+      clear:
+        DB_HOST: heimdall-db
+        DB_PORT: 3306
+        DB_NAME: freeradius
+        DB_USER: heimdall
+        DB_SRV: mysql
+        MYSQL_DATABASE: freeradius
+        MYSQL_USER: heimdall
+      secret:
+        - MYSQL_PASSWORD
+    files:
+      - config/freeradius/radiusd.conf:/etc/freeradius/radiusd.conf
+      - config/freeradius/mods-enabled/sql:/etc/freeradius/mods-enabled/sql
+      - config/freeradius/sites-enabled/default:/etc/freeradius/sites-enabled/default
+    directories:
+      - freeradius_data:/var/log/freeradius
 #   redis:
 #     image: valkey/valkey:8
 #     host: 192.168.0.2

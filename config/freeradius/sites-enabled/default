@@ -1,0 +1,171 @@
+# -*- text -*-
+##
+## default -- Default virtual server for Heimdall FreeRADIUS
+##
+## This is the main virtual server configuration that handles
+## authentication and accounting requests.
+##
+
+server default {
+    # Listen for authentication requests on port 1812
+    listen {
+        type = auth
+        ipaddr = *
+        port = 1812
+        limit {
+            max_connections = 16
+            lifetime = 0
+            idle_timeout = 30
+        }
+    }
+
+    # Listen for accounting requests on port 1813
+    listen {
+        type = acct
+        ipaddr = *
+        port = 1813
+        limit {
+            max_connections = 16
+            lifetime = 0
+            idle_timeout = 30
+        }
+    }
+
+    # Authorization section
+    authorize {
+        # Filter username/password
+        filter_username
+
+        # Preprocess requests 
+        preprocess
+
+        # Check the users file for static users (if needed)
+        # files
+
+        # Check SQL database for users
+        sql
+
+        # If no username was given, reject immediately
+        if (!User-Name) {
+            reject
+        }
+
+        # Determine authentication method
+        # Look for PAP, CHAP, MS-CHAP, etc.
+        Auth-Type PAP {
+            pap
+        }
+        
+        Auth-Type CHAP {
+            chap
+        }
+    }
+
+    # Authentication section
+    authenticate {
+        # PAP authentication using SQL
+        Auth-Type PAP {
+            sql
+        }
+        
+        # CHAP authentication
+        Auth-Type CHAP {
+            chap
+        }
+        
+        # MS-CHAP authentication
+        Auth-Type MS-CHAP {
+            mschap
+        }
+
+        # EAP authentication (for WPA/WPA2 Enterprise)
+        eap
+    }
+
+    # Pre-accounting section
+    preacct {
+        preprocess
+        
+        # Ensure Acct-Session-Id is unique
+        acct_unique
+        
+        # Look up username in SQL
+        suffix
+        
+        # files
+    }
+
+    # Accounting section
+    accounting {
+        # Log to SQL database
+        sql
+        
+        # Log to detail files (optional)
+        # detail
+        
+        # For Simultaneous-Use checks
+        # radutmp
+        
+        # Log accounting to syslog (optional)
+        # syslog
+    }
+
+    # Session section (for simultaneous use checking)
+    session {
+        # sql
+    }
+
+    # Post-authentication section
+    post-auth {
+        # If authentication was successful
+        update {
+            &reply: += &session-state:
+        }
+        
+        # Log to SQL post-auth table
+        sql
+        
+        # Remove reply message if the response contains an EAP-Message
+        remove_reply_message_if_eap
+        
+        # Handle Access-Challenge responses
+        Post-Auth-Type Challenge {
+            remove_reply_message_if_eap
+        }
+
+        # Handle failed authentication
+        Post-Auth-Type Reject {
+            # Log failed authentication attempts
+            sql
+            attr_filter.access_reject
+            
+            # Insert failed auth into SQL log
+            eap
+            remove_reply_message_if_eap
+        }
+    }
+
+    # Pre-proxy section (if using proxy)
+    pre-proxy {
+        # attr_filter.pre-proxy
+    }
+
+    # Post-proxy section
+    post-proxy {
+        # attr_filter.post-proxy
+        eap
+    }
+}
+
+# Status server virtual server (for monitoring)
+server status {
+    listen {
+        type = status
+        ipaddr = 127.0.0.1
+        port = 18120
+    }
+    
+    authorize {
+        ok
+    }
+}
