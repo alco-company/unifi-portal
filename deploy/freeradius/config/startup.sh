@@ -156,7 +156,6 @@ files {
     usersfile = ${confdir}/users
     acctusersfile = ${confdir}/acct_users
     preproxy_usersfile = ${confdir}/preproxy_users
-    compat = no
 }
 EOF
 
@@ -283,10 +282,15 @@ done
 # Create users file with test user
 echo "Creating users file with test user..."
 cat > /etc/freeradius/users <<'EOF'
-# Test user for FreeRADIUS authentication
+# Test user for FreeRADIUS file-based authentication
 testuser Cleartext-Password := "testpass123"
     Reply-Message = "Hello %{User-Name}",
     Session-Timeout = 86400
+
+# API user for REST authentication - this will trigger Auth-Type REST
+apiuser Auth-Type := REST
+    Reply-Message = "API Authentication for %{User-Name}",
+    Session-Timeout = 3600
 
 # Default reject
 DEFAULT Auth-Type := Reject
@@ -322,6 +326,18 @@ fi
 echo "Copying configuration files to /etc/raddb..."
 cp -r /etc/freeradius/* /etc/raddb/ 2>/dev/null || true
 echo "- Copied all configuration files to /etc/raddb"
+
+# Perform environment variable substitution in configuration files
+echo "Substituting environment variables in configuration..."
+echo "- HEIMDALL_API_URL = ${HEIMDALL_API_URL}"
+
+# Replace ${ENV_HEIMDALL_API_URL} with actual value in all config files
+for config_file in /etc/raddb/radiusd.conf /etc/raddb/mods-enabled/rest; do
+    if [ -f "$config_file" ]; then
+        sed -i "s|\${ENV_HEIMDALL_API_URL}|${HEIMDALL_API_URL}|g" "$config_file"
+        echo "- Updated $config_file with environment variables"
+    fi
+done
 
 # Debug - show what configuration files exist
 echo "Debug: Configuration files present:"

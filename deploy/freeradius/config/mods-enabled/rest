@@ -15,7 +15,8 @@ rest {
     }
 
     # HTTP client configuration
-    connect_uri = "http://heimdall-web:3001"
+    # Use environment variable set in deployment config
+    connect_uri = "${ENV_HEIMDALL_API_URL}"
     
     # Connection pooling
     pool {

@@ -119,8 +119,8 @@ accessories:
     port: "1812:1812/udp"
     env:
       clear:
-        # Heimdall API endpoint for REST authentication
-        ENV_HEIMDALL_API_URL: http://heimdall-web:3001
+        # Heimdall API endpoint for REST authentication  
+        ENV_HEIMDALL_API_URL: http://172.19.0.7
         # Legacy database config (may be needed for some modules)
         ENV_FREERADIUS_DB_HOST: heimdall-db
         ENV_FREERADIUS_DB_PORT: 3306
