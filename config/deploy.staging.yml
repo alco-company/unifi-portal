@@ -7,7 +7,10 @@ image: wdiechmann/heimdall
 # Deploy to these servers.
 servers:
   web:
-    - 135.181.202.106
+    hosts:
+      - 135.181.202.106
+    options:
+      network-alias: heimdall-web
 
 
 # Enable SSL auto certification via Let's Encrypt and allow for multiple apps on a single web server.
@@ -89,6 +92,9 @@ builder:
 # ssh:
 #   user: app
 
+# Configure custom network for stable container communication
+network: "kamal"
+
 # Use accessory services (secrets come from .kamal/secrets).
 accessories:
   db:
@@ -119,8 +125,8 @@ accessories:
     port: "1812:1812/udp"
     env:
       clear:
-        # Heimdall API endpoint for REST authentication  
-        ENV_HEIMDALL_API_URL: http://172.19.0.7
+        # Heimdall API endpoint for REST authentication using stable hostname
+        ENV_HEIMDALL_API_URL: http://heimdall-web:80
         # Legacy database config (may be needed for some modules)
         ENV_FREERADIUS_DB_HOST: heimdall-db
         ENV_FREERADIUS_DB_PORT: 3306
