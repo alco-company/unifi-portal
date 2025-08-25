@@ -16,9 +16,16 @@ echo "- Database Name: $FREERADIUS_DB_NAME"
 echo "- Database User: $FREERADIUS_DB_USER"
 echo "- Heimdall API URL: $HEIMDALL_API_URL"
 
-# Install necessary packages
+# Install necessary packages including FreeRADIUS
 echo "Installing packages..."
-apk add --no-cache curl jq || true
+apk update
+apk add --no-cache freeradius freeradius-rest freeradius-radclient curl jq bash
+
+# Find the FreeRADIUS executable
+echo "Finding FreeRADIUS executable..."
+find /usr -name "*radius*" -type f 2>/dev/null || true
+which radiusd || echo "radiusd not in PATH"
+which freeradius || echo "freeradius not in PATH"
 
 # Clean up any conflicting package files
 echo "Cleaning up package conflicts..."
@@ -41,8 +48,11 @@ chmod -R 755 /var/log/radius /var/run/freeradius /var/lib/freeradius
 # Copy configuration files from mounted volume to FreeRADIUS directory
 echo "Copying configuration files..."
 if [ -d "/config" ]; then
-    # Copy main config
-    if [ -f "/config/radiusd.conf" ]; then
+    # Copy main config - use simple config first
+    if [ -f "/config/simple_radiusd.conf" ]; then
+        cp /config/simple_radiusd.conf /etc/freeradius/radiusd.conf
+        echo "- Copied simple_radiusd.conf as radiusd.conf"
+    elif [ -f "/config/radiusd.conf" ]; then
         cp /config/radiusd.conf /etc/freeradius/radiusd.conf
         echo "- Copied radiusd.conf"
     fi
@@ -247,10 +257,18 @@ for module in preprocess unix digest exec expr expiration logintime; do
     fi
 done
 
-# Create users file if it doesn't exist
-if [ ! -f "/etc/freeradius/users" ]; then
-    echo "DEFAULT Auth-Type := Reject" > /etc/freeradius/users
-fi
+# Create users file with test user
+echo "Creating users file with test user..."
+cat > /etc/freeradius/users <<'EOF'
+# Test user for FreeRADIUS authentication
+testuser Cleartext-Password := "testpass123"
+    Reply-Message = "Hello %{User-Name}",
+    Session-Timeout = 86400
+
+# Default reject
+DEFAULT Auth-Type := Reject
+    Reply-Message = "Authentication failed"
+EOF
 
 # Create clients.conf if it doesn't exist
 if [ ! -f "/etc/freeradius/clients.conf" ]; then
@@ -271,7 +289,7 @@ fi
 
 # Test the configuration
 echo "Testing FreeRADIUS configuration..."
-if freeradius -XC; then
+if radiusd -XC; then
     echo "Configuration test passed!"
 else
     echo "Configuration test failed! Continuing anyway..."
@@ -279,4 +297,4 @@ fi
 
 # Start FreeRADIUS in foreground mode for Docker
 echo "Starting FreeRADIUS..."
-exec freeradius -X
+exec radiusd -X

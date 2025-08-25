@@ -112,7 +112,7 @@ accessories:
     directories:
       - data:/var/lib/mysql
   freeradius:
-    image: freeradius/freeradius-server:3.2.3-alpine
+    image: alpine:3.20
     roles:
     - web
     # Expose RADIUS authentication (1812), accounting (1813) and status (18120) ports
@@ -131,6 +131,7 @@ accessories:
     cmd: sh /config/startup.sh
     files:
       - deploy/freeradius/config/startup.sh:/config/startup.sh
+      - deploy/freeradius/config/simple_radiusd.conf:/config/simple_radiusd.conf
       - deploy/freeradius/config/radiusd.conf:/config/radiusd.conf
       - deploy/freeradius/config/mods-enabled/rest:/config/mods-enabled/rest
       - deploy/freeradius/config/mods-enabled/eap:/config/mods-enabled/eap
