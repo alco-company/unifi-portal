@@ -47,6 +47,15 @@ Rails.application.routes.draw do
       post :authorize
       post :accounting
       get :status
+      
+      # NAS client management
+      resources :clients, only: [:index, :create, :show, :update, :destroy] do
+        member do
+          post :test_connection
+        end
+      end
+      post 'clients/generate_config', to: 'clients#generate_config'
+      post 'clients/reload_freeradius', to: 'clients#reload_freeradius'
     end
   end
 
