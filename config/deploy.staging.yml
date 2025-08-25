@@ -101,7 +101,8 @@ accessories:
   db:
     image: mysql:latest
     # host: 135.181.202.106
-    network: heimdall
+    options:
+      network: heimdall
     roles:
     - web
     # Change to 3306 to expose port to the world instead of just local network.
@@ -121,7 +122,8 @@ accessories:
       - data:/var/lib/mysql
   freeradius:
     image: alpine:3.20
-    network: heimdall
+    options:
+      network: heimdall
     roles:
     - web
     # Expose RADIUS authentication (1812), accounting (1813) and status (18120) ports
