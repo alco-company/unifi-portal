@@ -54,9 +54,12 @@ mkdir -p /etc/freeradius/sites-enabled
 mkdir -p /etc/freeradius/policy.d
 mkdir -p /etc/freeradius/mods-config/attr_filter
 
-# Create symbolic link so FreeRADIUS can find config in expected location
-echo "Creating symbolic links for FreeRADIUS..."
-ln -sf /etc/freeradius /etc/raddb || true
+# Create /etc/raddb directory since FreeRADIUS expects config there
+echo "Setting up FreeRADIUS expected directories..."
+mkdir -p /etc/raddb/mods-enabled
+mkdir -p /etc/raddb/sites-enabled
+mkdir -p /etc/raddb/policy.d
+mkdir -p /etc/raddb/mods-config/attr_filter
 
 # Set correct permissions
 chown -R nobody:nobody /var/log/radius /var/run/freeradius /var/lib/freeradius
@@ -307,12 +310,18 @@ client docker {
 EOF
 fi
 
+# Copy all files to /etc/raddb as well since FreeRADIUS expects them there
+echo "Copying configuration files to /etc/raddb..."
+cp -r /etc/freeradius/* /etc/raddb/ 2>/dev/null || true
+echo "- Copied all configuration files to /etc/raddb"
+
 # Debug - show what configuration files exist
 echo "Debug: Configuration files present:"
 ls -la /etc/freeradius/ || true
-ls -la /etc/freeradius/mods-enabled/ || true
+ls -la /etc/raddb/ || true
+ls -la /etc/raddb/mods-enabled/ || true
 echo "Content of radiusd.conf:"
-head -20 /etc/freeradius/radiusd.conf || true
+head -20 /etc/raddb/radiusd.conf || true
 
 # Test the configuration
 echo "Testing FreeRADIUS configuration..."
