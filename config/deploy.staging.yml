@@ -11,6 +11,7 @@ servers:
       - 135.181.202.106
     options:
       network: heimdall
+      network-alias: heimdall-web
 
 
 # Enable SSL auto certification via Let's Encrypt and allow for multiple apps on a single web server.
