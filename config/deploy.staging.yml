@@ -92,9 +92,6 @@ builder:
 # ssh:
 #   user: app
 
-# Configure custom Docker network for stable container communication
-network: "heimdall"
-
 
 # Use accessory services (secrets come from .kamal/secrets).
 accessories:
