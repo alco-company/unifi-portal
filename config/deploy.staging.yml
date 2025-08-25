@@ -131,6 +131,7 @@ accessories:
     cmd: sh /config/startup.sh
     files:
       - deploy/freeradius/config/startup.sh:/config/startup.sh
+      - deploy/freeradius/config/minimal_radiusd.conf:/config/minimal_radiusd.conf
       - deploy/freeradius/config/simple_radiusd.conf:/config/simple_radiusd.conf
       - deploy/freeradius/config/radiusd.conf:/config/radiusd.conf
       - deploy/freeradius/config/mods-enabled/rest:/config/mods-enabled/rest

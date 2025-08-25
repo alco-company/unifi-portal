@@ -41,6 +41,12 @@ mkdir -p /etc/freeradius/mods-enabled
 mkdir -p /etc/freeradius/sites-enabled
 mkdir -p /etc/freeradius/policy.d
 
+# Remove any existing default configurations that might conflict
+echo "Removing default configurations..."
+rm -rf /etc/freeradius/mods-enabled/* || true
+rm -rf /etc/freeradius/sites-enabled/* || true
+rm -rf /etc/freeradius/policy.d/* || true
+
 # Set correct permissions
 chown -R nobody:nobody /var/log/radius /var/run/freeradius /var/lib/freeradius
 chmod -R 755 /var/log/radius /var/run/freeradius /var/lib/freeradius
@@ -48,8 +54,11 @@ chmod -R 755 /var/log/radius /var/run/freeradius /var/lib/freeradius
 # Copy configuration files from mounted volume to FreeRADIUS directory
 echo "Copying configuration files..."
 if [ -d "/config" ]; then
-    # Copy main config - use simple config first
-    if [ -f "/config/simple_radiusd.conf" ]; then
+    # Copy main config - use minimal config first
+    if [ -f "/config/minimal_radiusd.conf" ]; then
+        cp /config/minimal_radiusd.conf /etc/freeradius/radiusd.conf
+        echo "- Copied minimal_radiusd.conf as radiusd.conf"
+    elif [ -f "/config/simple_radiusd.conf" ]; then
         cp /config/simple_radiusd.conf /etc/freeradius/radiusd.conf
         echo "- Copied simple_radiusd.conf as radiusd.conf"
     elif [ -f "/config/radiusd.conf" ]; then
