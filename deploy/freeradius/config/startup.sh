@@ -54,6 +54,10 @@ mkdir -p /etc/freeradius/sites-enabled
 mkdir -p /etc/freeradius/policy.d
 mkdir -p /etc/freeradius/mods-config/attr_filter
 
+# Create symbolic link so FreeRADIUS can find config in expected location
+echo "Creating symbolic links for FreeRADIUS..."
+ln -sf /etc/freeradius /etc/raddb || true
+
 # Set correct permissions
 chown -R nobody:nobody /var/log/radius /var/run/freeradius /var/lib/freeradius
 chmod -R 755 /var/log/radius /var/run/freeradius /var/lib/freeradius
