@@ -293,6 +293,14 @@ DEFAULT Auth-Type := Reject
     Reply-Message = "Authentication failed"
 EOF
 
+# Create empty acct_users file
+echo "Creating empty acct_users file..."
+touch /etc/freeradius/acct_users
+
+# Create empty preproxy_users file
+echo "Creating empty preproxy_users file..."
+touch /etc/freeradius/preproxy_users
+
 # Create clients.conf if it doesn't exist
 if [ ! -f "/etc/freeradius/clients.conf" ]; then
     cat > /etc/freeradius/clients.conf <<'EOF'
