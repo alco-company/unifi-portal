@@ -112,37 +112,31 @@ accessories:
     directories:
       - data:/var/lib/mysql
   freeradius:
-    image: alpine:latest
+    image: freeradius/freeradius-server:3.2.3-alpine
     roles:
     - web
     # Expose RADIUS authentication (1812), accounting (1813) and status (18120) ports
     port: "1812:1812/udp"
     env:
       clear:
-        DB_HOST: heimdall-db
-        DB_PORT: 3306
-        DB_NAME: freeradius
-        DB_USER: heimdall
-        DB_SRV: mysql
-        MYSQL_DATABASE: freeradius
-        MYSQL_USER: heimdall
+        # Heimdall API endpoint for REST authentication
+        ENV_HEIMDALL_API_URL: http://heimdall-web:3001
+        # Legacy database config (may be needed for some modules)
+        ENV_FREERADIUS_DB_HOST: heimdall-db
+        ENV_FREERADIUS_DB_PORT: 3306
+        ENV_FREERADIUS_DB_NAME: freeradius
+        ENV_FREERADIUS_DB_USER: heimdall
       secret:
         - MYSQL_PASSWORD
-    cmd: >
-      sh -c '
-      apk add --no-cache freeradius freeradius-mysql mysql-client &&
-      rm -f /etc/raddb/mods-enabled/sql.apk-new &&
-      rm -f /etc/raddb/mods-config/sql/main/sqlite/queries.conf &&
-      mkdir -p /var/log/freeradius &&
-      chown nobody:nobody /var/log/freeradius &&
-      radiusd -X -f
-      '
+    cmd: sh /config/startup.sh
     files:
-      - config/freeradius/radiusd.conf:/etc/raddb/radiusd.conf
-      - config/freeradius/mods-enabled/sql:/etc/raddb/mods-enabled/sql
-      - config/freeradius/sites-enabled/default:/etc/raddb/sites-enabled/default
+      - deploy/freeradius/config/startup.sh:/config/startup.sh
+      - deploy/freeradius/config/radiusd.conf:/config/radiusd.conf
+      - deploy/freeradius/config/mods-enabled/rest:/config/mods-enabled/rest
+      - deploy/freeradius/config/mods-enabled/eap:/config/mods-enabled/eap
     directories:
-      - freeradius_data:/var/log/freeradius
+      - freeradius_config:/config
+      - freeradius_logs:/var/log/radius
 #   redis:
 #     image: valkey/valkey:8
 #     host: 192.168.0.2

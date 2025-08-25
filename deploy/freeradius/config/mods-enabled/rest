@@ -1,0 +1,137 @@
+# REST module configuration for connecting to Heimdall API
+rest {
+    # Heimdall Rails application endpoint
+    # This should point to your Rails application
+    tls {
+        # For HTTPS connections (production)
+        # ca_file = /path/to/ca.pem
+        # ca_path = /path/to/ca/directory
+        # certificate_file = /path/to/client.pem
+        # private_key_file = /path/to/client.key
+        
+        # For development/staging with self-signed certificates
+        check_cert = no
+        check_cert_cn = no
+    }
+
+    # HTTP client configuration
+    connect_uri = "${ENV_HEIMDALL_API_URL}"
+    
+    # Connection pooling
+    pool {
+        start = 5
+        min = 4
+        max = 32
+        spare = 3
+        uses = 0
+        lifetime = 0
+        cleanup_interval = 30s
+        idle_timeout = 60s
+        retry_delay = 30s
+        spread = no
+    }
+
+    # Authorization endpoint - check if user exists
+    authorize {
+        uri = "${..connect_uri}/api/radius/authorize"
+        method = 'post'
+        body = 'post'
+        data = '{"username": "%{User-Name}", "nas_ip": "%{NAS-IP-Address}", "calling_station_id": "%{Calling-Station-Id}"}'
+        
+        # Set content type
+        header += 'Content-Type: application/json'
+        header += 'Accept: application/json'
+        
+        # Authentication (if needed)
+        # auth = 'basic'
+        # username = 'api_user'
+        # password = 'api_password'
+        
+        # Response handling
+        # If successful response (200), set attributes
+        if (200) {
+            update {
+                # Copy any returned attributes to the control list
+                control:Session-Timeout := '%{json:session_timeout}'
+            }
+        }
+        
+        # If unauthorized (401/404), reject
+        if (401 || 404) {
+            reject
+        }
+    }
+
+    # Authentication endpoint - validate username/password
+    authenticate {
+        uri = "${..connect_uri}/api/radius/authenticate"
+        method = 'post'
+        body = 'post' 
+        data = '{"username": "%{User-Name}", "password": "%{User-Password}", "nas_ip": "%{NAS-IP-Address}", "calling_station_id": "%{Calling-Station-Id}"}'
+        
+        # Set content type
+        header += 'Content-Type: application/json'
+        header += 'Accept: application/json'
+        
+        # Response handling
+        if (200) {
+            # Authentication successful
+            update {
+                reply:Session-Timeout := '%{json:session_timeout}'
+                # Add other reply attributes as needed
+            }
+            ok
+        }
+        
+        if (401) {
+            # Authentication failed
+            reject
+        }
+        
+        if (500) {
+            # Server error
+            fail
+        }
+    }
+
+    # Accounting endpoint - send accounting records
+    accounting {
+        uri = "${..connect_uri}/api/radius/accounting"
+        method = 'post'
+        body = 'post'
+        data = '{"username": "%{User-Name}", "acct_status_type": "%{Acct-Status-Type}", "acct_session_id": "%{Acct-Session-Id}", "nas_ip": "%{NAS-IP-Address}", "calling_station_id": "%{Calling-Station-Id}", "acct_session_time": "%{Acct-Session-Time}", "acct_input_octets": "%{Acct-Input-Octets}", "acct_output_octets": "%{Acct-Output-Octets}"}'
+        
+        # Set content type
+        header += 'Content-Type: application/json'
+        header += 'Accept: application/json'
+        
+        # Accounting is fire-and-forget, don't fail if it doesn't work
+        if (200) {
+            ok
+        }
+        else {
+            # Log but don't fail
+            ok
+        }
+    }
+
+    # Post-auth endpoint - log successful/failed authentication
+    post-auth {
+        uri = "${..connect_uri}/api/radius/accounting"
+        method = 'post'
+        body = 'post'
+        data = '{"username": "%{User-Name}", "acct_status_type": "auth-success", "nas_ip": "%{NAS-IP-Address}", "calling_station_id": "%{Calling-Station-Id}", "auth_result": "%{Module-Success-Message}"}'
+        
+        # Set content type
+        header += 'Content-Type: application/json'
+        header += 'Accept: application/json'
+        
+        # Post-auth is informational, don't fail on errors
+        if (200) {
+            noop
+        }
+        else {
+            noop
+        }
+    }
+}

@@ -40,6 +40,16 @@ Rails.application.routes.draw do
     end
   end
 
+  # RADIUS API endpoints for FreeRADIUS integration
+  namespace :api do
+    namespace :radius do
+      post :authenticate
+      post :authorize
+      post :accounting
+      get :status
+    end
+  end
+
   put "/toggle_active", to: "toggle_active#update", as: :toggle_active
 
   get "/check_pnr", to: "pnumber#check_pnr", as: :check_pnr

@@ -1,0 +1,69 @@
+# Basic EAP module configuration
+eap {
+    default_eap_type = md5
+    timer_expire = 60
+    ignore_unknown_eap_types = no
+    cisco_accounting_username_bug = no
+    max_sessions = 16384
+
+    # Supported EAP types
+    md5 {
+    }
+
+    gtc {
+        auth_type = PAP
+    }
+
+    tls-config tls-common {
+        private_key_radius_password = whatever
+        private_key_file = ${certdir}/server.pem
+        certificate_file = ${certdir}/server.pem
+        ca_file = ${cadir}/ca.pem
+        dh_file = ${certdir}/dh
+        ca_path = ${cadir}
+        cipher_list = "DEFAULT"
+        cipher_server_preference = no
+        tls_max_version = "1.2"
+        tls_min_version = "1.0"
+        ecdh_curve = "prime256v1"
+        cache {
+            enable = no
+        }
+        verify {
+        }
+        ocsp {
+            enable = no
+            override_cert_url = yes
+            url = "http://127.0.0.1/ocsp/"
+            use_nonce = yes
+            timeout = 0
+            softfail = no
+        }
+    }
+
+    ttls {
+        tls = tls-common
+        default_eap_type = md5
+        copy_request_to_tunnel = no
+        use_tunneled_reply = no
+        virtual_server = "inner-tunnel"
+        include_length = yes
+        require_client_cert = no
+    }
+
+    peap {
+        tls = tls-common
+        default_eap_type = mschapv2
+        copy_request_to_tunnel = no
+        use_tunneled_reply = no
+        proxy_tunneled_request_as_eap = yes
+        virtual_server = "inner-tunnel"
+        soh = no
+        require_client_cert = no
+    }
+
+    mschapv2 {
+        with_ntdomain_hack = no
+        send_error = no
+    }
+}

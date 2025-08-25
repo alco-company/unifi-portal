@@ -11,11 +11,11 @@ sql {
     # Database connection info  
     dialect = "mysql"
     
-    # Connection parameters - hardcoded for reliability
+    # Connection parameters
     server = "heimdall-db"
     port = 3306
     login = "heimdall"
-    password = "U2FsdGVkX19fY2F0YWxvZ2luX3Bhc3N!!Jk"
+    password = "${MYSQL_PASSWORD}"
     
     # Database name
     radius_db = "freeradius"
