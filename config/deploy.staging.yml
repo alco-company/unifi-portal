@@ -10,7 +10,7 @@ servers:
     hosts:
       - 135.181.202.106
     options:
-      network-alias: heimdall-web
+      network: heimdall
 
 
 # Enable SSL auto certification via Let's Encrypt and allow for multiple apps on a single web server.
@@ -92,14 +92,16 @@ builder:
 # ssh:
 #   user: app
 
-# Configure custom network for stable container communication
-network: "kamal"
+# Configure custom Docker network for stable container communication
+network: "heimdall"
+
 
 # Use accessory services (secrets come from .kamal/secrets).
 accessories:
   db:
     image: mysql:latest
     # host: 135.181.202.106
+    network: heimdall
     roles:
     - web
     # Change to 3306 to expose port to the world instead of just local network.
@@ -119,6 +121,7 @@ accessories:
       - data:/var/lib/mysql
   freeradius:
     image: alpine:3.20
+    network: heimdall
     roles:
     - web
     # Expose RADIUS authentication (1812), accounting (1813) and status (18120) ports
