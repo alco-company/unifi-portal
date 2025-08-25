@@ -45,7 +45,10 @@ mkdir -p /etc/freeradius/policy.d
 echo "Removing default configurations..."
 rm -rf /etc/freeradius/* || true
 rm -rf /etc/raddb/* || true
-rm -rf /usr/share/freeradius/* || true
+# Keep dictionary files but remove config templates
+rm -rf /usr/share/freeradius/mods-* || true
+rm -rf /usr/share/freeradius/sites-* || true
+rm -rf /usr/share/freeradius/policy.d || true
 mkdir -p /etc/freeradius/mods-enabled
 mkdir -p /etc/freeradius/sites-enabled
 mkdir -p /etc/freeradius/policy.d
