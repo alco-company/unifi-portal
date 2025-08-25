@@ -43,9 +43,13 @@ mkdir -p /etc/freeradius/policy.d
 
 # Remove any existing default configurations that might conflict
 echo "Removing default configurations..."
-rm -rf /etc/freeradius/mods-enabled/* || true
-rm -rf /etc/freeradius/sites-enabled/* || true
-rm -rf /etc/freeradius/policy.d/* || true
+rm -rf /etc/freeradius/* || true
+rm -rf /etc/raddb/* || true
+rm -rf /usr/share/freeradius/* || true
+mkdir -p /etc/freeradius/mods-enabled
+mkdir -p /etc/freeradius/sites-enabled
+mkdir -p /etc/freeradius/policy.d
+mkdir -p /etc/freeradius/mods-config/attr_filter
 
 # Set correct permissions
 chown -R nobody:nobody /var/log/radius /var/run/freeradius /var/lib/freeradius
@@ -295,6 +299,13 @@ client docker {
 }
 EOF
 fi
+
+# Debug - show what configuration files exist
+echo "Debug: Configuration files present:"
+ls -la /etc/freeradius/ || true
+ls -la /etc/freeradius/mods-enabled/ || true
+echo "Content of radiusd.conf:"
+head -20 /etc/freeradius/radiusd.conf || true
 
 # Test the configuration
 echo "Testing FreeRADIUS configuration..."
