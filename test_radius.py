@@ -114,7 +114,7 @@ if __name__ == "__main__":
     # Configuration
     RADIUS_SERVER = "135.181.202.106"  # FreeRADIUS server
     RADIUS_PORT = 1812
-    NAS_SECRET = "ac9288da03e815ce98fb646c1ef2e40c"  # The shared secret for IP 188.228.2.218
+    NAS_SECRET = "testing123"  # Use docker client range secret which allows 172.16.0.0/12
     NAS_IP = "188.228.2.218"  # Your IP address
     
     # Test credentials
