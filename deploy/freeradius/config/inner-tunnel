@@ -8,7 +8,6 @@ server inner-tunnel {
 
     authorize {
         files
-        rest
         pap
         chap
         mschap
@@ -23,9 +22,6 @@ server inner-tunnel {
         }
         Auth-Type MS-CHAP {
             mschap
-        }
-        Auth-Type REST {
-            rest
         }
     }
 
