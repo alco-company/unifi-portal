@@ -211,7 +211,8 @@ mschap {
     require_encryption = no
     require_strong = no
     with_ntdomain_hack = no
-    ntlm_auth = "/usr/bin/ntlm_auth --request-nt-key --username=%{%{Stripped-User-Name}:-%{%{User-Name}:-None}} --challenge=%{%{mschap:Challenge}:-00} --nt-response=%{%{mschap:NT-Response}:-00}"
+    # Use cleartext passwords instead of ntlm_auth binary
+    # FreeRADIUS will automatically convert cleartext to NT hashes for MS-CHAPv2
 }
 EOF
 
