@@ -118,7 +118,7 @@ if [ ! -f "/etc/freeradius/mods-config/attr_filter/post-proxy" ]; then
 fi
 
 if [ ! -f "/etc/freeradius/mods-config/attr_filter/access_reject" ]; then
-    echo "DEFAULT Reply-Message" > /etc/freeradius/mods-config/attr_filter/access_reject
+    echo "DEFAULT Reply-Message += ANY" > /etc/freeradius/mods-config/attr_filter/access_reject
 fi
 
 if [ ! -f "/etc/freeradius/mods-config/attr_filter/access_challenge" ]; then
