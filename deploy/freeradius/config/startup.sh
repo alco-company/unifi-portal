@@ -99,30 +99,9 @@ if [ -d "/config" ]; then
     fi
 fi
 
-# Create basic policy files if they don't exist
-echo "Creating basic policy files..."
-if [ ! -f "/etc/freeradius/policy.d/filter" ]; then
-    cat > /etc/freeradius/policy.d/filter <<'EOF'
-# Basic filter policies
-filter_username {
-    if (&User-Name) {
-        if (&User-Name =~ / /) {
-            update request {
-                &Module-Failure-Message += "Username contains invalid characters"
-            }
-            reject
-        }
-    }
-}
-
-filter_password {
-    if (&User-Password) {
-        # Basic password validation can go here
-        noop
-    }
-}
-EOF
-fi
+# Skip creating policy files - they cause parsing issues in FreeRADIUS 3.0.27
+echo "Skipping policy file creation (not needed for basic operation)..."
+# Policy filtering will be handled in virtual server sections instead
 
 # Create basic attribute filter files if they don't exist
 echo "Creating attribute filters..."
