@@ -23,6 +23,9 @@ server inner-tunnel {
         Auth-Type MS-CHAP {
             mschap
         }
+        pap
+        chap
+        mschap
     }
 
     session {
