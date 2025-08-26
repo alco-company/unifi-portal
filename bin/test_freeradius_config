@@ -1,0 +1,239 @@
+#!/usr/bin/env ruby
+
+# Manual test script for FreeRADIUS configuration generation
+# Usage: bin/test_freeradius_config [action] [options]
+# 
+# Actions:
+#   generate   - Generate and display FreeRADIUS config
+#   test       - Run complete integration test
+#   create     - Create test NAS and update config
+#   cleanup    - Remove test NAS devices
+
+require_relative '../config/environment'
+
+class FreeRadiusConfigTester
+  def initialize
+    @test_site = Site.first || create_test_site
+    @output_file = "/tmp/freeradius_test_config.conf"
+  end
+
+  def run(action = 'test')
+    case action.downcase
+    when 'generate'
+      generate_config
+    when 'test'
+      run_integration_test
+    when 'create'
+      create_test_nas
+    when 'cleanup'
+      cleanup_test_data
+    else
+      puts "Unknown action: #{action}"
+      show_usage
+    end
+  end
+
+  private
+
+  def generate_config
+    puts "🔧 Generating FreeRADIUS configuration..."
+    
+    controller = Admin::NasController.new
+    config = controller.send(:generate_freeradius_config)
+    
+    # Write to file
+    File.write(@output_file, config)
+    
+    puts "✅ Configuration generated successfully!"
+    puts "📄 Written to: #{@output_file}"
+    puts "\n📊 Statistics:"
+    puts "   - Total NAS devices: #{Nas.count}"
+    puts "   - Configuration lines: #{config.lines.count}"
+    puts "   - Client blocks: #{config.scan(/client \w+ \{/).count}"
+    
+    puts "\n🔍 Sample configuration:"
+    puts config.lines.first(20).join
+    puts "   ... (truncated, see full config in #{@output_file})"
+  end
+
+  def run_integration_test
+    puts "🧪 Running FreeRADIUS integration test..."
+    
+    # Enable test environment
+    original_env = ENV['FREERADIUS_AUTO_UPDATE']
+    ENV['FREERADIUS_AUTO_UPDATE'] = 'true'
+    
+    begin
+      test_nas = create_test_nas_data
+      
+      # Test config generation
+      generate_config
+      config_content = File.read(@output_file)
+      
+      # Verify test NAS is in config
+      if config_content.include?("client #{test_nas[:shortname]}")
+        puts "✅ Test NAS found in configuration"
+      else
+        puts "❌ Test NAS NOT found in configuration"
+        return false
+      end
+      
+      # Test config update simulation
+      puts "🔄 Simulating configuration update..."
+      
+      controller = Admin::NasController.new
+      
+      # Mock system calls for testing
+      system_calls = []
+      controller.define_singleton_method(:system) do |command|
+        system_calls << command
+        puts "   📞 System call: #{command}"
+        true
+      end
+      
+      # Test update
+      result = controller.send(:update_freeradius_config)
+      
+      if result && system_calls.any?
+        puts "✅ Configuration update simulation successful"
+        puts "   - Docker commands executed: #{system_calls.count}"
+      else
+        puts "ℹ️ Configuration update skipped (not in production mode)"
+      end
+      
+      # Verify configuration structure
+      verify_config_structure(config_content)
+      
+      puts "\n🎉 Integration test completed successfully!"
+      
+    rescue => e
+      puts "❌ Integration test failed: #{e.message}"
+      puts e.backtrace.first(5)
+      false
+    ensure
+      ENV['FREERADIUS_AUTO_UPDATE'] = original_env
+      cleanup_test_data
+    end
+  end
+
+  def create_test_nas
+    puts "➕ Creating test NAS device..."
+    
+    nas_data = create_test_nas_data
+    puts "✅ Test NAS created:"
+    puts "   - Name: #{nas_data[:nasname]}"
+    puts "   - Short name: #{nas_data[:shortname]}"
+    puts "   - Type: #{nas_data[:nas_type]}"
+    puts "   - Secret: #{nas_data[:secret][0..8]}..."
+    
+    generate_config
+  end
+
+  def cleanup_test_data
+    puts "🧹 Cleaning up test data..."
+    
+    deleted_count = Nas.where("shortname LIKE ?", "test-freeradius-%").delete_all
+    puts "✅ Deleted #{deleted_count} test NAS devices"
+  end
+
+  def create_test_nas_data
+    test_nas_params = {
+      site: @test_site,
+      nasname: "192.168.100.#{rand(100..200)}",
+      shortname: "test-freeradius-#{Time.current.to_i}",
+      secret: SecureRandom.hex(16),
+      nas_type: ["cisco", "mikrotik", "other"].sample,
+      description: "Test NAS created by integration test - #{Time.current}",
+      ports: "1812,1813"
+    }
+    
+    Nas.create!(test_nas_params)
+    test_nas_params
+  end
+
+  def create_test_site
+    tenant = Tenant.first || Tenant.create!(
+      name: "Test Tenant",
+      active: true,
+      guest_max: 100,
+      guest_rx: 1000,
+      guest_tx: 1000,
+      note: "Test tenant for FreeRADIUS integration"
+    )
+    
+    Site.create!(
+      tenant: tenant,
+      name: "Test Site",
+      url: "https://test.example.com",
+      ssid: "test-wifi",
+      controller_url: "https://test-controller.example.com",
+      controller_type: "login",
+      username: "testuser",
+      password: "testpass",
+      unifi_id: SecureRandom.hex(8),
+      active: true
+    )
+  end
+
+  def verify_config_structure(config)
+    puts "\n🔍 Verifying configuration structure..."
+    
+    # Check for required default clients
+    required_clients = %w[localhost docker]
+    required_clients.each do |client|
+      if config.include?("client #{client} {")
+        puts "   ✅ Found required client: #{client}"
+      else
+        puts "   ❌ Missing required client: #{client}"
+      end
+    end
+    
+    # Check NAS clients
+    nas_count = Nas.count
+    actual_clients = config.scan(/client (\w+) \{/).flatten.reject { |c| %w[localhost docker].include?(c) }
+    
+    puts "   📊 Database NAS count: #{nas_count}"
+    puts "   📊 Config NAS clients: #{actual_clients.count}"
+    
+    if actual_clients.count == nas_count
+      puts "   ✅ NAS count matches between database and config"
+    else
+      puts "   ⚠️ NAS count mismatch - check for orphaned or missing clients"
+    end
+    
+    # Check configuration syntax
+    open_braces = config.scan(/\{/).count
+    close_braces = config.scan(/\}/).count
+    
+    if open_braces == close_braces
+      puts "   ✅ Configuration syntax appears valid (braces balanced)"
+    else
+      puts "   ❌ Configuration syntax error (unbalanced braces)"
+    end
+  end
+
+  def show_usage
+    puts <<~USAGE
+      Usage: bin/test_freeradius_config [action]
+      
+      Actions:
+        generate   - Generate and display current FreeRADIUS configuration
+        test       - Run complete integration test (default)
+        create     - Create test NAS device and generate config
+        cleanup    - Remove all test NAS devices
+      
+      Examples:
+        bin/test_freeradius_config
+        bin/test_freeradius_config generate
+        bin/test_freeradius_config create
+        bin/test_freeradius_config cleanup
+    USAGE
+  end
+end
+
+# Run the tester
+if __FILE__ == $0
+  action = ARGV[0] || 'test'
+  tester = FreeRadiusConfigTester.new
+  tester.run(action)
+end

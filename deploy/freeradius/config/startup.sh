@@ -19,7 +19,7 @@ echo "- Heimdall API URL: $HEIMDALL_API_URL"
 # Install necessary packages including FreeRADIUS
 echo "Installing packages..."
 apk update
-apk add --no-cache freeradius freeradius-rest freeradius-radclient curl jq bash
+apk add --no-cache freeradius freeradius-rest freeradius-eap freeradius-radclient curl jq bash openssl
 
 # Find the FreeRADIUS executable
 echo "Finding FreeRADIUS executable..."
@@ -305,9 +305,8 @@ touch /etc/freeradius/acct_users
 echo "Creating empty preproxy_users file..."
 touch /etc/freeradius/preproxy_users
 
-# Create clients.conf if it doesn't exist
-if [ ! -f "/etc/freeradius/clients.conf" ]; then
-    cat > /etc/freeradius/clients.conf <<'EOF'
+# Create base clients.conf with localhost and docker network
+cat > /etc/freeradius/clients.conf <<'EOF'
 client localhost {
     ipaddr = 127.0.0.1
     secret = testing123
@@ -320,12 +319,102 @@ client docker {
     require_message_authenticator = no
 }
 EOF
+
+# Try to fetch dynamic client configuration from Heimdall API
+echo "Fetching dynamic client configuration from Heimdall API..."
+if command -v curl >/dev/null 2>&1; then
+    # Wait for Heimdall API to be available
+    max_attempts=30
+    attempt=1
+    while [ $attempt -le $max_attempts ]; do
+        echo "Attempt $attempt/$max_attempts: Checking Heimdall API availability..."
+        if curl -s --max-time 5 "${HEIMDALL_API_URL}/api/radius/clients/generate_config" >/dev/null 2>&1; then
+            echo "Heimdall API is available, fetching client configuration..."
+            
+            # Fetch the dynamic client configuration
+            if api_response=$(curl -s --max-time 10 -H "Content-Type: application/json" -X POST "${HEIMDALL_API_URL}/api/radius/clients/generate_config" 2>/dev/null); then
+                # Extract the config from the JSON response
+                if echo "$api_response" | grep -q '"success":true'; then
+                    # Use a simple approach to extract the config field
+                    dynamic_config=$(echo "$api_response" | sed -n 's/.*"config":"\([^"]*\)".*/\1/p' | sed 's/\\n/\n/g' | sed 's/\\t/\t/g')
+                    
+                    if [ -n "$dynamic_config" ]; then
+                        echo "Successfully fetched dynamic client configuration"
+                        echo "$dynamic_config" > /etc/freeradius/clients.conf
+                        echo "Updated clients.conf with dynamic configuration"
+                    else
+                        echo "Warning: Empty dynamic configuration received, using default"
+                    fi
+                else
+                    echo "Warning: API returned error, using default configuration"
+                fi
+            else
+                echo "Warning: Failed to fetch configuration from API, using default"
+            fi
+            break
+        else
+            echo "Heimdall API not yet available, waiting..."
+            sleep 5
+            attempt=$((attempt + 1))
+        fi
+    done
+    
+    if [ $attempt -gt $max_attempts ]; then
+        echo "Warning: Could not connect to Heimdall API after $max_attempts attempts"
+        echo "Using default client configuration"
+    fi
+else
+    echo "Warning: curl not available, using default client configuration"
+fi
+
+# Generate SSL certificates for TTLS/PEAP
+echo "Setting up SSL certificates for EAP-TTLS/PEAP..."
+if [ -f "/config/generate-certs.sh" ]; then
+    chmod +x /config/generate-certs.sh
+    /config/generate-certs.sh
+else
+    echo "Certificate generation script not found, creating basic self-signed certificates..."
+    
+    CERT_DIR="/etc/ssl/radius"
+    DOMAIN="${RADIUS_SSL_DOMAIN:-radius.staging.unifi-portal.site}"
+    
+    mkdir -p "$CERT_DIR"
+    
+    # Generate self-signed certificates for testing
+    openssl genrsa -out "$CERT_DIR/privkey.pem" 2048
+    
+    openssl req -new -x509 \
+        -key "$CERT_DIR/privkey.pem" \
+        -out "$CERT_DIR/cert.pem" \
+        -days 365 \
+        -subj "/CN=$DOMAIN/O=Heimdall RADIUS/C=DK"
+    
+    # Create chain file (same as cert for self-signed)
+    cp "$CERT_DIR/cert.pem" "$CERT_DIR/chain.pem"
+    cp "$CERT_DIR/cert.pem" "$CERT_DIR/fullchain.pem"
+    
+    # Generate DH parameters
+    echo "Generating DH parameters (this may take a while)..."
+    openssl dhparam -out "$CERT_DIR/dh2048.pem" 2048
+    
+    # Set permissions
+    chmod 600 "$CERT_DIR/privkey.pem"
+    chmod 644 "$CERT_DIR/cert.pem" "$CERT_DIR/chain.pem" "$CERT_DIR/fullchain.pem" "$CERT_DIR/dh2048.pem"
+    
+    echo "Self-signed certificates generated for $DOMAIN"
+    ls -la "$CERT_DIR/"
 fi
 
 # Copy all files to /etc/raddb as well since FreeRADIUS expects them there
 echo "Copying configuration files to /etc/raddb..."
 cp -r /etc/freeradius/* /etc/raddb/ 2>/dev/null || true
 echo "- Copied all configuration files to /etc/raddb"
+
+# Copy inner-tunnel configuration if it exists
+if [ -f "/config/inner-tunnel" ]; then
+    cp /config/inner-tunnel /etc/raddb/sites-enabled/inner-tunnel
+    echo "- Copied inner-tunnel virtual server configuration"
+fi
 
 # Perform environment variable substitution in configuration files
 echo "Substituting environment variables in configuration..."

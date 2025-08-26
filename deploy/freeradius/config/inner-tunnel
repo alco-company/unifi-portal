@@ -1,0 +1,39 @@
+# Inner tunnel virtual server for TTLS/PEAP
+server inner-tunnel {
+    listen {
+        ipaddr = 127.0.0.1
+        port = 18120
+        type = auth
+    }
+
+    authorize {
+        files
+        pap
+        chap
+        mschap
+    }
+
+    authenticate {
+        Auth-Type PAP {
+            pap
+        }
+        Auth-Type CHAP {
+            chap
+        }
+        Auth-Type MS-CHAP {
+            mschap
+        }
+    }
+
+    session {
+    }
+
+    post-auth {
+    }
+
+    pre-proxy {
+    }
+
+    post-proxy {
+    }
+}

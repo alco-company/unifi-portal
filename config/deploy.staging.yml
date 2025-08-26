@@ -135,6 +135,8 @@ accessories:
         ENV_FREERADIUS_DB_PORT: 3306
         ENV_FREERADIUS_DB_NAME: freeradius
         ENV_FREERADIUS_DB_USER: heimdall
+        # SSL/TLS configuration for EAP-TTLS/PEAP
+        RADIUS_SSL_DOMAIN: radius.staging.unifi-portal.site
       secret:
         - MYSQL_PASSWORD
     cmd: sh /config/startup.sh
@@ -145,9 +147,13 @@ accessories:
       - deploy/freeradius/config/radiusd.conf:/config/radiusd.conf
       - deploy/freeradius/config/mods-enabled/rest:/config/mods-enabled/rest
       - deploy/freeradius/config/mods-enabled/eap:/config/mods-enabled/eap
+      - deploy/freeradius/config/inner-tunnel:/config/inner-tunnel
+      - deploy/freeradius/config/generate-certs.sh:/config/generate-certs.sh
     directories:
       - freeradius_config:/config
       - freeradius_logs:/var/log/radius
+    volumes:
+      - "/etc/letsencrypt:/etc/letsencrypt:ro"
 #   redis:
 #     image: valkey/valkey:8
 #     host: 192.168.0.2

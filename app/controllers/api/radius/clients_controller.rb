@@ -215,7 +215,7 @@ class Api::Radius::ClientsController < ApplicationController
       config_lines << "client #{client.shortname} {"
       config_lines << "    ipaddr = #{client.nasname}"
       config_lines << "    secret = #{client.secret}"
-      config_lines << "    require_message_authenticator = no"
+      config_lines << "    require_message_authenticator = yes"
       config_lines << "    shortname = #{client.shortname}"
       
       if client.nas_type.present?
