@@ -212,6 +212,23 @@ class Api::Radius::ClientsController < ApplicationController
 
     # Add each NAS client from database
     Nas.all.find_each do |client|
+      # Skip clients with invalid/empty data
+      if client.shortname.blank? || client.nasname.blank? || client.secret.blank?
+        Rails.logger.warn "Skipping NAS client #{client.id} due to missing required fields (shortname: #{client.shortname.inspect}, nasname: #{client.nasname.inspect}, secret present: #{client.secret.present?})"
+        next
+      end
+      
+      # Basic validation to ensure valid characters for FreeRADIUS config
+      unless client.shortname =~ /\A[a-zA-Z0-9][a-zA-Z0-9\-_]*[a-zA-Z0-9]\z|\A[a-zA-Z0-9]\z/
+        Rails.logger.warn "Skipping NAS client #{client.id} due to invalid shortname format: #{client.shortname.inspect}"
+        next
+      end
+      
+      unless client.nasname =~ /\A(?:[0-9]{1,3}\.){3}[0-9]{1,3}\z|\A[a-zA-Z0-9][a-zA-Z0-9\-\.]*[a-zA-Z0-9]\z/
+        Rails.logger.warn "Skipping NAS client #{client.id} due to invalid nasname format: #{client.nasname.inspect}"
+        next
+      end
+      
       config_lines << "client #{client.shortname} {"
       config_lines << "    ipaddr = #{client.nasname}"
       config_lines << "    secret = #{client.secret}"
