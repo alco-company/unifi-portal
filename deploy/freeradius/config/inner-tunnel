@@ -8,6 +8,9 @@ server inner-tunnel {
 
     authorize {
         files
+        eap {
+            ok = return
+        }
         pap
         chap
         mschap
@@ -23,6 +26,7 @@ server inner-tunnel {
         Auth-Type MS-CHAP {
             mschap
         }
+        eap
         pap
         chap
         mschap
