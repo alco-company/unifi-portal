@@ -269,12 +269,13 @@ testuser Cleartext-Password := "testpass123"
     Reply-Message = "Hello %{User-Name}",
     Session-Timeout = 86400
 
-# API user for REST authentication - this will trigger Auth-Type REST
-apiuser Auth-Type := REST
-    Reply-Message = "API Authentication for %{User-Name}",
-    Session-Timeout = 3600
+# Default fall-through for PAP authentication
+DEFAULT Auth-Type := PAP
+    Reply-Message = "Default PAP Authentication",
+    Session-Timeout = 3600,
+    Fall-Through = Yes
 
-# Default reject
+# Final default reject
 DEFAULT Auth-Type := Reject
     Reply-Message = "Authentication failed"
 EOF
