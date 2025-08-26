@@ -352,7 +352,95 @@ fi
 
 # Generate SSL certificates for TTLS/PEAP
 echo "Setting up SSL certificates for EAP-TTLS/PEAP..."
-if [ -f "/config/generate-certs.sh" ]; then
+
+# Function to extract certificates from kamal-proxy certificate file
+extract_kamal_certs() {
+    local kamal_cert_file="/etc/kamal-proxy-certs/e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855/staging.unifi-portal.site"
+    local cert_dir="/etc/ssl/radius"
+    
+    if [ -f "$kamal_cert_file" ]; then
+        echo "[$(date)] Extracting certificates from kamal-proxy file..."
+        
+        # Create temporary files for atomic replacement
+        local temp_key="${cert_dir}/server.key.tmp"
+        local temp_crt="${cert_dir}/server.crt.tmp"
+        local temp_ca="${cert_dir}/ca.pem.tmp"
+        
+        # Extract private key (first section)
+        awk '/-----BEGIN EC PRIVATE KEY-----/,/-----END EC PRIVATE KEY-----/' "$kamal_cert_file" > "$temp_key"
+        
+        # Extract server certificate (first certificate section)
+        awk '/-----BEGIN CERTIFICATE-----/,/-----END CERTIFICATE-----/ {print; if(/-----END CERTIFICATE-----/) exit}' "$kamal_cert_file" > "$temp_crt"
+        
+        # Extract CA certificate chain (remaining certificate sections)
+        awk '/-----BEGIN CERTIFICATE-----/,/-----END CERTIFICATE-----/ {if(cert_count>0) print; if(/-----END CERTIFICATE-----/) cert_count++}' "$kamal_cert_file" > "$temp_ca"
+        
+        # Verify the extracted files are not empty
+        if [ -s "$temp_key" ] && [ -s "$temp_crt" ] && [ -s "$temp_ca" ]; then
+            # Atomically replace the certificate files
+            mv "$temp_key" "${cert_dir}/server.key"
+            mv "$temp_crt" "${cert_dir}/server.crt"
+            mv "$temp_ca" "${cert_dir}/ca.pem"
+            
+            # Set permissions
+            chmod 600 "${cert_dir}/server.key"
+            chmod 644 "${cert_dir}/server.crt" "${cert_dir}/ca.pem"
+            
+            echo "[$(date)] Successfully updated certificates from kamal-proxy"
+            return 0
+        else
+            # Clean up failed extraction
+            rm -f "$temp_key" "$temp_crt" "$temp_ca"
+            echo "[$(date)] ERROR: Failed to extract valid certificates from kamal-proxy"
+            return 1
+        fi
+    else
+        echo "[$(date)] Kamal-proxy certificate file not found: $kamal_cert_file"
+        return 1
+    fi
+}
+
+# Start certificate monitoring in background
+cert_monitor() {
+    local kamal_cert_file="/etc/kamal-proxy-certs/e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855/staging.unifi-portal.site"
+    local last_hash=""
+    
+    echo "[$(date)] Starting certificate monitor..."
+    
+    while true; do
+        if [ -f "$kamal_cert_file" ]; then
+            # Check if certificate file has changed
+            current_hash=$(md5sum "$kamal_cert_file" 2>/dev/null | cut -d' ' -f1)
+            
+            if [ "$current_hash" != "$last_hash" ] && [ -n "$current_hash" ]; then
+                echo "[$(date)] Certificate file changed, extracting new certificates..."
+                if extract_kamal_certs; then
+                    last_hash="$current_hash"
+                    # Send SIGHUP to FreeRADIUS to reload certificates (if running)
+                    pkill -HUP radiusd 2>/dev/null || true
+                    echo "[$(date)] Sent reload signal to FreeRADIUS"
+                fi
+            fi
+        fi
+        
+        # Check every 5 minutes
+        sleep 300
+    done
+}
+
+# Check if kamal-proxy certificates are available and extract them initially
+CERT_DIR="/etc/ssl/radius"
+mkdir -p "$CERT_DIR"
+
+if extract_kamal_certs; then
+    echo "Using kamal-proxy managed Let's Encrypt certificates"
+    # Start certificate monitoring in background
+    cert_monitor &
+    CERT_MONITOR_PID=$!
+    echo "Certificate monitor started with PID $CERT_MONITOR_PID"
+    
+elif [ -f "/config/generate-certs.sh" ]; then
+    echo "Kamal-proxy certificates not available, using generate-certs.sh..."
     chmod +x /config/generate-certs.sh
     /config/generate-certs.sh
 else

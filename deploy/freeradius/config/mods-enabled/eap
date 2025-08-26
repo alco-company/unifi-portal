@@ -42,9 +42,10 @@ eap {
         require_client_cert = no
     }
 
-    # Proper TLS configuration with CA + Server certificate chain
+    # Proper TLS configuration with CA + Server certificate chain from kamal-proxy
     tls-config tls-common {
         private_key_password = ""
+        # Use extracted certificate files from kamal-proxy Let's Encrypt certificates
         private_key_file = /etc/ssl/radius/server.key
         certificate_file = /etc/ssl/radius/server.crt
         ca_file = /etc/ssl/radius/ca.pem

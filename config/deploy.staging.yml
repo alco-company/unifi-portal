@@ -155,6 +155,7 @@ accessories:
       - freeradius_logs:/var/log/radius
     volumes:
       - "/etc/letsencrypt:/etc/letsencrypt:ro"
+      - "/var/lib/docker/volumes/kamal-proxy-config/_data/certs:/etc/kamal-proxy-certs:ro"
 #   redis:
 #     image: valkey/valkey:8
 #     host: 192.168.0.2
