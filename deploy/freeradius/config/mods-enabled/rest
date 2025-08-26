@@ -49,18 +49,8 @@ rest {
         # password = 'api_password'
         
         # Response handling
-        # If successful response (200), set attributes
-        if (200) {
-            update {
-                # Copy any returned attributes to the control list
-                control:Session-Timeout := '%{json:session_timeout}'
-            }
-        }
-        
-        # If unauthorized (401/404), reject
-        if (401 || 404) {
-            reject
-        }
+        # Timeout for request
+        timeout = 4s
     }
 
     # Authentication endpoint - validate username/password
@@ -74,25 +64,8 @@ rest {
         header = 'Content-Type: application/json'
         header = 'Accept: application/json'
         
-        # Response handling
-        if (200) {
-            # Authentication successful
-            update {
-                reply:Session-Timeout := '%{json:session_timeout}'
-                # Add other reply attributes as needed
-            }
-            ok
-        }
-        
-        if (401) {
-            # Authentication failed
-            reject
-        }
-        
-        if (500) {
-            # Server error
-            fail
-        }
+        # Response timeout
+        timeout = 4s
     }
 
     # Accounting endpoint - send accounting records
@@ -106,14 +79,8 @@ rest {
         header = 'Content-Type: application/json'
         header = 'Accept: application/json'
         
-        # Accounting is fire-and-forget, don't fail if it doesn't work
-        if (200) {
-            ok
-        }
-        else {
-            # Log but don't fail
-            ok
-        }
+        # Response timeout
+        timeout = 4s
     }
 
     # Post-auth endpoint - log successful/failed authentication
@@ -127,12 +94,7 @@ rest {
         header = 'Content-Type: application/json'
         header = 'Accept: application/json'
         
-        # Post-auth is informational, don't fail on errors
-        if (200) {
-            noop
-        }
-        else {
-            noop
-        }
+        # Response timeout
+        timeout = 4s
     }
 }
