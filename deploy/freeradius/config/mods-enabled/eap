@@ -31,26 +31,36 @@ eap {
         require_client_cert = no
     }
 
-    # Simple TLS configuration using self-signed certs
+    # Proper TLS configuration with CA + Server certificate chain
     tls-config tls-common {
         private_key_password = ""
-        private_key_file = /etc/ssl/radius/privkey.pem
-        certificate_file = /etc/ssl/radius/cert.pem
-        ca_file = /etc/ssl/radius/cert.pem
-        cipher_list = "DEFAULT"
+        private_key_file = /etc/ssl/radius/server.key
+        certificate_file = /etc/ssl/radius/server.crt
+        ca_file = /etc/ssl/radius/ca.pem
+        ca_path = /etc/ssl/certs
+        cipher_list = "ECDHE-RSA-AES256-GCM-SHA384:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-SHA384:ECDHE-RSA-AES128-SHA256:DHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-SHA256:DHE-RSA-AES128-SHA256:AES256-GCM-SHA384:AES128-GCM-SHA256:AES256-SHA256:AES128-SHA256"
+        cipher_server_preference = yes
+        ecdh_curve = "prime256v1"
         tls_max_version = "1.3"
         tls_min_version = "1.2"
         
         cache {
-            enable = no
+            enable = yes
+            lifetime = 24
+            max_entries = 255
         }
         
         verify {
-            skip_if_ocsp_ok = yes
+            skip_if_ocsp_ok = no
+            tmpdir = /tmp/radiusd
+            client = "/usr/bin/openssl verify -CApath /etc/ssl/certs %{TLS-Client-Cert-Filename}"
         }
         
         ocsp {
             enable = no
+            override_cert_url = no
+            timeout = 0
+            softfail = yes
         }
     }
 }
