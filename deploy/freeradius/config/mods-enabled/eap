@@ -31,6 +31,17 @@ eap {
         require_client_cert = no
     }
 
+    # TTLS (Tunneled TLS) - alternative for mobile devices
+    ttls {
+        tls = tls-common
+        default_eap_type = pap
+        copy_request_to_tunnel = no
+        use_tunneled_reply = no
+        virtual_server = "inner-tunnel"
+        include_length = yes
+        require_client_cert = no
+    }
+
     # Proper TLS configuration with CA + Server certificate chain
     tls-config tls-common {
         private_key_password = ""
