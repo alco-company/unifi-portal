@@ -1,5 +1,5 @@
 eap {
-    default_eap_type = peap
+    default_eap_type = ttls
     timer_expire = 60
     ignore_unknown_eap_types = no
     cisco_accounting_username_bug = no
