@@ -376,9 +376,9 @@ else
     cp "$CERT_DIR/cert.pem" "$CERT_DIR/chain.pem"
     cp "$CERT_DIR/cert.pem" "$CERT_DIR/fullchain.pem"
     
-    # Generate DH parameters
-    echo "Generating DH parameters (this may take a while)..."
-    openssl dhparam -out "$CERT_DIR/dh2048.pem" 2048
+    # Generate DH parameters (using smaller size for testing)
+    echo "Generating DH parameters (using 1024-bit for faster startup)..."
+    openssl dhparam -out "$CERT_DIR/dh2048.pem" 1024
     
     # Set permissions
     chmod 600 "$CERT_DIR/privkey.pem"
