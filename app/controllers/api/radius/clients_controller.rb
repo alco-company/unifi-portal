@@ -230,7 +230,11 @@ class Api::Radius::ClientsController < ApplicationController
       config_lines << ""
     end
 
-    config_lines.join("\n")
+    # Remove any trailing empty lines and ensure proper termination
+    config_content = config_lines.join("\n").strip
+    config_content += "\n" # Ensure file ends with a single newline
+    
+    config_content
   end
 
   def update_freeradius_config
