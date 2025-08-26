@@ -388,6 +388,11 @@ else
     ls -la "$CERT_DIR/"
 fi
 
+# Create tmpdir for SSL verification
+echo "Creating tmpdir for SSL verification..."
+mkdir -p /tmp/radiusd
+chmod 755 /tmp/radiusd
+
 # Copy all files to /etc/raddb as well since FreeRADIUS expects them there
 echo "Copying configuration files to /etc/raddb..."
 cp -r /etc/freeradius/* /etc/raddb/ 2>/dev/null || true

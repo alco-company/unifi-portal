@@ -1,11 +1,11 @@
 eap {
-    default_eap_type = md5
+    default_eap_type = peap
     timer_expire = 60
     ignore_unknown_eap_types = no
     cisco_accounting_username_bug = no
     max_sessions = 16384
 
-    # MD5 authentication (simple, no TLS required)
+    # MD5 authentication (fallback)
     md5 {
     }
 
@@ -14,9 +14,43 @@ eap {
         auth_type = PAP
     }
 
-    # MS-CHAPv2 for basic authentication
+    # MS-CHAPv2 for PEAP inner authentication
     mschapv2 {
         send_error = no
         with_ntdomain_hack = no
+    }
+
+    # PEAP (Protected EAP) - most common for WiFi
+    peap {
+        tls = tls-common
+        default_eap_type = mschapv2
+        copy_request_to_tunnel = no
+        use_tunneled_reply = no
+        virtual_server = "inner-tunnel"
+        soh = no
+        require_client_cert = no
+    }
+
+    # Simple TLS configuration using self-signed certs
+    tls-config tls-common {
+        private_key_password = ""
+        private_key_file = /etc/ssl/radius/privkey.pem
+        certificate_file = /etc/ssl/radius/cert.pem
+        ca_file = /etc/ssl/radius/cert.pem
+        cipher_list = "DEFAULT"
+        tls_max_version = "1.3"
+        tls_min_version = "1.2"
+        
+        cache {
+            enable = no
+        }
+        
+        verify {
+            skip_if_ocsp_ok = yes
+        }
+        
+        ocsp {
+            enable = no
+        }
     }
 }
