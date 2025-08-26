@@ -15,7 +15,7 @@ server inner-tunnel {
 
     authenticate {
         Auth-Type PAP {
-            rest.authenticate
+            pap
         }
         Auth-Type CHAP {
             chap
