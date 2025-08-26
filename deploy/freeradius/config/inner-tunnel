@@ -15,13 +15,16 @@ server inner-tunnel {
 
     authenticate {
         Auth-Type PAP {
-            pap
+            rest.authenticate
         }
         Auth-Type CHAP {
             chap
         }
         Auth-Type MS-CHAP {
             mschap
+        }
+        Auth-Type REST {
+            rest.authenticate
         }
     }
 
