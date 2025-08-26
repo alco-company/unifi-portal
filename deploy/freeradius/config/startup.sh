@@ -166,27 +166,27 @@ EOF
 cat > /etc/freeradius/mods-enabled/attr_filter <<'EOF'
 attr_filter attr_filter.post-proxy {
     key = "%{Realm}"
-    filename = ${modconfdir}/${.:name}/post-proxy
+    filename = ${confdir}/mods-config/attr_filter/post-proxy
 }
 
 attr_filter attr_filter.pre-proxy {
     key = "%{Realm}"
-    filename = ${modconfdir}/${.:name}/pre-proxy
+    filename = ${confdir}/mods-config/attr_filter/pre-proxy
 }
 
 attr_filter attr_filter.access_reject {
     key = "%{User-Name}"
-    filename = ${modconfdir}/${.:name}/access_reject
+    filename = ${confdir}/mods-config/attr_filter/access_reject
 }
 
 attr_filter attr_filter.access_challenge {
     key = "%{User-Name}"
-    filename = ${modconfdir}/${.:name}/access_challenge
+    filename = ${confdir}/mods-config/attr_filter/access_challenge
 }
 
 attr_filter attr_filter.accounting_response {
     key = "%{User-Name}"
-    filename = ${modconfdir}/${.:name}/accounting_response
+    filename = ${confdir}/mods-config/attr_filter/accounting_response
 }
 EOF
 
