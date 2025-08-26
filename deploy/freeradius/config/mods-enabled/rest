@@ -40,8 +40,8 @@ rest {
         data = '{"username": "%{User-Name}", "nas_ip": "%{NAS-IP-Address}", "calling_station_id": "%{Calling-Station-Id}"}'
         
         # Set content type
-        header += 'Content-Type: application/json'
-        header += 'Accept: application/json'
+        header = 'Content-Type: application/json'
+        header = 'Accept: application/json'
         
         # Authentication (if needed)
         # auth = 'basic'
@@ -71,8 +71,8 @@ rest {
         data = '{"username": "%{User-Name}", "password": "%{User-Password}", "nas_ip": "%{NAS-IP-Address}", "calling_station_id": "%{Calling-Station-Id}"}'
         
         # Set content type
-        header += 'Content-Type: application/json'
-        header += 'Accept: application/json'
+        header = 'Content-Type: application/json'
+        header = 'Accept: application/json'
         
         # Response handling
         if (200) {
@@ -103,8 +103,8 @@ rest {
         data = '{"username": "%{User-Name}", "acct_status_type": "%{Acct-Status-Type}", "acct_session_id": "%{Acct-Session-Id}", "nas_ip": "%{NAS-IP-Address}", "calling_station_id": "%{Calling-Station-Id}", "acct_session_time": "%{Acct-Session-Time}", "acct_input_octets": "%{Acct-Input-Octets}", "acct_output_octets": "%{Acct-Output-Octets}"}'
         
         # Set content type
-        header += 'Content-Type: application/json'
-        header += 'Accept: application/json'
+        header = 'Content-Type: application/json'
+        header = 'Accept: application/json'
         
         # Accounting is fire-and-forget, don't fail if it doesn't work
         if (200) {
@@ -124,8 +124,8 @@ rest {
         data = '{"username": "%{User-Name}", "acct_status_type": "auth-success", "nas_ip": "%{NAS-IP-Address}", "calling_station_id": "%{Calling-Station-Id}", "auth_result": "%{Module-Success-Message}"}'
         
         # Set content type
-        header += 'Content-Type: application/json'
-        header += 'Accept: application/json'
+        header = 'Content-Type: application/json'
+        header = 'Accept: application/json'
         
         # Post-auth is informational, don't fail on errors
         if (200) {
