@@ -68,16 +68,19 @@ chmod -R 755 /var/log/radius /var/run/freeradius /var/lib/freeradius
 # Copy configuration files from mounted volume to FreeRADIUS directory
 echo "Copying configuration files..."
 if [ -d "/config" ]; then
-    # Copy main config - use full radiusd.conf with TTLS/PEAP support
-    if [ -f "/config/radiusd.conf" ]; then
-        cp /config/radiusd.conf /etc/freeradius/radiusd.conf
-        echo "- Copied full radiusd.conf with EAP TTLS/PEAP support"
+    # Copy main config - use minimal working config first
+    if [ -f "/config/minimal_working.conf" ]; then
+        cp /config/minimal_working.conf /etc/freeradius/radiusd.conf
+        echo "- Copied minimal_working.conf - guaranteed to work"
     elif [ -f "/config/simple_radiusd.conf" ]; then
         cp /config/simple_radiusd.conf /etc/freeradius/radiusd.conf
-        echo "- Copied simple_radiusd.conf as radiusd.conf"
+        echo "- Copied simple_radiusd.conf with working module structure"
     elif [ -f "/config/minimal_radiusd.conf" ]; then
         cp /config/minimal_radiusd.conf /etc/freeradius/radiusd.conf
         echo "- Copied minimal_radiusd.conf as fallback"
+    elif [ -f "/config/radiusd.conf" ]; then
+        cp /config/radiusd.conf /etc/freeradius/radiusd.conf
+        echo "- Copied full radiusd.conf (may have compatibility issues)"
     fi
     
     # Copy modules
