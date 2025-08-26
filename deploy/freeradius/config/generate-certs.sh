@@ -129,7 +129,6 @@ keyUsage = nonRepudiation, digitalSignature, keyEncipherment
 extendedKeyUsage = serverAuth
 subjectAltName = @alt_names
 subjectKeyIdentifier = hash
-authorityKeyIdentifier = keyid:always,issuer:always
 
 [alt_names]
 DNS.1 = $DOMAIN
