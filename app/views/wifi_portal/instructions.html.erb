@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>WiFi Setup Instructions</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="utf-8">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+    <style>
+      body {
+        font-family: system-ui, -apple-system, sans-serif;
+        background: #f8fafc;
+        margin: 0;
+        padding: 1rem;
+      }
+      .container {
+        max-width: 600px;
+        margin: 0 auto;
+      }
+      .header {
+        background: white;
+        border-radius: 12px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        text-align: center;
+      }
+      .logo {
+        font-size: 2rem;
+        font-weight: bold;
+        color: #667eea;
+        margin-bottom: 0.5rem;
+      }
+      .subtitle {
+        color: #6b7280;
+        font-size: 1rem;
+      }
+      .card {
+        background: white;
+        border-radius: 12px;
+        padding: 2rem;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+      }
+      .credentials {
+        background: #f8fafc;
+        border: 2px solid #e5e7eb;
+        border-radius: 8px;
+        padding: 1.5rem;
+        margin: 1.5rem 0;
+      }
+      .credential-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+        padding: 0.5rem 0;
+        border-bottom: 1px solid #e5e7eb;
+      }
+      .credential-item:last-child {
+        margin-bottom: 0;
+        border-bottom: none;
+      }
+      .credential-label {
+        font-weight: 600;
+        color: #374151;
+      }
+      .credential-value {
+        font-family: monospace;
+        background: white;
+        padding: 0.5rem;
+        border-radius: 4px;
+        border: 1px solid #d1d5db;
+        position: relative;
+      }
+      .copy-btn {
+        background: #667eea;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        padding: 0.25rem 0.5rem;
+        font-size: 0.8rem;
+        cursor: pointer;
+        margin-left: 0.5rem;
+      }
+      .copy-btn:hover {
+        background: #5a67d8;
+      }
+      .step {
+        margin-bottom: 2rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 1px solid #e5e7eb;
+      }
+      .step:last-child {
+        border-bottom: none;
+        margin-bottom: 0;
+      }
+      .step-number {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 2rem;
+        height: 2rem;
+        background: #667eea;
+        color: white;
+        border-radius: 50%;
+        font-weight: bold;
+        margin-right: 1rem;
+      }
+      .step-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: #374151;
+        margin-bottom: 0.75rem;
+        display: flex;
+        align-items: center;
+      }
+      .step-content {
+        color: #6b7280;
+        line-height: 1.6;
+        margin-left: 3rem;
+      }
+      .back-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: #667eea;
+        text-decoration: none;
+        font-weight: 500;
+        margin-bottom: 2rem;
+      }
+      .back-btn:hover {
+        text-decoration: underline;
+      }
+      .alert {
+        padding: 1rem;
+        border-radius: 8px;
+        margin-bottom: 1.5rem;
+      }
+      .alert-warning {
+        background: #fef3cd;
+        color: #856404;
+        border: 1px solid #faeaa7;
+      }
+      .device-info {
+        background: #eff6ff;
+        border: 2px solid #dbeafe;
+        border-radius: 8px;
+        padding: 1rem;
+        margin-bottom: 1.5rem;
+      }
+      .device-info h3 {
+        margin: 0 0 0.5rem 0;
+        color: #1e40af;
+      }
+      .device-info p {
+        margin: 0;
+        color: #1e40af;
+        font-size: 0.9rem;
+      }
+      ul {
+        margin: 0.5rem 0;
+        padding-left: 1.5rem;
+      }
+      li {
+        margin-bottom: 0.5rem;
+      }
+      code {
+        background: #f3f4f6;
+        padding: 0.25rem 0.5rem;
+        border-radius: 4px;
+        font-family: monospace;
+        font-size: 0.9rem;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <a href="<%= wifi_dashboard_path %>" class="back-btn">
+        ← Back to Dashboard
+      </a>
+      
+      <div class="header">
+        <div class="logo">📖 Setup Instructions</div>
+        <div class="subtitle">Connect your device to RADIUS WiFi</div>
+      </div>
+
+      <div class="device-info">
+        <h3><%= @device.device_name.presence || "Your Device" %></h3>
+        <p><strong>Network:</strong> <%= @device.site.ssid %> | <strong>MAC:</strong> <%= @device.mac_address %></p>
+      </div>
+
+      <div class="card">
+        <h2>WiFi Credentials</h2>
+        
+        <div class="credentials">
+          <div class="credential-item">
+            <div class="credential-label">Network Name (SSID):</div>
+            <div style="display: flex; align-items: center;">
+              <div class="credential-value" id="ssid"><%= @device.site.ssid %></div>
+              <button class="copy-btn" onclick="copyToClipboard('ssid')">Copy</button>
+            </div>
+          </div>
+          
+          <div class="credential-item">
+            <div class="credential-label">Username:</div>
+            <div style="display: flex; align-items: center;">
+              <div class="credential-value" id="username"><%= @device.radius_username %></div>
+              <button class="copy-btn" onclick="copyToClipboard('username')">Copy</button>
+            </div>
+          </div>
+          
+          <div class="credential-item">
+            <div class="credential-label">Password:</div>
+            <div style="display: flex; align-items: center;">
+              <div class="credential-value" id="password"><%= @device.last_otp %></div>
+              <button class="copy-btn" onclick="copyToClipboard('password')">Copy</button>
+            </div>
+          </div>
+          
+          <% if @device.otp_expires_at && @device.otp_expires_at > Time.current %>
+            <div class="credential-item">
+              <div class="credential-label">Password expires at:</div>
+              <div class="credential-value">
+                <%= @device.otp_expires_at.strftime("%H:%M on %Y-%m-%d") %>
+              </div>
+            </div>
+          <% end %>
+        </div>
+
+        <div class="alert alert-warning">
+          <strong>Important:</strong> This is a temporary password that may expire. If you can't connect, go back to the dashboard and generate a new login code.
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Setup Instructions</h2>
+
+        <div class="step">
+          <div class="step-title">
+            <div class="step-number">1</div>
+            Open WiFi Settings
+          </div>
+          <div class="step-content">
+            <p>On your device, open the WiFi settings:</p>
+            <ul>
+              <li><strong>iPhone/iPad:</strong> Settings → Wi-Fi</li>
+              <li><strong>Android:</strong> Settings → Wi-Fi or Network & Internet</li>
+              <li><strong>Windows:</strong> Settings → Network & Internet → Wi-Fi</li>
+              <li><strong>Mac:</strong> Apple Menu → System Preferences → Network</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-title">
+            <div class="step-number">2</div>
+            Select Network
+          </div>
+          <div class="step-content">
+            <p>Look for and select the network named:</p>
+            <p><strong><code><%= @device.site.ssid %></code></strong></p>
+            <p>If you don't see it, make sure you're within range of the network.</p>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-title">
+            <div class="step-number">3</div>
+            Enter Credentials
+          </div>
+          <div class="step-content">
+            <p>When prompted, enter:</p>
+            <ul>
+              <li><strong>Username:</strong> <code><%= @device.radius_username %></code></li>
+              <li><strong>Password:</strong> <code><%= @device.last_otp %></code></li>
+            </ul>
+            <p><em>Note: Some devices may ask for additional settings like "Security Type" or "EAP Method". If so, try WPA2-Enterprise or leave them as default.</em></p>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-title">
+            <div class="step-number">4</div>
+            Connect
+          </div>
+          <div class="step-content">
+            <p>Tap "Connect" or "Join". Your device should now connect to the WiFi network.</p>
+            <p>If it doesn't work immediately, try:</p>
+            <ul>
+              <li>Double-check that you entered the username and password correctly</li>
+              <li>Make sure the password hasn't expired</li>
+              <li>Try "forgetting" the network and connecting again</li>
+              <li>Generate a new login code from the dashboard</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Need Help?</h2>
+        <p>If you're having trouble connecting:</p>
+        <ul>
+          <li>Make sure you're using the exact username and password shown above</li>
+          <li>Check that the password hasn't expired</li>
+          <li>Try generating a new login code from your <a href="<%= wifi_dashboard_path %>">dashboard</a></li>
+          <li>Make sure you're within range of the WiFi access point</li>
+          <li>Some older devices may not support this type of WiFi security</li>
+        </ul>
+      </div>
+    </div>
+
+    <script>
+      async function copyToClipboard(elementId) {
+        const element = document.getElementById(elementId);
+        const text = element.textContent;
+        
+        try {
+          await navigator.clipboard.writeText(text);
+          
+          // Show feedback
+          const btn = element.nextElementSibling;
+          const originalText = btn.textContent;
+          btn.textContent = 'Copied!';
+          btn.style.background = '#10b981';
+          
+          setTimeout(() => {
+            btn.textContent = originalText;
+            btn.style.background = '#667eea';
+          }, 2000);
+        } catch (err) {
+          // Fallback for older browsers
+          const textArea = document.createElement('textarea');
+          textArea.value = text;
+          document.body.appendChild(textArea);
+          textArea.focus();
+          textArea.select();
+          document.execCommand('copy');
+          document.body.removeChild(textArea);
+          
+          alert('Copied to clipboard!');
+        }
+      }
+    </script>
+  </body>
+</html>

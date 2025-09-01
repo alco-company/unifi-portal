@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>WiFi Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="utf-8">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+    <style>
+      body {
+        font-family: system-ui, -apple-system, sans-serif;
+        background: #f8fafc;
+        margin: 0;
+        padding: 1rem;
+      }
+      .container {
+        max-width: 800px;
+        margin: 0 auto;
+      }
+      .header {
+        background: white;
+        border-radius: 12px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        text-align: center;
+      }
+      .logo {
+        font-size: 2rem;
+        font-weight: bold;
+        color: #667eea;
+        margin-bottom: 0.5rem;
+      }
+      .welcome {
+        color: #6b7280;
+        font-size: 1.1rem;
+      }
+      .card {
+        background: white;
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+      }
+      .card-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: #374151;
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+      .device-list {
+        display: grid;
+        gap: 1rem;
+      }
+      .device-item {
+        border: 2px solid #e5e7eb;
+        border-radius: 8px;
+        padding: 1rem;
+        transition: border-color 0.2s;
+      }
+      .device-item:hover {
+        border-color: #667eea;
+      }
+      .device-header {
+        display: flex;
+        justify-content: between;
+        align-items: center;
+        margin-bottom: 0.75rem;
+      }
+      .device-name {
+        font-weight: 600;
+        color: #374151;
+        flex-grow: 1;
+      }
+      .device-status {
+        padding: 0.25rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 500;
+      }
+      .status-enabled {
+        background: #d1fae5;
+        color: #065f46;
+      }
+      .status-disabled {
+        background: #fee2e2;
+        color: #991b1b;
+      }
+      .device-info {
+        color: #6b7280;
+        font-size: 0.9rem;
+        margin-bottom: 1rem;
+      }
+      .device-actions {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+      }
+      .btn {
+        padding: 0.5rem 1rem;
+        border: none;
+        border-radius: 6px;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: all 0.2s;
+        text-decoration: none;
+        display: inline-block;
+        text-align: center;
+      }
+      .btn-primary {
+        background: #667eea;
+        color: white;
+      }
+      .btn-primary:hover {
+        background: #5a67d8;
+      }
+      .btn-secondary {
+        background: #f3f4f6;
+        color: #374151;
+      }
+      .btn-secondary:hover {
+        background: #e5e7eb;
+      }
+      .btn-danger {
+        background: #ef4444;
+        color: white;
+      }
+      .btn-danger:hover {
+        background: #dc2626;
+      }
+      .btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+      .alert {
+        padding: 1rem;
+        border-radius: 8px;
+        margin-bottom: 1rem;
+      }
+      .alert-success {
+        background: #d1fae5;
+        color: #065f46;
+        border: 1px solid #a7f3d0;
+      }
+      .alert-error {
+        background: #fee2e2;
+        color: #991b1b;
+        border: 1px solid #fca5a5;
+      }
+      .empty-state {
+        text-align: center;
+        color: #6b7280;
+        padding: 3rem 1rem;
+      }
+      .empty-state h3 {
+        margin-bottom: 0.5rem;
+        color: #374151;
+      }
+      .logout-btn {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        background: none;
+        border: none;
+        color: #6b7280;
+        cursor: pointer;
+        font-size: 0.9rem;
+        text-decoration: underline;
+      }
+      .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0,0,0,0.5);
+        z-index: 1000;
+        align-items: center;
+        justify-content: center;
+        padding: 1rem;
+      }
+      .modal.active {
+        display: flex;
+      }
+      .modal-content {
+        background: white;
+        border-radius: 12px;
+        padding: 2rem;
+        max-width: 400px;
+        width: 100%;
+      }
+      .modal-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+        color: #374151;
+      }
+      .form-group {
+        margin-bottom: 1rem;
+      }
+      .form-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 500;
+        color: #374151;
+      }
+      .form-control {
+        width: 100%;
+        padding: 0.75rem;
+        border: 2px solid #e5e7eb;
+        border-radius: 8px;
+        font-size: 1rem;
+        box-sizing: border-box;
+      }
+      .form-control:focus {
+        outline: none;
+        border-color: #667eea;
+      }
+      .modal-actions {
+        display: flex;
+        gap: 0.5rem;
+        justify-content: flex-end;
+        margin-top: 1.5rem;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <button class="logout-btn" onclick="logout()">Logout</button>
+      
+      <div class="header">
+        <div class="logo">📶 WiFi Dashboard</div>
+        <div class="welcome">Welcome, <%= @client.name || @client.email %></div>
+      </div>
+
+      <div id="alerts"></div>
+
+      <% if @radius_devices.any? %>
+        <div class="card">
+          <div class="card-title">
+            🔐 RADIUS WiFi Devices
+            <small style="color: #6b7280; font-weight: normal; margin-left: auto;">
+              Enterprise WiFi with username/password
+            </small>
+          </div>
+          
+          <div class="device-list">
+            <% @radius_devices.each do |device| %>
+              <div class="device-item" data-device-id="<%= device.id %>">
+                <div class="device-header">
+                  <div class="device-name">
+                    <%= device.device_name.presence || device.mac_address %>
+                  </div>
+                  <div class="device-status <%= device.radius_enabled? ? 'status-enabled' : 'status-disabled' %>">
+                    <%= device.radius_enabled? ? '✅ Active' : '❌ Disabled' %>
+                  </div>
+                </div>
+                
+                <div class="device-info">
+                  <div><strong>Network:</strong> <%= device.site.name %> (<%= device.site.ssid %>)</div>
+                  <div><strong>MAC:</strong> <%= device.mac_address %></div>
+                  <% if device.radius_enabled? %>
+                    <div><strong>Username:</strong> <%= device.radius_username %></div>
+                    <% if device.otp_expires_at && device.otp_expires_at > Time.current %>
+                      <div><strong>Code expires:</strong> <%= device.otp_expires_at.strftime("%H:%M") %></div>
+                    <% end %>
+                  <% end %>
+                </div>
+                
+                <div class="device-actions">
+                  <% if device.radius_enabled? %>
+                    <button class="btn btn-secondary" onclick="regenerateOTP(<%= device.id %>)">
+                      🔄 New Login Code
+                    </button>
+                    <a href="<%= wifi_instructions_path(device) %>" class="btn btn-secondary">
+                      📖 Setup Instructions
+                    </a>
+                    <button class="btn btn-danger" onclick="disableRadius(<%= device.id %>)">
+                      ❌ Disable WiFi
+                    </button>
+                  <% else %>
+                    <button class="btn btn-primary" onclick="showEnableModal(<%= device.id %>, '<%= device.device_name.presence || device.mac_address %>')">
+                      ✅ Enable WiFi Access
+                    </button>
+                  <% end %>
+                </div>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+
+      <% if @unifi_devices.any? %>
+        <div class="card">
+          <div class="card-title">
+            🌐 Guest WiFi Devices
+            <small style="color: #6b7280; font-weight: normal; margin-left: auto;">
+              Simple captive portal access
+            </small>
+          </div>
+          
+          <div class="device-list">
+            <% @unifi_devices.each do |device| %>
+              <div class="device-item">
+                <div class="device-header">
+                  <div class="device-name">
+                    <%= device.device_name.presence || device.mac_address %>
+                  </div>
+                  <div class="device-status <%= device.active? ? 'status-enabled' : 'status-disabled' %>">
+                    <%= device.active? ? '✅ Connected' : '❌ Offline' %>
+                  </div>
+                </div>
+                
+                <div class="device-info">
+                  <div><strong>Network:</strong> <%= device.site.name %> (<%= device.site.ssid %>)</div>
+                  <div><strong>MAC:</strong> <%= device.mac_address %></div>
+                  <% if device.authentication_expire_at %>
+                    <div><strong>Access expires:</strong> <%= device.authentication_expire_at.strftime("%Y-%m-%d %H:%M") %></div>
+                  <% end %>
+                </div>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+
+      <% if @radius_devices.empty? && @unifi_devices.empty? %>
+        <div class="card">
+          <div class="empty-state">
+            <h3>No Devices Found</h3>
+            <p>No devices are currently associated with your account.</p>
+            <p>Connect to a WiFi network first, then return here to manage your access.</p>
+          </div>
+        </div>
+      <% end %>
+    </div>
+
+    <!-- Enable RADIUS Modal -->
+    <div id="enable-modal" class="modal">
+      <div class="modal-content">
+        <div class="modal-title">Enable WiFi Access</div>
+        <form id="enable-form">
+          <div class="form-group">
+            <label for="device_name">Device Name</label>
+            <input type="text" id="device_name" name="device_name" class="form-control" 
+                   placeholder="e.g. John's iPhone" required>
+          </div>
+          <div class="modal-actions">
+            <button type="button" class="btn btn-secondary" onclick="hideModal()">Cancel</button>
+            <button type="submit" class="btn btn-primary">Enable WiFi</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <script>
+      let currentDeviceId = null;
+
+      function showAlert(message, type = 'error') {
+        const alertsDiv = document.getElementById('alerts');
+        alertsDiv.innerHTML = `
+          <div class="alert alert-${type}">
+            ${message}
+          </div>
+        `;
+        
+        // Auto-hide success messages
+        if (type === 'success') {
+          setTimeout(() => {
+            alertsDiv.innerHTML = '';
+          }, 5000);
+        }
+      }
+
+      function showEnableModal(deviceId, currentName) {
+        currentDeviceId = deviceId;
+        document.getElementById('device_name').value = currentName;
+        document.getElementById('enable-modal').classList.add('active');
+      }
+
+      function hideModal() {
+        document.getElementById('enable-modal').classList.remove('active');
+        currentDeviceId = null;
+      }
+
+      async function makeRequest(url, data = {}) {
+        const formData = new FormData();
+        Object.keys(data).forEach(key => {
+          formData.append(key, data[key]);
+        });
+        
+        const response = await fetch(url, {
+          method: 'POST',
+          body: formData,
+          headers: {
+            'X-CSRF-Token': document.querySelector('[name="csrf-token"]').content,
+            'Accept': 'application/json'
+          }
+        });
+        
+        return response.json();
+      }
+
+      // Enable RADIUS form submission
+      document.getElementById('enable-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const deviceName = document.getElementById('device_name').value;
+        
+        try {
+          const result = await makeRequest('/wifi/enable_device_radius', {
+            device_id: currentDeviceId,
+            device_name: deviceName
+          });
+          
+          if (result.success) {
+            showAlert(result.message, 'success');
+            hideModal();
+            // Reload page to show updated status
+            setTimeout(() => window.location.reload(), 1500);
+          } else {
+            showAlert(result.message);
+          }
+        } catch (error) {
+          showAlert('An error occurred. Please try again.');
+        }
+      });
+
+      async function regenerateOTP(deviceId) {
+        if (!confirm('Generate a new login code? The old code will stop working.')) {
+          return;
+        }
+        
+        try {
+          const result = await makeRequest('/wifi/regenerate_otp', {
+            device_id: deviceId
+          });
+          
+          if (result.success) {
+            showAlert(result.message, 'success');
+          } else {
+            showAlert(result.message);
+          }
+        } catch (error) {
+          showAlert('An error occurred. Please try again.');
+        }
+      }
+
+      async function disableRadius(deviceId) {
+        if (!confirm('Disable WiFi access for this device? You can re-enable it later.')) {
+          return;
+        }
+        
+        try {
+          const result = await makeRequest('/wifi/disable_device_radius', {
+            device_id: deviceId
+          });
+          
+          if (result.success) {
+            showAlert(result.message, 'success');
+            // Reload page to show updated status
+            setTimeout(() => window.location.reload(), 1500);
+          } else {
+            showAlert(result.message);
+          }
+        } catch (error) {
+          showAlert('An error occurred. Please try again.');
+        }
+      }
+
+      function logout() {
+        if (confirm('Log out of the WiFi portal?')) {
+          window.location.href = '/wifi';
+        }
+      }
+
+      // Close modal when clicking outside
+      document.getElementById('enable-modal').addEventListener('click', (e) => {
+        if (e.target === e.currentTarget) {
+          hideModal();
+        }
+      });
+
+      // Auto-refresh every 5 minutes to keep session active
+      setInterval(() => {
+        fetch('/wifi/dashboard', { method: 'HEAD' });
+      }, 5 * 60 * 1000);
+    </script>
+  </body>
+</html>

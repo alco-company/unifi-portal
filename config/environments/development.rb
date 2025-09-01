@@ -6,6 +6,8 @@ Rails.application.configure do
   config.force_ssl = true
   config.ssl_options = { hsts: false }
   config.hosts << "heimdall.dev"
+  config.hosts << "localhost"
+  config.hosts << "127.0.0.1"
   config.hosts << "2b0b-188-228-2-218.ngrok-free.app"
 
   # Make code changes take effect immediately without server restart.

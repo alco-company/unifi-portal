@@ -2,6 +2,12 @@ class WifiPortalController < ApplicationController
   layout "guest"
   skip_before_action :verify_authenticity_token, only: [:verify_phone, :verify_email]
   
+  # GET /wifi
+  def index
+    # Landing page for WiFi self-service portal
+    # Users can verify their identity via phone or email
+  end
+  
   # GET /wifi/setup/:token
   def setup
     @client = find_client_by_token
