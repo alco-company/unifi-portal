@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_08_12_193000) do
+ActiveRecord::Schema[8.1].define(version: 2025_08_26_204400) do
   create_table "clients", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.boolean "active", default: true
     t.datetime "created_at", null: false
@@ -31,6 +31,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_08_12_193000) do
     t.datetime "authentication_expire_at"
     t.bigint "client_id", null: false
     t.datetime "created_at", null: false
+    t.string "device_name"
     t.integer "guest_max", default: 0
     t.integer "guest_rx", default: 0
     t.integer "guest_tx", default: 0
@@ -38,10 +39,19 @@ ActiveRecord::Schema[8.1].define(version: 2025_08_12_193000) do
     t.datetime "last_authenticated_at"
     t.string "last_otp"
     t.string "mac_address"
+    t.datetime "otp_expires_at"
+    t.integer "radius_auth_failures", default: 0
+    t.boolean "radius_enabled", default: false
+    t.datetime "radius_last_auth_at"
+    t.datetime "radius_locked_until"
+    t.string "radius_password_hash"
+    t.string "radius_username"
     t.bigint "site_id"
     t.string "unifi_id"
     t.datetime "updated_at", null: false
     t.index ["client_id"], name: "index_devices_on_client_id"
+    t.index ["radius_enabled"], name: "index_devices_on_radius_enabled"
+    t.index ["radius_username"], name: "index_devices_on_radius_username", unique: true
     t.index ["site_id"], name: "index_devices_on_site_id"
   end
 

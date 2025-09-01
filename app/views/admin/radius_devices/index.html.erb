@@ -1,0 +1,48 @@
+<% content_for :title, "RADIUS Devices" %>
+
+<div class="content-header">
+  <h1>RADIUS Devices for <%= @tenant.name %></h1>
+</div>
+
+<div class="content">
+  <%= form_with url: admin_tenant_radius_devices_path(@tenant), method: :get, local: true, class: "search-form" do |form| %>
+    <%= form.text_field :search, placeholder: "Search devices...", value: params[:search] %>
+    <%= form.submit "Search", class: "btn btn-primary" %>
+  <% end %>
+
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Device Name</th>
+        <th>Username</th>
+        <th>Client</th>
+        <th>MAC Address</th>
+        <th>Status</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @devices.each do |device| %>
+        <tr>
+          <td><%= device.device_name %></td>
+          <td><%= device.radius_username %></td>
+          <td><%= device.client.name %></td>
+          <td><%= device.mac_address %></td>
+          <td>
+            <% if device.radius_enabled? %>
+              <span class="badge badge-success">Enabled</span>
+            <% else %>
+              <span class="badge badge-secondary">Disabled</span>
+            <% end %>
+            <% if device.radius_locked? %>
+              <span class="badge badge-danger">Locked</span>
+            <% end %>
+          </td>
+          <td>
+            <%= link_to "View", admin_tenant_radius_device_path(@tenant, device), class: "btn btn-sm btn-outline-primary" %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>

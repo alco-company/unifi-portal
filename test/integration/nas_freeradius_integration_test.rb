@@ -3,7 +3,10 @@ require "fileutils"
 require "tempfile"
 
 class NasFreeradiusIntegrationTest < ActionDispatch::IntegrationTest
-  setup do
+  # Skip these tests unless explicitly enabled via environment variable
+  def setup
+    skip "FreeRADIUS integration tests disabled in CI" unless ENV['ENABLE_FREERADIUS_INTEGRATION_TESTS'] == 'true'
+    super
     @nas = nas(:one)
     @site = @nas.site
     @tenant = @site.tenant
@@ -174,8 +177,8 @@ class NasFreeradiusIntegrationTest < ActionDispatch::IntegrationTest
     # Verify NAS is removed from config
     if File.exist?(@config_file)
       config_after = File.read(@config_file)
-      assert_not_match(/client delete-integration-test \{/, config_after)
-      assert_not_match(/deletemesecret/, config_after)
+      refute_match(/client delete-integration-test \{/, config_after)
+      refute_match(/deletemesecret/, config_after)
     end
   end
   

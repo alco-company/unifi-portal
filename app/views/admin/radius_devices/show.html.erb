@@ -1,0 +1,56 @@
+<% content_for :title, "RADIUS Device Details" %>
+
+<div class="content-header">
+  <h1>RADIUS Device: <%= @device.device_name %></h1>
+</div>
+
+<div class="content">
+  <div class="device-info">
+    <h3>Device Information</h3>
+    <p><strong>Device Name:</strong> <%= @device.device_name %></p>
+    <p><strong>MAC Address:</strong> <%= @device.mac_address %></p>
+    <p><strong>RADIUS Username:</strong> <%= @device.radius_username %></p>
+    <p><strong>Status:</strong> 
+      <% if @device.radius_enabled? %>
+        <span class="badge badge-success">RADIUS Enabled</span>
+      <% else %>
+        <span class="badge badge-secondary">RADIUS Disabled</span>
+      <% end %>
+      <% if @device.radius_locked? %>
+        <span class="badge badge-danger">Account Locked</span>
+      <% end %>
+    </p>
+    
+    <% if @device.radius_enabled? %>
+      <p><strong>OTP Expires:</strong> <%= @device.otp_expires_at %></p>
+      <p><strong>Auth Failures:</strong> <%= @device.radius_auth_failures %></p>
+      <% if @device.radius_locked_until %>
+        <p><strong>Locked Until:</strong> <%= @device.radius_locked_until %></p>
+      <% end %>
+    <% end %>
+    
+    <h3>Client Information</h3>
+    <p><strong>Client Name:</strong> <%= @client.name %></p>
+    <p><strong>Email:</strong> <%= @client.email %></p>
+    <p><strong>Phone:</strong> <%= @client.phone %></p>
+    
+    <h3>Site Information</h3>
+    <p><strong>Site Name:</strong> <%= @site.name %></p>
+    <p><strong>Site Type:</strong> <%= @site.controller_type.humanize %></p>
+  </div>
+
+  <div class="actions">
+    <% if @device.radius_enabled? %>
+      <%= button_to "Regenerate OTP", regenerate_otp_admin_tenant_radius_device_path(@tenant, @device), method: :post, class: "btn btn-warning" %>
+      <%= button_to "Reset Failures", reset_failures_admin_tenant_radius_device_path(@tenant, @device), method: :post, class: "btn btn-secondary" %>
+      <%= button_to "Disable RADIUS", disable_radius_admin_tenant_radius_device_path(@tenant, @device), method: :delete, class: "btn btn-danger", confirm: "Are you sure?" %>
+    <% else %>
+      <%= form_with url: enable_radius_admin_tenant_radius_device_path(@tenant, @device), method: :post, local: true do |form| %>
+        <%= form.text_field :device_name, placeholder: "Device name", value: @device.device_name || "#{@client.name}'s device" %>
+        <%= form.submit "Enable RADIUS", class: "btn btn-success" %>
+      <% end %>
+    <% end %>
+    
+    <%= link_to "Back to RADIUS Devices", admin_tenant_radius_devices_path(@tenant), class: "btn btn-outline-primary" %>
+  </div>
+</div>

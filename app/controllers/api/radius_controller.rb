@@ -13,29 +13,84 @@ class Api::RadiusController < ApplicationController
   # POST /api/radius/authenticate
   # FreeRADIUS calls this endpoint to authenticate users
   def authenticate
-    auth_service = RadiusAuthenticationService.new(
-      username: params[:username],
-      password: params[:password], 
-      nas_ip: params[:nas_ip] || request.remote_ip,
-      calling_station_id: params[:calling_station_id]
-    )
+    username = params[:username]
+    password = params[:password]
+    nas_ip = params[:nas_ip] || request.remote_ip
+    calling_station_id = params[:calling_station_id]
+    
+    Rails.logger.info("RADIUS Auth Request: username=#{username}, nas_ip=#{nas_ip}, calling_station=#{calling_station_id}")
+    
+    # Try Device-based RADIUS authentication first
+    device = find_radius_device(username)
+    
+    if device&.radius_enabled?
+      # Verify NAS is authorized
+      unless authorized_nas?(nas_ip, device.site)
+        Rails.logger.warn("RADIUS Auth Failed: Unauthorized NAS #{nas_ip} for site #{device.site&.name}")
+        render json: {
+          success: false,
+          username: username,
+          reason: "Unauthorized network access point"
+        }, status: 401
+        return
+      end
+      
+      auth_result = device.radius_authenticate(username, password)
+      
+      if auth_result[:success]
+        Rails.logger.info("RADIUS Auth Success: #{username} from #{calling_station_id}")
+        render json: {
+          success: true,
+          username: username,
+          session_timeout: device.session_timeout,
+          method: 'device_otp',
+          tenant: device.client.tenant.name,
+          reply_attributes: auth_result[:user_attributes]
+        }, status: 200
+        return
+      else
+        Rails.logger.warn("RADIUS Auth Failed: #{auth_result[:error]} for #{username}")
+        render json: {
+          success: false,
+          username: username,
+          reason: auth_result[:error]
+        }, status: 401
+        return
+      end
+    end
+    
+    # Fall back to legacy authentication service if no RADIUS device found
+    if defined?(RadiusAuthenticationService)
+      auth_service = RadiusAuthenticationService.new(
+        username: username,
+        password: password, 
+        nas_ip: nas_ip,
+        calling_station_id: calling_station_id
+      )
 
-    auth_result = auth_service.authenticate
+      auth_result = auth_service.authenticate
 
-    if auth_result[:success]
-      render json: {
-        success: true,
-        username: params[:username],
-        session_timeout: auth_result[:session_timeout],
-        method: auth_result[:method],
-        tenant: auth_result[:tenant]&.name,
-        reply_attributes: build_reply_attributes(auth_result)
-      }, status: 200
+      if auth_result[:success]
+        render json: {
+          success: true,
+          username: username,
+          session_timeout: auth_result[:session_timeout],
+          method: auth_result[:method],
+          tenant: auth_result[:tenant]&.name,
+          reply_attributes: build_reply_attributes(auth_result)
+        }, status: 200
+      else
+        render json: {
+          success: false,
+          username: username,
+          reason: auth_result[:reason] || 'Authentication failed'
+        }, status: 401
+      end
     else
       render json: {
         success: false,
-        username: params[:username],
-        reason: auth_result[:reason] || 'Authentication failed'
+        username: username,
+        reason: 'User not found'
       }, status: 401
     end
   rescue => e
@@ -53,15 +108,21 @@ class Api::RadiusController < ApplicationController
     nas_ip = params[:nas_ip] || request.remote_ip
     calling_station_id = params[:calling_station_id]
 
-    # Basic authorization - check if user exists and is active
-    auth_service = RadiusAuthenticationService.new(
-      username: username,
-      password: 'dummy', # Not used for authorization
-      nas_ip: nas_ip,
-      calling_station_id: calling_station_id
-    )
+    # Try Device-based RADIUS authorization first
+    device = find_radius_device(username)
+    
+    if device&.radius_enabled? && device.client.active?
+      render json: {
+        success: true,
+        username: username,
+        user_type: 'radius_device',
+        tenant: device.client.tenant.name,
+        reply_attributes: device.radius_user_attributes
+      }, status: 200
+      return
+    end
 
-    # Get user/device info without password verification
+    # Fall back to legacy user info lookup
     user_info = find_user_info(username, calling_station_id)
 
     if user_info[:found]
@@ -360,6 +421,7 @@ class Api::RadiusController < ApplicationController
     {
       active_clients: Client.where(active: true).count,
       active_devices: Device.where(active: true).count,
+      radius_enabled_devices: Device.where(radius_enabled: true).count,
       active_admin_users: User.where(active: true).count,
       radius_users: begin
         ActiveRecord::Base.connection.execute('SELECT COUNT(*) FROM radcheck').first[0]
@@ -369,5 +431,22 @@ class Api::RadiusController < ApplicationController
     }
   rescue => e
     { error: e.message }
+  end
+  
+  # Find a device by RADIUS username
+  def find_radius_device(username)
+    Device.joins(:client)
+          .where(radius_enabled: true, radius_username: username)
+          .where(clients: { active: true })
+          .first
+  end
+  
+  # Check if NAS is authorized for the site
+  def authorized_nas?(nas_ip, site)
+    return true if site.nil? # Allow if no site restriction
+    return true if Rails.env.development? # Allow in development
+    
+    # Check if NAS IP is registered for this site
+    site.nas.where('nasname = ?', nas_ip).exists?
   end
 end

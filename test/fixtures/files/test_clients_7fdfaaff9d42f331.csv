@@ -1,0 +1,2 @@
+name;email;phone;note;guest_max;guest_rx;guest_tx;active
+Test User;test@example.com;12345678;"";"";"";"";true

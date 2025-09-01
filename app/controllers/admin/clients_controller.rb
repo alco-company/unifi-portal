@@ -33,16 +33,27 @@ class Admin::ClientsController < Admin::BaseController
           #   redirect_to admin_tenant_clients_path(@tenant), alert: "CSV file is missing required fields (name, email, phone) - no clients imported!"
           #   return
           # end
+          # Custom boolean parsing for CSV import
+          active_value = if row["active"].present?
+                          case row["active"].downcase.strip
+                          when "true", "yes", "1" then true
+                          when "false", "no", "0" then false
+                          else true # Default to true for other values
+                          end
+                        else
+                          true # Default when empty
+                        end
+
           Client.create!(
             tenant: @tenant,
-            name:  row["name"]&.strip&.downcase&.titleize,
-            email: row["email"]&.strip&.downcase,
-            phone: row["phone"]&.gsub(/ /, "")&.strip,
-            note:  row["note"],
+            name:  row["name"]&.strip&.titleize,
+            email: row["email"]&.strip&.downcase.presence,
+            phone: row["phone"]&.gsub(/[\s\+]/, "")&.strip.presence,
+            note:  row["note"].presence,
             guest_max: row["guest_max"].to_i,
             guest_rx: row["guest_rx"].to_i,
             guest_tx: row["guest_tx"].to_i,
-            active: row["active"].present? ? ActiveModel::Type::Boolean.new.cast(row["active"]) : true
+            active: active_value
           )
         end
         redirect_to admin_tenant_clients_path(@tenant), notice: "Clients imported successfully"

@@ -121,7 +121,8 @@ class SessionsController < ApplicationController
 
   def update
     Rails.logger.error("PATCH: with these parameters #{params.inspect}")
-    @site = Site.find_by(id: params[:sid]) if params[:site_id].present?
+    @device = Device.find_by(id: session[:did]) if session[:did]
+    @site = @device&.site
     if otp_valid? && authorize_guest?
       expire_at = @device.client.created_at < 5.minute.ago ? 10.years.from_now : 24.hours.from_now
       Rails.logger.error("PATCH: will expire this device at #{expire_at}")
@@ -133,14 +134,13 @@ class SessionsController < ApplicationController
       Rails.logger.error("Device authenticated successfully: #{session[:did]}")
       session.delete(:did)
 
-      do_redirect and return
-      # respond_to do |format|
-      #   # format.turbo_stream { render turbo_stream: turbo_stream.action(:redirect, params[:url]) }
-      #   format.html { redirect_to params[:url], allow_other_host: true, status: :found }
-      # end
+      respond_to do |format|
+        format.turbo_stream { render turbo_stream: turbo_stream.replace("otp_input", partial: "sessions/success") }
+        format.html { do_redirect and return }
+      end
     else
       respond_to do |format|
-        # format.turbo_stream { render turbo_stream: turbo_stream.replace("otp_input", partial: "sessions/failed") }
+        format.turbo_stream { render turbo_stream: turbo_stream.replace("otp_input", partial: "sessions/failed") }
         format.html { redirect_to new_session_path(site_name: @site.name,
           phone: @device&.client&.phone,
           ap: params[:ap],
@@ -158,9 +158,13 @@ class SessionsController < ApplicationController
 
     def load_site
       @client = nil
-      @site = Site.where(ssid: params["ssid"], url: request.remote_addr, active: true).first# , ssid: params["ssid"], name: params["site_name"], ).first
+      if params["site_name"].present?
+        @site = Site.find_by(name: params["site_name"])
+      elsif params["ssid"].present?
+        @site = Site.find_by(ssid: params["ssid"])
+      end
     rescue
-      Rails.logger.error("Failed to load site with name: #{params['site_name']} and URL: #{request.remote_addr}")
+      Rails.logger.error("Failed to load site with name: #{params['site_name']} or ssid: #{params['ssid']}")
       @site = nil
     end
 
@@ -208,7 +212,7 @@ class SessionsController < ApplicationController
     end
 
     def sms_available?(device)
-      device.client.phone.present? && device.client.phone =~ /^(\+?[1-9]\d){0,1}\d{8}$/
+      device.client.phone.present? && device.client.phone =~ /^\+?[1-9]\d{7,14}$/
     rescue
       false
     end
@@ -222,7 +226,6 @@ class SessionsController < ApplicationController
 
       if params[:did] && session[:did] && params[:did] == session[:did].to_s
         Rails.logger.error("PATCH: did matches session did, more")
-        @device = Device.find_by(id: session[:did])
         Rails.logger.error("PATCH: device found: #{@device.inspect}")
         if @device.nil? || @device.last_otp.nil? || !@device.client.active?
           errs = []
@@ -232,7 +235,7 @@ class SessionsController < ApplicationController
           @error = errs.join(", ")
           return false
         end
-        @error = "Invalid OTP code"
+        @error = "OTP koden er forkert eller udløbet"
         @device.last_otp == params[:otp]
       else
         @error = "Invalid device ID or session expired"

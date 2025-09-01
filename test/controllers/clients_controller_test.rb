@@ -5,7 +5,7 @@ class ClientsControllerTest < ActionDispatch::IntegrationTest
     @site = sites(:one)
     @client = clients(:one)
     @user = users(:one)
-    post admin_login_path, params: { email: @user.email, password: "password" }
+    post admin_login_path, params: { email: @user.email, password: "secret" }
     stub_unifi_sites_api(@client.devices.first.site.unifi_id)
     stub_unifi_client_api(@client.devices.first.mac_address, @client.devices.first.site.unifi_id)
     stub_unifi_authorize_api("https://heimdall.test", site_id: @client.devices.first.site.unifi_id)

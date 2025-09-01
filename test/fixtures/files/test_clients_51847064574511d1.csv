@@ -1,0 +1,4 @@
+name;email;phone;note;guest_max;guest_rx;guest_tx;active
+John Doe;john@example.com;12345678;VIP client;1000;5000;10000;true
+Jane Smith;jane@example.com;87654321;Regular client;500;2000;4000;true
+Bob Johnson;"";11111111;Phone only;"";"";"";false

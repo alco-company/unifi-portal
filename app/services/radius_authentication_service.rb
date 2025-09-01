@@ -5,6 +5,14 @@ class RadiusAuthenticationService
 
   attr_reader :username, :password, :nas_ip, :calling_station_id
 
+  private
+
+  def logger
+    Rails.logger
+  end
+
+  public
+
   def initialize(username:, password:, nas_ip: nil, calling_station_id: nil)
     @username = username.to_s.strip
     @password = password.to_s
@@ -22,6 +30,9 @@ class RadiusAuthenticationService
                    try_email_authentication ||
                    try_admin_user_authentication ||
                    try_device_mac_authentication
+
+      # Handle case where no authentication method succeeded
+      auth_result ||= { success: false, reason: 'User not found' }
 
       if auth_result[:success]
         log_successful_auth(auth_result)

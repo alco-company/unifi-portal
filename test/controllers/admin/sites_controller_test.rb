@@ -4,7 +4,7 @@ class Admin::SitesControllerTest < ActionDispatch::IntegrationTest
   setup do
     @site = sites(:one)
     @user = users(:one)
-    post admin_login_path, params: { email: @user.email, password: "password" }
+    post admin_login_path, params: { email: @user.email, password: "secret" }
   end
 
   test "should get index" do

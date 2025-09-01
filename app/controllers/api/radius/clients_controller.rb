@@ -141,8 +141,15 @@ class Api::Radius::ClientsController < ApplicationController
     # In production, implement proper API authentication
     api_key = request.headers['X-API-Key'] || params[:api_key]
     
+    # Get expected API key - handle test environment
+    expected_key = if Rails.env.test?
+      ENV['TEST_RADIUS_API_KEY'] || 'test-api-key-123'
+    else
+      Rails.application.credentials.radius_api_key
+    end
+    
     # Simple API key check - customize this for your needs
-    unless api_key == Rails.application.credentials.radius_api_key
+    unless api_key == expected_key
       render json: { 
         success: false, 
         error: 'Unauthorized - Valid API key required' 

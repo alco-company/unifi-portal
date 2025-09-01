@@ -1,1 +1,1 @@
-json.partial! "devices/device", device: @device
+json.partial! "admin/devices/device", device: @device

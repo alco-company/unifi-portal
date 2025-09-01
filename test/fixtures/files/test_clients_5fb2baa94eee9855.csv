@@ -1,0 +1,3 @@
+name;email;phone;note;guest_max;guest_rx;guest_tx;active
+Åse Ørsted;åse@example.com;+45 12 34 56 78;Special chars æøå;"";"";"";true
+  John Doe  ;JOHN@EXAMPLE.COM; 12345678 ;Whitespace test;"";"";"";true

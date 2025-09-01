@@ -4,7 +4,7 @@ class Admin::TenantsControllerTest < ActionDispatch::IntegrationTest
   setup do
     @admin_tenant = tenants(:one)
     @user = users(:one)
-    post admin_login_path, params: { email: @user.email, password: "password" }
+    post admin_login_path, params: { email: @user.email, password: "secret" }
   end
 
   test "should get index" do

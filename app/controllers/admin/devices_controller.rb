@@ -54,11 +54,11 @@ class Admin::DevicesController < Admin::BaseController
   def destroy
     if !@device.nil?
       @device.destroy!
-
-      respond_to do |format|
-        format.html { redirect_to admin_client_devices_path(@client), status: :see_other, notice: "Device was successfully destroyed." }
-        format.json { head :no_content }
-      end
+    end
+    
+    respond_to do |format|
+      format.html { redirect_to admin_client_devices_path(@client), status: :see_other, notice: "Device was successfully destroyed." }
+      format.json { head :no_content }
     end
   end
 
@@ -85,6 +85,6 @@ class Admin::DevicesController < Admin::BaseController
 
     # Only allow a list of trusted parameters through.
     def device_params
-      params.expect(device: [ :client_id, :last_ap, :mac_address, :site_id, :last_authenticated_at, :last_otp, :authentication_expire_at ])
+      params.expect(device: [ :client_id, :last_ap, :mac_address, :site_id, :last_authenticated_at, :last_otp, :authentication_expire_at, :device_name, :radius_enabled, :radius_username, :active ])
     end
 end

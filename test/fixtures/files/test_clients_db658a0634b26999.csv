@@ -1,0 +1,8 @@
+name;email;phone;note;guest_max;guest_rx;guest_tx;active
+Active True;active1@example.com;11111111;"";"";"";"";true
+Active False;active2@example.com;22222222;"";"";"";"";false
+Active Yes;active3@example.com;33333333;"";"";"";"";yes
+Active No;active4@example.com;44444444;"";"";"";"";no
+Active 1;active5@example.com;55555555;"";"";"";"";1
+Active 0;active6@example.com;66666666;"";"";"";"";0
+Active Empty;active7@example.com;77777777;"";"";"";"";""

@@ -151,6 +151,27 @@ module UnifiApiStubs
   end
 
   def stub_unifi_authorize_login(unifi_id, base_url = "https://heimdall.test")
+    response_body = {
+      "meta": {
+        "rc": "ok"
+      },
+      "data": [
+        {
+          "mac": "1c:71:25:63:e4:24",
+          "ap_mac": "94:2a:6f:d0:30:57", 
+          "start": Time.current.to_i,
+          "site_id": "6803b1a107ae330ef4d6f5b8",
+          "authorized_by": "api",
+          "_id": "test_guest_id",
+          "end": (Time.current + 24.hours).to_i,
+          "qos_rate_max_up": 1,
+          "qos_rate_max_down": 1,
+          "qos_usage_quota": 1048576,
+          "qos_overwrite": true
+        }
+      ]
+    }
+    
     stub_request(:post, "https://heimdall.test/api/s/default/cmd/stamgr").
       with(
         body: "{\"cmd\":\"authorize-guest\",\"mac\":\"1c:71:25:63:e4:24\",\"minutes\":1440,\"up\":1,\"down\":1,\"bytes\":1048576}",
@@ -161,6 +182,32 @@ module UnifiApiStubs
           "Cookie"=>"test_cookie",
           "User-Agent"=>"Ruby"
         }).
-      to_return(status: 200, body: "", headers: { "Content-Type" => "application/json" })
+      to_return(status: 200, body: response_body.to_json, headers: { "Content-Type" => "application/json" })
+      
+    # Stub the client list call that happens after authorization
+    clients_response = {
+      "meta": {
+        "rc": "ok"
+      },
+      "data": [
+        {
+          "mac": "1c:71:25:63:e4:24",
+          "ip": "10.0.0.100",
+          "authorized": true,
+          "_id": "test_client_id"
+        }
+      ]
+    }
+    
+    stub_request(:get, "https://heimdall.test/api/s/default/stat/sta").
+      with(
+        headers: {
+          "Accept"=>"application/json",
+          "Accept-Encoding"=>"gzip;q=1.0,deflate;q=0.6,identity;q=0.3",
+          "Content-Type"=>"application/json",
+          "Cookie"=>"test_cookie",
+          "User-Agent"=>"Ruby"
+        }).
+      to_return(status: 200, body: clients_response.to_json, headers: { "Content-Type" => "application/json" })
   end
 end

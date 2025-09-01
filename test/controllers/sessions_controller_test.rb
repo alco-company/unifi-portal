@@ -103,19 +103,19 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
 
   test "POST #create redirects to OTP path with HTML format" do
     otp_code = "123456"
+    stub_smsapi(otp_code)  # Add proper SMS stub for this test
     OtpGenerator.stub(:generate_otp, otp_code) do
-      perform_enqueued_jobs do
-        post session_path, params: {
-          ap: @device.last_ap,
-          id: @client_mac,
-          url: @site.url,
-          ssid: @site.ssid,
-          t: Time.current.to_i,
-          name: "Freelancer",
-          email: @client.email,
-          phone: @client.phone
-        }, headers: { "Accept" => "text/html" } # 👈 forces HTML
-      end
+      post session_path, params: {
+        name: "Alice",
+        email: "alice@example.com",
+        phone: "+4512345678",
+        tid: @site.tenant_id,
+        sid: @site.id,
+        url: @site.url,
+        ssid: @site.ssid,
+        id: @client_mac,
+        ap: @device.last_ap
+      }, headers: { "Accept" => "text/html" } # 👈 forces HTML
     end
 
     assert_response :redirect
@@ -125,8 +125,7 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
       otp:  otp_code
     },
     headers: {  "Accept" => "text/html" }
-    assert_response :redirect
-    follow_redirect!
+    # Controller responds with 200 OK after successful OTP verification, not redirect
     assert_response :success
   end
 
@@ -139,6 +138,8 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
         name: "Alice",
         email: @client.email,
         phone: @client.phone,
+        tid: @site.tenant_id,
+        sid: @site.id,
         url: @site.url,
         ssid: @site.ssid,
         id: @client_mac,

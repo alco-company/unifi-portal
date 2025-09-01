@@ -126,9 +126,9 @@ class AdminNasFreeradiusIntegrationTest < ApplicationSystemTestCase
     # Verify FreeRADIUS config was updated and doesn't contain the deleted NAS
     if File.exist?(@config_file)
       config_content = File.read(@config_file)
-      assert_not_match(/client delete-test \{/, config_content)
-      assert_not_match(/ipaddr = 192\.168\.1\.150/, config_content)
-      assert_not_match(/deletesecret/, config_content)
+      refute_match(/client delete-test \{/, config_content)
+      refute_match(/ipaddr = 192\.168\.1\.150/, config_content)
+      refute_match(/deletesecret/, config_content)
     end
   end
 
@@ -164,8 +164,8 @@ class AdminNasFreeradiusIntegrationTest < ApplicationSystemTestCase
       # Verify FreeRADIUS config was updated
       if File.exist?(@config_file)
         config_content = File.read(@config_file)
-        assert_not_match(/bulk-test-1/, config_content)
-        assert_not_match(/bulk-test-2/, config_content)
+        refute_match(/bulk-test-1/, config_content)
+        refute_match(/bulk-test-2/, config_content)
       end
     end
   end

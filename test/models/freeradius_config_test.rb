@@ -89,8 +89,8 @@ class FreeradiusConfigTest < ActiveSupport::TestCase
     assert_match(/shortname = minimal/, config)
     
     # Should not include type or description lines
-    assert_not_match(/type = $/, config) # Empty type
-    assert_not_match(/# $/, config) # Empty description
+    refute_match(/type = $/, config) # Empty type
+    refute_match(/# $/, config) # Empty description
     
     minimal_nas.destroy
   end
@@ -106,9 +106,9 @@ class FreeradiusConfigTest < ActiveSupport::TestCase
     # Each block should have required fields
     client_blocks.each do |block_content|
       block_text = block_content.first
-      assert_match(/ipaddr = /, block_text), "Each client should have ipaddr"
-      assert_match(/secret = /, block_text), "Each client should have secret"
-      assert_match(/require_message_authenticator = /, block_text), "Each client should have require_message_authenticator"
+      assert_match(/ipaddr = /, block_text, "Each client should have ipaddr")
+      assert_match(/secret = /, block_text, "Each client should have secret")
+      assert_match(/require_message_authenticator = /, block_text, "Each client should have require_message_authenticator")
     end
   end
   

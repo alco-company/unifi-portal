@@ -7,14 +7,29 @@ class NasTest < ActiveSupport::TestCase
   end
 
   test "should save valid nas" do
-  nas = Nas.new(site: sites(:one), nasname: "192.168.1.1", secret: "supersecret")
+    nas = Nas.new(
+      site: sites(:one), 
+      nasname: "192.168.1.1", 
+      shortname: "test-nas", 
+      secret: "supersecret"
+    )
     assert nas.save, "Could not save a valid NAS"
   end
 
   test "should not save nas with duplicate nasname" do
-  Nas.create!(site: sites(:one), nasname: "192.168.1.1", secret: "secret1")
-  nas = Nas.new(site: sites(:one), nasname: "192.168.1.1", secret: "secret2")
-  assert_not nas.valid?, "NAS should be invalid due to duplicate nasname"
-  assert_includes nas.errors[:nasname], "has already been taken"
+    Nas.create!(
+      site: sites(:one), 
+      nasname: "192.168.1.1", 
+      shortname: "unique-nas-1", 
+      secret: "secret123456"
+    )
+    nas = Nas.new(
+      site: sites(:one), 
+      nasname: "192.168.1.1", 
+      shortname: "unique-nas-2", 
+      secret: "secret234567"
+    )
+    assert_not nas.valid?, "NAS should be invalid due to duplicate nasname"
+    assert_includes nas.errors[:nasname], "has already been taken"
   end
 end

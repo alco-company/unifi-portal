@@ -1,5 +1,14 @@
 # CHANGELOG
 
+## 0.7.7
+
+- making all tests green
+
+## 0.7.6
+
+- added RADIUS server
+- bug on device.rb
+
 ## 0.7.5
 
 - adding env to staging deploy

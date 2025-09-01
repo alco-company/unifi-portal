@@ -25,7 +25,7 @@ module ActiveSupport
 
     def login_as(user)
       if respond_to?(:post)
-        post admin_login_path, params: { email: user.email, password: "password" }
+        post admin_login_path, params: { email: user.email, password: "secret" }
       else
         raise "login_as not implemented for this type of test"
       end
