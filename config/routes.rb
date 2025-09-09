@@ -30,7 +30,7 @@ Rails.application.routes.draw do
           delete :delete_all, to: "users#delete_all", as: :delete_all
         end
       end
-      resources :radius_devices, only: [:index, :show] do
+      resources :radius_devices, only: [ :index, :show ] do
         member do
           post :enable_radius
           delete :disable_radius
@@ -59,15 +59,15 @@ Rails.application.routes.draw do
       post :authorize
       post :accounting
       get :status
-      
+
       # NAS client management
-      resources :clients, only: [:index, :create, :show, :update, :destroy] do
+      resources :clients, only: [ :index, :create, :show, :update, :destroy ] do
         member do
           post :test_connection
         end
       end
-      post 'clients/generate_config', to: 'clients#generate_config'
-      post 'clients/reload_freeradius', to: 'clients#reload_freeradius'
+      post "clients/generate_config", to: "clients#generate_config"
+      post "clients/reload_freeradius", to: "clients#reload_freeradius"
     end
   end
 
@@ -75,8 +75,9 @@ Rails.application.routes.draw do
 
   get "/check_pnr", to: "pnumber#check_pnr", as: :check_pnr
   get "/check_phone", to: "pnumber#check_phone", as: :check_phone
-  
+
   # WiFi Portal Routes
+  get "/wifi_qr", to: "wifi_portal#show", as: :wifi_qr, defaults: { format: :svg } # render QR Code
   get "wifi", to: "wifi_portal#index", as: :wifi_portal
   get "wifi/setup/:token", to: "wifi_portal#setup", as: :wifi_setup
   post "wifi/verify_phone", to: "wifi_portal#verify_phone"

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_08_26_204400) do
+ActiveRecord::Schema[8.1].define(version: 2025_09_08_163547) do
   create_table "clients", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.boolean "active", default: true
     t.datetime "created_at", null: false
@@ -82,6 +82,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_08_26_204400) do
     t.integer "guest_tx", default: 0, null: false
     t.string "name"
     t.string "password"
+    t.text "qr_code_data"
     t.string "ssid"
     t.bigint "tenant_id", null: false
     t.string "unifi_id"

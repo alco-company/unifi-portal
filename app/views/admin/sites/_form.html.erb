@@ -22,6 +22,11 @@
   </div>
 
   <div class="my-5">
+    <%= form.label :slug %>
+    <%= form.text_field :slug, autofocus: true, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": site.errors[:name].none?, "border-red-400 focus:outline-red-600": site.errors[:name].any?}] %>
+  </div>
+
+  <div class="my-5">
     <%= form.label :url %>
     <%= form.text_field :url, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": site.errors[:url].none?, "border-red-400 focus:outline-red-600": site.errors[:url].any?}] %>
   </div>
@@ -30,8 +35,8 @@
     <%= form.label :ssid %>
     <%= form.text_field :ssid, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": site.errors[:ssid].none?, "border-red-400 focus:outline-red-600": site.errors[:ssid].any?}] %>
   </div>
-    
-  <div data-controller="controller-type">
+
+  <div data-controller="controller-type" data-controller-type-type-value="<%= site.controller_type %>">
     <div class="mb-4">
       <label class="font-semibold block mb-1">Controller Type</label>
       <div class="space-x-4">

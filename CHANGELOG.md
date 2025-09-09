@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 0.7.8
+
+- show QRCode on site management
+- 
 ## 0.7.7
 
 - making all tests green
