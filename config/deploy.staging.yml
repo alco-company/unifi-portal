@@ -125,7 +125,7 @@ accessories:
     roles:
     - web
     # Expose RADIUS authentication (1812), accounting (1813) and status (18120) ports
-    port: "1812:1812/udp"
+    port: "1812:1812/udp,1813:1813/udp"
     env:
       clear:
         # Heimdall API endpoint for REST authentication using stable hostname
