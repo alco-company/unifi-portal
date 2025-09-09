@@ -22,10 +22,16 @@ server default {
 
     # Authorization section
     authorize {
+        rest
         # Always accept for now - will add SQL later
-        update control {
-            &Auth-Type := Accept
+        if (ok || updated) {
+            update control {
+                &Auth-Type := Accept
+            }
+        } else {
+            reject
         }
+        pap
     }
 
     # Authentication section

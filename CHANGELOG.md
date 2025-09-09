@@ -6,6 +6,8 @@
 - verify site
 - build device if none
 - validate device mac_addr
+- add REST to RADIUS
+
 
 ## 0.7.7
 
