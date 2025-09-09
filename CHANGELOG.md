@@ -4,6 +4,7 @@
 
 - show QRCode on site management
 - verify site
+- build device if none
 
 ## 0.7.7
 

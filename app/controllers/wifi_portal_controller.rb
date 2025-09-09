@@ -2,30 +2,13 @@ class WifiPortalController < ApplicationController
   layout "guest"
   skip_before_action :verify_authenticity_token, only: [ :verify_phone, :verify_email ]
 
-  # def show
-  #   slug = params[:site].to_s
-  #   @site = Site.find_by!(slug: slug)
-
-  #   ssid = @site.ssid.to_s
-  #   # Choose a key source; adjust if you store Wi‑Fi passphrase elsewhere
-  #   key = @site.slug || redirect_to("/wifi") and return
-  #   auth = key.present? ? "WPA" : "" # WPA/WPA2 by default; set "" for open networks
-
-  #   payload = wifi_payload(ssid: ssid, key: key, auth: auth, hidden: false)
-
-  #   qr = RQRCode::QRCode.new(payload)
-  #   svg = qr.as_svg(module_size: 6, standalone: true, use_path: true)
-
-  #   render inline: svg, content_type: "image/svg+xml"
-  # end
-
-
   # GET /wifi
   def index
     # Landing page for WiFi self-service portal
     # Users can verify their identity via phone or email
     slug = params[:site].to_s
-    @site = Site.find_by(slug: slug) || nil
+    site = Site.find_by(slug: slug) || nil
+    session[:site_id] = site.id if site
   end
 
   # GET /wifi/setup/:token
@@ -36,8 +19,6 @@ class WifiPortalController < ApplicationController
     @radius_devices = @client.devices.joins(:site).where(sites: { controller_type: "radius" })
     @has_radius_sites = @radius_devices.any?
   end
-
-
 
   # t.boolean "active", default: true
   # t.datetime "created_at", null: false
@@ -50,29 +31,16 @@ class WifiPortalController < ApplicationController
   # t.string "phone"
   # t.bigint "tenant_id", null: false
   #
-  #
   # POST /wifi/verify_phone
   def verify_phone
     phone = params[:phone]&.gsub(/\D/, "")
-    @site = Site.find_by(slug: params[:site]) if params[:site].present?
 
     if phone.present? && phone.length >= 8
-      @client = Client.find_by("REGEXP_REPLACE(phone, '[^0-9]', '') = ?", phone)
-      unless @client
-        @client = Client.create active: true,
-          email: phone,
-          phone: phone,
-          tenant_id: @site.tenant_id,
-          guest_max: 0,
-          guest_rx: 0,
-          guest_tx: 0,
-          name: "Guest User(#{phone})"
-      end
+      @client = build_client(phone: phone)
 
       if @client&.active?
         send_verification_otp(@client, :phone)
         session[:wifi_client_id] = @client.id
-        session[:site_id] = @site.id if @site
         session[:verification_method] = "phone"
 
         render json: {
@@ -98,13 +66,13 @@ class WifiPortalController < ApplicationController
   def verify_email
     email = params[:email]&.downcase&.strip
 
+
     if email.present? && email.match?(URI::MailTo::EMAIL_REGEXP)
-      @client = Client.find_by(email: email, active: true)
+      @client = build_client(email: email)
 
       if @client
         send_verification_otp(@client, :email)
         session[:wifi_client_id] = @client.id
-        session[:site_id] = @site.id if @site
         session[:verification_method] = "email"
 
         render json: {
@@ -140,13 +108,12 @@ class WifiPortalController < ApplicationController
 
     if verify_client_otp(@client, otp)
       session[:verified_client_id] = @client.id
-      site = Site.find_by(id: session[:site_id]) if session[:site_id].present?
       session.delete(:wifi_client_id)
 
       render json: {
         success: true,
         message: "Verification successful",
-        redirect_url: wifi_dashboard_path(site: site)
+        redirect_url: wifi_dashboard_path(site: session[:site_id])
       }
     else
       render json: {
@@ -164,6 +131,9 @@ class WifiPortalController < ApplicationController
 
     @radius_devices = @client.devices.joins(:site).where(sites: { controller_type: "radius" })
     @unifi_devices = @client.devices.joins(:site).where(sites: { controller_type: [ "login", "api_key" ] })
+    if @site.radius? && @radius_devices.empty?
+      @radius_devices = build_device
+    end
   end
 
   # POST /wifi/enable_device_radius
@@ -301,5 +271,33 @@ class WifiPortalController < ApplicationController
 
   def wifi_payload(ssid:, key:, auth:, hidden:)
     "WIFI:T:#{auth};S:#{esc(ssid)};P:#{esc(key)};H:#{hidden ? 'true' : 'false'};;"
+  end
+
+  def build_client(site: nil, phone: nil, email: nil)
+    client = Client.find_by("REGEXP_REPLACE(phone, '[^0-9]', '') = ?", phone) unless phone.nil?
+    client = Client.find_by(email: email, active: true) unless email.nil?
+    site = session[:site_id]
+
+    unless client
+      client = Client.create active: true,
+        email: phone,
+        phone: phone,
+        tenant_id: site&.tenant_id,
+        guest_max: 0,
+        guest_rx: 0,
+        guest_tx: 0,
+        name: "Guest User(#{phone || email})"
+    end
+    client
+  end
+
+  def build_device
+    aea = (@client.created_at < Time.current - 8.hours) ? Time.current + 3.years : 1.day.from_now
+    device = @client.devices.create site_id: @site.id,
+      authentication_expire_at: aea,
+      radius_enabled: true,
+      device_name: "Device-#{SecureRandom.hex(4)}",
+      mac_address: Rails.env.development? ? "00:0C:00:00:00:01" : request.remote_ip
+    [ device ]
   end
 end
