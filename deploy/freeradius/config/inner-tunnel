@@ -7,7 +7,16 @@ server inner-tunnel {
     }
 
     authorize {
-        files
+        preprocess
+        # files # disable: DEFAULT rules are forcing Reject
+        rest
+        if (ok || updated) {
+            update control {
+                Auth-Type := Accept
+            }
+        } else {
+            reject
+        }
         eap {
             ok = return
         }

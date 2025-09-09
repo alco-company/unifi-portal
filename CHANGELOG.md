@@ -7,6 +7,7 @@
 - build device if none
 - validate device mac_addr
 - add REST to RADIUS
+- add REST to RADIUS II
 
 
 ## 0.7.7
