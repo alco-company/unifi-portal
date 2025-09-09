@@ -237,11 +237,18 @@
       <div class="header">
         <div class="logo">📶 WiFi Dashboard</div>
         <div class="welcome">Welcome, <%= @client.name || @client.email %></div>
+        <% unless @site.present? %>
+          <div class="form-group">
+            <label>You did not get here by scanning a QR Code!</label>
+            <p class="mt-2">We are sorry but we are not able to register your device without a valid QR Code.</p>
+            <p class="mt-2">The QR Code usually will be visible in a lobby, near the entrance. Please ask staff for assistance.</p>
+          </div>
+        <% end %>
       </div>
 
       <div id="alerts"></div>
 
-      <% if @radius_devices.any? %>
+      <% if @site.present? && @radius_devices.any? %>
         <div class="card">
           <div class="card-title">
             🔐 RADIUS WiFi Devices
@@ -296,7 +303,7 @@
         </div>
       <% end %>
 
-      <% if @unifi_devices.any? %>
+      <% if @site.present? && @unifi_devices.any? %>
         <div class="card">
           <div class="card-title">
             🌐 Guest WiFi Devices
@@ -330,7 +337,7 @@
         </div>
       <% end %>
 
-      <% if @radius_devices.empty? && @unifi_devices.empty? %>
+      <% if @site.present? && @radius_devices.empty? && @unifi_devices.empty? %>
         <div class="card">
           <div class="empty-state">
             <h3>No Devices Found</h3>

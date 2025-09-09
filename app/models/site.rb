@@ -19,8 +19,8 @@ class Site < ApplicationRecord
 
   def qr_code_url
     return nil unless slug.present?
-    return "https://unifi-portal.site/wifi_qr.svg?site=#{slug}" unless Rails.env.development?
-    "https://localhost:3000/wifi_qr.svg?site=#{slug}"
+    return "https://unifi-portal.site/wifi?site=#{slug}" unless Rails.env.development?
+    "https://localhost:3000/wifi?site=#{slug}"
   end
 
   def qr_code_svg

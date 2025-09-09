@@ -3,7 +3,8 @@
 ## 0.7.8
 
 - show QRCode on site management
-- 
+- verify site
+
 ## 0.7.7
 
 - making all tests green
