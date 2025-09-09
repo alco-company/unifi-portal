@@ -5,6 +5,7 @@
 - show QRCode on site management
 - verify site
 - build device if none
+- validate device mac_addr
 
 ## 0.7.7
 

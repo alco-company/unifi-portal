@@ -145,7 +145,7 @@ class WifiPortalController < ApplicationController
     device_name = params[:device_name].present? ? params[:device_name] : "My Device"
 
     if device&.site&.radius?
-      device.update!(device_name: device_name)
+      device.update!(device_name: device_name, radius_username: @client.email || @client.phone)
 
       if device.enable_radius_access!
         render json: {
@@ -297,7 +297,12 @@ class WifiPortalController < ApplicationController
       authentication_expire_at: aea,
       radius_enabled: true,
       device_name: "Device-#{SecureRandom.hex(4)}",
-      mac_address: Rails.env.development? ? "00:0C:00:00:00:01" : request.remote_ip
+      mac_address: request.remote_ip
+    unless device.valid?
+      if device.errors.full_messages.filter { |m| m =~ /Mac/ }.count > 0
+        device.update!(mac_address: "00:0C:00:00:00:01")
+      end
+    end
     [ device ]
   end
 end

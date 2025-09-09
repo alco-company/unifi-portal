@@ -68,10 +68,6 @@ I've created a comprehensive solution that seamlessly integrates RADIUS authenti
 
 The solution leverages your existing OTP infrastructure, user management, and CSV import functionality while adding powerful RADIUS capabilities that work alongside UniFi deployments. Users get a consistent experience whether they're connecting to RADIUS or UniFi-managed networks.
 
-
-
-
-
 Let me create a summary of the comprehensive test suite I've created, as the tests demonstrate all the key functionality works correctly:
 
 Summary: Comprehensive Test Suite for RADIUS and CSV Integration
