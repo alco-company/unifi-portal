@@ -9,6 +9,7 @@
 - add REST to RADIUS
 - add REST to RADIUS II
 - add REST to RADIUS III
+- add REST to RADIUS IV
 
 
 ## 0.7.7

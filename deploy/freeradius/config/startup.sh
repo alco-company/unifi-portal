@@ -45,6 +45,7 @@ mkdir -p /etc/freeradius/policy.d
 echo "Removing default configurations..."
 rm -rf /etc/freeradius/* || true
 rm -rf /etc/raddb/* || true
+
 # Keep dictionary files but remove config templates
 rm -rf /usr/share/freeradius/mods-* || true
 rm -rf /usr/share/freeradius/sites-* || true
@@ -55,7 +56,13 @@ mkdir -p /etc/freeradius/policy.d
 mkdir -p /etc/freeradius/mods-config/attr_filter
 
 # Create /etc/raddb directory since FreeRADIUS expects config there
+
+# Set canonical FreeRADIUS config dir and symlink /etc/freeradius -> /etc/raddb
 echo "Setting up FreeRADIUS expected directories..."
+CONF_DIR="/etc/raddb"
+mkdir -p "$CONF_DIR"
+ln -sfn "$CONF_DIR" /etc/freeradius
+
 mkdir -p /etc/raddb/mods-enabled
 mkdir -p /etc/raddb/sites-enabled
 mkdir -p /etc/raddb/policy.d
@@ -264,22 +271,24 @@ done
 
 # Create users file with test user
 echo "Creating users file with test user..."
-cat > /etc/freeradius/users <<'EOF'
-# Test user for FreeRADIUS file-based authentication
-#testuser Cleartext-Password := "testpass123"
-#    Reply-Message = "Hello %{User-Name}",
-#    Session-Timeout = 86400
-
-# Default fall-through for PAP authentication
-#DEFAULT Auth-Type := PAP
-#    Reply-Message = "Default PAP Authentication",
-#    Session-Timeout = 3600,
-#    Fall-Through = Yes
-
-# Final default reject
-DEFAULT Auth-Type := Reject
-    Reply-Message = "Authentication failed"
-EOF
+touch /etc/freeradius/users
+# cat > /etc/freeradius/users <<'EOF'
+# # Test user for FreeRADIUS file-based authentication
+# testuser Cleartext-Password := "testpass123"
+#     Reply-Message = "Hello %{User-Name}",
+#     Session-Timeout = 86400
+# 
+# # Default fall-through for PAP authentication
+# DEFAULT Auth-Type := PAP
+#     Reply-Message = "Default PAP Authentication",
+#     Session-Timeout = 3600,
+#     Fall-Through = Yes
+# 
+# # Final default reject
+# DEFAULT Auth-Type := Reject
+#     Reply-Message = "Authentication failed"
+# EOF
+# 
 
 # Create empty acct_users file
 echo "Creating empty acct_users file..."
@@ -483,9 +492,9 @@ mkdir -p /tmp/radiusd
 chmod 755 /tmp/radiusd
 
 # Copy all files to /etc/raddb as well since FreeRADIUS expects them there
-echo "Copying configuration files to /etc/raddb..."
-cp -r /etc/freeradius/* /etc/raddb/ 2>/dev/null || true
-echo "- Copied all configuration files to /etc/raddb"
+# echo "Copying configuration files to /etc/raddb..."
+# cp -r /etc/freeradius/* /etc/raddb/ 2>/dev/null || true
+# echo "- Copied all configuration files to /etc/raddb"
 
 # Copy inner-tunnel configuration if it exists
 if [ -f "/config/inner-tunnel" ]; then
