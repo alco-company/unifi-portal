@@ -8,6 +8,7 @@
 - validate device mac_addr
 - add REST to RADIUS
 - add REST to RADIUS II
+- add REST to RADIUS III
 
 
 ## 0.7.7

@@ -266,15 +266,15 @@ done
 echo "Creating users file with test user..."
 cat > /etc/freeradius/users <<'EOF'
 # Test user for FreeRADIUS file-based authentication
-testuser Cleartext-Password := "testpass123"
-    Reply-Message = "Hello %{User-Name}",
-    Session-Timeout = 86400
+#testuser Cleartext-Password := "testpass123"
+#    Reply-Message = "Hello %{User-Name}",
+#    Session-Timeout = 86400
 
 # Default fall-through for PAP authentication
-DEFAULT Auth-Type := PAP
-    Reply-Message = "Default PAP Authentication",
-    Session-Timeout = 3600,
-    Fall-Through = Yes
+#DEFAULT Auth-Type := PAP
+#    Reply-Message = "Default PAP Authentication",
+#    Session-Timeout = 3600,
+#    Fall-Through = Yes
 
 # Final default reject
 DEFAULT Auth-Type := Reject
