@@ -3,151 +3,120 @@
 class Api::RadiusController < ApplicationController
   # Skip CSRF protection for RADIUS API calls
   skip_before_action :verify_authenticity_token
-  
-  # Skip any authentication - we'll handle RADIUS-specific auth
-  # skip_before_action :authenticate_user! if defined?(authenticate_user!)
-  
+  before_action :coerce_radius_params   # ADD THIS
   before_action :validate_radius_request
   before_action :log_radius_request
 
   # POST /api/radius/authenticate
   # FreeRADIUS calls this endpoint to authenticate users
   def authenticate
-    username = params[:username]
-    password = params[:password]
-    nas_ip = params[:nas_ip] || request.remote_ip
-    calling_station_id = params[:calling_station_id]
-    
+    username = params[:username].to_s
+    password = params[:password].to_s
+    nas_ip = (params[:nas_ip].presence || request.remote_ip).to_s
+    calling_station_id = params[:calling_station_id].to_s
+
     Rails.logger.info("RADIUS Auth Request: username=#{username}, nas_ip=#{nas_ip}, calling_station=#{calling_station_id}")
-    
-    # Try Device-based RADIUS authentication first
+
     device = find_radius_device(username)
-    
+
     if device&.radius_enabled?
-      # Verify NAS is authorized
       unless authorized_nas?(nas_ip, device.site)
         Rails.logger.warn("RADIUS Auth Failed: Unauthorized NAS #{nas_ip} for site #{device.site&.name}")
-        render json: {
-          success: false,
-          username: username,
-          reason: "Unauthorized network access point"
-        }, status: 401
-        return
+        render json: { reply: { "Reply-Message" => "Unauthorized NAS" } }, status: 401 and return
       end
-      
+
       auth_result = device.radius_authenticate(username, password)
-      
+
       if auth_result[:success]
         Rails.logger.info("RADIUS Auth Success: #{username} from #{calling_station_id}")
-        render json: {
-          success: true,
-          username: username,
-          session_timeout: device.session_timeout,
-          method: 'device_otp',
-          tenant: device.client.tenant.name,
-          reply_attributes: auth_result[:user_attributes]
-        }, status: 200
-        return
+        render json: { reply: build_reply_attributes(auth_result) }, status: 200 and return
       else
         Rails.logger.warn("RADIUS Auth Failed: #{auth_result[:error]} for #{username}")
-        render json: {
-          success: false,
-          username: username,
-          reason: auth_result[:error]
-        }, status: 401
-        return
-      end
-    end
-    
-    # Fall back to legacy authentication service if no RADIUS device found
-    if defined?(RadiusAuthenticationService)
-      auth_service = RadiusAuthenticationService.new(
-        username: username,
-        password: password, 
-        nas_ip: nas_ip,
-        calling_station_id: calling_station_id
-      )
-
-      auth_result = auth_service.authenticate
-
-      if auth_result[:success]
-        render json: {
-          success: true,
-          username: username,
-          session_timeout: auth_result[:session_timeout],
-          method: auth_result[:method],
-          tenant: auth_result[:tenant]&.name,
-          reply_attributes: build_reply_attributes(auth_result)
-        }, status: 200
-      else
-        render json: {
-          success: false,
-          username: username,
-          reason: auth_result[:reason] || 'Authentication failed'
-        }, status: 401
+        render json: { reply: { "Reply-Message" => auth_result[:error].to_s } }, status: 401 and return
       end
     else
-      render json: {
-        success: false,
-        username: username,
-        reason: 'User not found'
-      }, status: 401
+      render json: { reply: { "Reply-Message" => "No device found" } }, status: 401
     end
+
+    # if defined?(RadiusAuthenticationService)
+    #   auth_result = RadiusAuthenticationService.new(
+    #     username: username, password: password, nas_ip: nas_ip, calling_station_id: calling_station_id
+    #   ).authenticate
+
+    #   if auth_result[:success]
+    #     render json: { reply: build_reply_attributes(auth_result) }, status: 200
+    #   else
+    #     render json: { reply: { "Reply-Message" => (auth_result[:reason] || "Authentication failed") } }, status: 401
+    #   end
+    # else
+    #   render json: { reply: { "Reply-Message" => "User not found" } }, status: 401
+    # end
   rescue => e
     Rails.logger.error "RADIUS API Error: #{e.message}\n#{e.backtrace.join("\n")}"
-    render json: {
-      success: false,
-      error: 'Internal server error'
-    }, status: 500
+    render json: { reply: { "Reply-Message" => "Internal server error" } }, status: 500
   end
 
-  # POST /api/radius/authorize  
+  # POST /api/radius/authorize
   # FreeRADIUS calls this for authorization checks
+  #
+  # POST "/api/radius/authorize"
+  # Parameters: {
+  # "User-Name" => {
+  #   "type" => "string",
+  #   "value" => ["1267031629d3"]
+  # },
+  # "NAS-IP-Address" => {
+  #   "type" => "ipaddr",
+  #   "value" => ["10.4.3.242"]
+  # }, "NAS-Port" => {
+  #   "type" => "integer",
+  #   "value" => [0]
+  # }, "Event-Timestamp" => {
+  #   "type" => "date",
+  #   "value" => ["Sep 10 2025 16:58:51 CEST"]
+  # }, "Message-Authenticator" => {
+  #   "type" => "octets",
+  #   "value" => ["Lºrä\u000F/¨ \u0087¹n\u0004ý\"UÜ"]
+  # }, "radiu" => {
+  #   "User-Name" => {
+  #     "type" => "string",
+  #     "value" => ["1267031629d3"]
+  #   }, "User-Password" => "[FILTERED]", "NAS-IP-Address" => {
+  #     "type" => "ipaddr",
+  #     "value" => ["10.4.3.242"]
+  #   }, "NAS-Port" => {
+  #     "type" => "integer",
+  #     "value" => [0]
+  #   }, "Event-Timestamp" => {
+  #     "type" => "date",
+  #     "value" => ["Sep 10 2025 16:58:51 CEST"]
+  #   }, "Message-Authenticator" => {
+  #     "type" => "octets",
+  #     "value" => ["Lºrä\u000F/¨ \u0087¹n\u0004ý\"UÜ"]
+  #   }
+  # }
+  #
   def authorize
-    username = params[:username]
-    nas_ip = params[:nas_ip] || request.remote_ip
-    calling_station_id = params[:calling_station_id]
+    username = params[:username].to_s
+    nas_ip = (params[:nas_ip].presence || request.remote_ip).to_s
+    calling_station_id = params[:calling_station_id].to_s
 
-    # Try Device-based RADIUS authorization first
     device = find_radius_device(username)
-    
+
     if device&.radius_enabled? && device.client.active?
-      render json: {
-        success: true,
-        username: username,
-        user_type: 'radius_device',
-        tenant: device.client.tenant.name,
-        reply_attributes: device.radius_user_attributes
-      }, status: 200
-      return
+      render json: { reply: device.radius_user_attributes.merge("Session-Timeout" => device.session_timeout || 86400) }, status: 200 and return
     end
 
-    # Fall back to legacy user info lookup
     user_info = find_user_info(username, calling_station_id)
 
     if user_info[:found]
-      render json: {
-        success: true,
-        username: username,
-        user_type: user_info[:type],
-        tenant: user_info[:tenant]&.name,
-        reply_attributes: {
-          'Session-Timeout' => user_info[:session_timeout] || 86400
-        }
-      }, status: 200
+      render json: { reply: { "Session-Timeout" => user_info[:session_timeout] || 86400 } }, status: 200
     else
-      render json: {
-        success: false,
-        username: username,
-        reason: 'User not found or inactive'
-      }, status: 404
+      render json: { reply: { "Reply-Message" => "User not found or inactive" } }, status: 404
     end
   rescue => e
     Rails.logger.error "RADIUS Authorization Error: #{e.message}"
-    render json: {
-      success: false,
-      error: 'Authorization error'
-    }, status: 500
+    render json: { reply: { "Reply-Message" => "Authorization error" } }, status: 500
   end
 
   # POST /api/radius/accounting
@@ -157,15 +126,15 @@ class Api::RadiusController < ApplicationController
     acct_status_type = params[:acct_status_type]&.downcase
     session_id = params[:acct_session_id]
     nas_ip = params[:nas_ip] || request.remote_ip
-    
+
     Rails.logger.info "RADIUS Accounting: #{username} - #{acct_status_type} (session: #{session_id})"
 
     case acct_status_type
-    when 'start'
+    when "start"
       handle_accounting_start
-    when 'stop' 
+    when "stop"
       handle_accounting_stop
-    when 'update', 'interim-update'
+    when "update", "interim-update"
       handle_accounting_update
     else
       Rails.logger.warn "Unknown accounting status: #{acct_status_type}"
@@ -174,7 +143,7 @@ class Api::RadiusController < ApplicationController
     render json: { success: true }, status: 200
   rescue => e
     Rails.logger.error "RADIUS Accounting Error: #{e.message}"
-    render json: { success: false, error: 'Accounting error' }, status: 500
+    render json: { success: false, error: "Accounting error" }, status: 500
   end
 
   # GET /api/radius/status
@@ -200,22 +169,57 @@ class Api::RadiusController < ApplicationController
 
   private
 
+  # Pull value from either flat params or RADIUS attribute hash {type,value:[...]}
+  def radius_attr_value(name)
+    h = params[name] || params[name.to_s]
+    return nil if h.nil?
+
+    # unwrap ActionController::Parameters -> Hash
+    if defined?(ActionController::Parameters) && h.is_a?(ActionController::Parameters)
+      h = h.to_unsafe_h
+    end
+
+    if h.is_a?(Hash)
+      v = h[:value] || h["value"]
+      return Array(v).first
+    end
+
+    h
+  end
+
+  # Normalize incoming params from FreeRADIUS
+  def coerce_radius_params
+    u = radius_attr_value("User-Name")
+    p = radius_attr_value("User-Password")
+    ni = radius_attr_value("NAS-IP-Address")
+    cs = radius_attr_value("Calling-Station-Id")
+    cd = radius_attr_value("Called-Station-Id")
+    na = radius_attr_value("NAS-Identifier")
+
+    params[:username]           = u.to_s if u.present?
+    params[:password]           = p.to_s if p.present?
+    params[:nas_ip]             = ni.to_s if ni.present?
+    params[:calling_station_id] = cs.to_s if cs.present?
+    params[:called_station_id]  = cd.to_s if cd.present?
+    params[:nas_identifier]     = na.to_s if na.present?
+  end
+
   # Validate that required RADIUS parameters are present
   def validate_radius_request
-    return true if action_name == 'status'
+    return true if action_name == "status"
 
     unless params[:username].present?
       render json: {
         success: false,
-        error: 'Username is required'
+        error: "Username is required"
       }, status: 400
       return false
     end
 
-    if action_name == 'authenticate' && !params[:password].present?
+    if action_name == "authenticate" && !params[:password].present?
       render json: {
         success: false,
-        error: 'Password is required for authentication'
+        error: "Password is required for authentication"
       }, status: 400
       return false
     end
@@ -225,7 +229,7 @@ class Api::RadiusController < ApplicationController
 
   # Log incoming RADIUS requests
   def log_radius_request
-    return if action_name == 'status'
+    return if action_name == "status"
 
     log_data = {
       action: action_name,
@@ -241,30 +245,22 @@ class Api::RadiusController < ApplicationController
 
   # Build RADIUS reply attributes based on authentication result
   def build_reply_attributes(auth_result)
-    attributes = {
-      'Session-Timeout' => auth_result[:session_timeout] || 86400
-    }
-
-    # Add device-specific attributes if available
+    attributes = { "Session-Timeout" => auth_result[:session_timeout] || 86400 }
     if auth_result[:device]
       device = auth_result[:device]
-      attributes['Framed-IP-Address'] = device.last_ap if device.last_ap.present?
+      attributes["Framed-IP-Address"] = device.last_ap if device.last_ap.present?
     end
-
-    # Add client-specific attributes
     if auth_result[:client]
       client = auth_result[:client]
-      # Could add bandwidth limits, etc.
-      attributes['Session-Timeout'] = [attributes['Session-Timeout'], client.guest_max].min if client.guest_max > 0
+      attributes["Session-Timeout"] = [ attributes["Session-Timeout"], client.guest_max ].min if client.guest_max.to_i > 0
     end
-
     attributes
   end
 
   # Find user information for authorization without password
   def find_user_info(username, calling_station_id = nil)
     # Try phone number
-    normalized_phone = username.gsub(/\D/, '')
+    normalized_phone = username.gsub(/\D/, "")
     if normalized_phone.present?
       client = Client.joins(:tenant)
                     .where("REGEXP_REPLACE(phone, '[^0-9]', '') = ?", normalized_phone)
@@ -275,7 +271,7 @@ class Api::RadiusController < ApplicationController
         device = client.devices.where(active: true).first
         return {
           found: true,
-          type: 'client',
+          type: "client",
           client: client,
           device: device,
           tenant: client.tenant,
@@ -285,7 +281,7 @@ class Api::RadiusController < ApplicationController
     end
 
     # Try email
-    if username.include?('@')
+    if username.include?("@")
       # Try client email
       client = Client.joins(:tenant)
                     .where(email: username, active: true)
@@ -296,7 +292,7 @@ class Api::RadiusController < ApplicationController
         device = client.devices.where(active: true).first
         return {
           found: true,
-          type: 'client_email',
+          type: "client_email",
           client: client,
           device: device,
           tenant: client.tenant,
@@ -313,7 +309,7 @@ class Api::RadiusController < ApplicationController
       if user
         return {
           found: true,
-          type: 'admin_user',
+          type: "admin_user",
           user: user,
           tenant: user.tenant,
           session_timeout: 86400
@@ -323,7 +319,7 @@ class Api::RadiusController < ApplicationController
 
     # Try MAC address
     if calling_station_id.present?
-      mac = calling_station_id.downcase.gsub(/[^0-9a-f]/, '').scan(/.{2}/).join(':')
+      mac = calling_station_id.downcase.gsub(/[^0-9a-f]/, "").scan(/.{2}/).join(":")
       device = Device.joins(client: :tenant)
                      .where(mac_address: mac, active: true)
                      .where(clients: { active: true })
@@ -333,7 +329,7 @@ class Api::RadiusController < ApplicationController
       if device
         return {
           found: true,
-          type: 'device_mac',
+          type: "device_mac",
           device: device,
           client: device.client,
           tenant: device.client.tenant,
@@ -350,10 +346,10 @@ class Api::RadiusController < ApplicationController
     username = params[:username]
     session_id = params[:acct_session_id]
     nas_ip = params[:nas_ip]
-    
+
     # Find associated device and update last_authenticated_at
     user_info = find_user_info(username, params[:calling_station_id])
-    
+
     if user_info[:found] && user_info[:device]
       user_info[:device].update(
         last_authenticated_at: Time.current,
@@ -364,30 +360,30 @@ class Api::RadiusController < ApplicationController
     Rails.logger.info "RADIUS Session Started: #{username} (#{session_id})"
   end
 
-  # Handle accounting stop records  
+  # Handle accounting stop records
   def handle_accounting_stop
     username = params[:username]
     session_id = params[:acct_session_id]
     session_time = params[:acct_session_time]
-    
+
     Rails.logger.info "RADIUS Session Ended: #{username} (#{session_id}) - Duration: #{session_time}s"
-    
+
     # Could update device statistics, session history, etc.
   end
 
   # Handle accounting update records
   def handle_accounting_update
-    username = params[:username] 
+    username = params[:username]
     session_id = params[:acct_session_id]
     input_octets = params[:acct_input_octets]
     output_octets = params[:acct_output_octets]
-    
+
     Rails.logger.debug "RADIUS Session Update: #{username} (#{session_id}) - In: #{input_octets}, Out: #{output_octets}"
   end
 
   # Check if database is connected
   def database_connected?
-    ActiveRecord::Base.connection.execute('SELECT 1')
+    ActiveRecord::Base.connection.execute("SELECT 1")
     true
   rescue
     false
@@ -397,16 +393,16 @@ class Api::RadiusController < ApplicationController
   def check_freeradius_tables
     tables = %w[radcheck radreply radacct nas radpostauth]
     existing_tables = []
-    
+
     tables.each do |table|
       begin
         ActiveRecord::Base.connection.execute("SELECT 1 FROM #{table} LIMIT 1")
         existing_tables << table
       rescue
-        # Table doesn't exist or not accessible
+        # Table doesn"t exist or not accessible
       end
     end
-    
+
     {
       required: tables,
       existing: existing_tables,
@@ -424,15 +420,15 @@ class Api::RadiusController < ApplicationController
       radius_enabled_devices: Device.where(radius_enabled: true).count,
       active_admin_users: User.where(active: true).count,
       radius_users: begin
-        ActiveRecord::Base.connection.execute('SELECT COUNT(*) FROM radcheck').first[0]
+        ActiveRecord::Base.connection.execute("SELECT COUNT(*) FROM radcheck").first[0]
       rescue
-        'N/A'
+        "N/A"
       end
     }
   rescue => e
     { error: e.message }
   end
-  
+
   # Find a device by RADIUS username
   def find_radius_device(username)
     Device.joins(:client)
@@ -440,13 +436,13 @@ class Api::RadiusController < ApplicationController
           .where(clients: { active: true })
           .first
   end
-  
+
   # Check if NAS is authorized for the site
   def authorized_nas?(nas_ip, site)
     return true if site.nil? # Allow if no site restriction
     return true if Rails.env.development? # Allow in development
-    
+
     # Check if NAS IP is registered for this site
-    site.nas.where('nasname = ?', nas_ip).exists?
+    site.nas.where("nasname = ?", nas_ip).exists?
   end
 end

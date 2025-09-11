@@ -119,7 +119,7 @@ accessories:
     directories:
       - data:/var/lib/mysql
   freeradius:
-    image: alpine:3.20
+    image: wdiechmann/freeradius:latest
     options:
       network: heimdall
     roles:
@@ -129,7 +129,8 @@ accessories:
     env:
       clear:
         # Heimdall API endpoint for REST authentication using stable hostname
-        ENV_HEIMDALL_API_URL: http://heimdall-web:80
+        HEIMDALL_API_URL: http://heimdall-web:80/api
+        HEIMDALL_API_HOST: http://heimdall-web:80
         # Legacy database config (may be needed for some modules)
         ENV_FREERADIUS_DB_HOST: heimdall-db
         ENV_FREERADIUS_DB_PORT: 3306
@@ -141,15 +142,15 @@ accessories:
         - MYSQL_PASSWORD
     cmd: sh /config/startup.sh
     files:
-      - deploy/freeradius/config/startup.sh:/config/startup.sh
-      - deploy/freeradius/config/minimal_working.conf:/config/minimal_working.conf
-      - deploy/freeradius/config/minimal_radiusd.conf:/config/minimal_radiusd.conf
-      - deploy/freeradius/config/simple_radiusd.conf:/config/simple_radiusd.conf
-      - deploy/freeradius/config/radiusd.conf:/config/radiusd.conf
-      - deploy/freeradius/config/mods-enabled/rest:/config/mods-enabled/rest
-      - deploy/freeradius/config/mods-enabled/eap:/config/mods-enabled/eap
-      - deploy/freeradius/config/inner-tunnel:/config/inner-tunnel
-      - deploy/freeradius/config/generate-certs.sh:/config/generate-certs.sh
+      - deploy/freeradius/startup.sh:/config/startup.sh
+      # - deploy/freeradius/config/minimal_working.conf:/config/minimal_working.conf
+      # - deploy/freeradius/config/minimal_radiusd.conf:/config/minimal_radiusd.conf
+      # - deploy/freeradius/config/simple_radiusd.conf:/config/simple_radiusd.conf
+      # - deploy/freeradius/config/radiusd.conf:/config/radiusd.conf
+      # - deploy/freeradius/config/mods-enabled/rest:/config/mods-enabled/rest
+      # - deploy/freeradius/config/mods-enabled/eap:/config/mods-enabled/eap
+      # - deploy/freeradius/config/inner-tunnel:/config/inner-tunnel
+      # - deploy/freeradius/config/generate-certs.sh:/config/generate-certs.sh
     directories:
       - freeradius_config:/config
       - freeradius_logs:/var/log/radius

@@ -1,0 +1,11 @@
+#!/bin/bash
+#
+# HEIMDALL_API_URL=http://localhost:3000/api
+# HEIMDALL_API_HOST=http://localhost:3000
+#
+docker run \
+  --rm \
+  --name freeradius \
+  -e "HEIMDALL_API_URL=${HEIMDALL_API_URL}" \
+  -e "HEIMDALL_API_BASE=${HEIMDALL_API_HOST}" \
+  -t wdiechmann/freeradius:latest

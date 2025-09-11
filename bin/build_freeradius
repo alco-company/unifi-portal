@@ -1,0 +1,5 @@
+#!/bin/bash
+pushd deploy/freeradius
+rm -rf raddb_local && cp -RL raddb/ raddb_local
+docker buildx build --platform linux/arm64 -t wdiechmann/freeradius:latest -f Dockerfile . --push
+popd

@@ -42,3 +42,10 @@ cookie.txt
 
 # ignore WARP
 WARP.md
+
+# ignore deploy/freeradius/ more
+/deploy/freeradius/raddb
+/deploy/freeradius/config_not_used
+/deploy/freeradius/raddb_local
+!/deploy/freeradius/raddb_local/mods-enabled/heimdall
+!/deploy/freeradius/raddb_local/sites-enabled/*

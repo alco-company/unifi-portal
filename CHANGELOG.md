@@ -10,6 +10,7 @@
 - add REST to RADIUS II
 - add REST to RADIUS III
 - add REST to RADIUS IV
+- fresh install of freeradius + docker
 
 
 ## 0.7.7
