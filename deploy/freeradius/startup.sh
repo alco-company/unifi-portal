@@ -1,19 +1,21 @@
 #!/bin/bash
 
-echo "...setting environment variables"
-# Replace ${ENV_HEIMDALL_API_URL} with actual value in all config files
-for config_file in /etc/raddb/mods-enabled/heimdall; do
-    if [ -f "$config_file" ]; then
-        pattern='%{env:HEIMDALL_API_URL}'
-        replacement=$(printf '%s' "$HEIMDALL_API_URL" | sed -e 's/[&|\\/]/\\&/g')
-        sed -i '' "s|$pattern|$replacement|g" "$config_file"
-        pattern='%{env:HEIMDALL_API_HOST}'
-        replacement=$(printf '%s' "$HEIMDALL_API_HOST" | sed -e 's/[&|\\/]/\\&/g')
-        sed -i '' "s|$pattern|$replacement|g" "$config_file"
-    fi
-done
+set -e
+
+: "${HEIMDALL_API_URL:?HEIMDALL_API_URL not set}"
+: "${HEIMDALL_API_HOST:?HEIMDALL_API_HOST not set}"
+
+CONFIG_FILE="/etc/raddb/mods-enabled/heimdall"
+
+if [ -f "$CONFIG_FILE" ]; then
+  echo "Substituting variables in $CONFIG_FILE"
+  esc() { printf '%s' "$1" | sed 's/[&/\]/\\&/g'; }
+  url_escaped=$(esc "$HEIMDALL_API_URL")
+  host_escaped=$(esc "$HEIMDALL_API_HOST")
+  sed -i "s|%{env:HEIMDALL_API_URL}|$url_escaped|g"  "$CONFIG_FILE"
+  sed -i "s|%{env:HEIMDALL_API_HOST}|$host_escaped|g" "$CONFIG_FILE"
+fi
 
 # Start FreeRADIUS in foreground mode for Docker
-# echo "Starting FreeRADIUS..."
-# exec radiusd -X
-# 
+echo "Starting FreeRADIUS..."
+exec radiusd -f -X -d /etc/raddb 
