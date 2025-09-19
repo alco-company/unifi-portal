@@ -102,7 +102,7 @@ accessories:
     options:
       network: heimdall
     roles:
-    - web
+      - web
     # Change to 3306 to expose port to the world instead of just local network.
     port: "127.0.0.1:3306:3306"
     env:
@@ -118,14 +118,15 @@ accessories:
       - config/mysql/init.sql:/docker-entrypoint-initdb.d/setup.sql
     directories:
       - data:/var/lib/mysql
+
   freeradius:
     image: wdiechmann/freeradius:latest
     options:
       network: heimdall
     roles:
-    - web
+      - web
     # Expose RADIUS authentication (1812), accounting (1813) and status (18120) ports
-    port: "1812:1812/udp,1813:1813/udp"
+    port: "1812:1812/udp"
     env:
       clear:
         # Heimdall API endpoint for REST authentication using stable hostname
@@ -140,7 +141,6 @@ accessories:
         RADIUS_SSL_DOMAIN: radius.staging.unifi-portal.site
       secret:
         - MYSQL_PASSWORD
-    cmd: sh /config/startup.sh
     directories:
       - freeradius_logs:/var/log/radius
     volumes:
