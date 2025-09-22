@@ -72,7 +72,7 @@ end
 gem "httparty"
 gem "dotenv", "~> 3.1"
 
-gem "solid_queue", "~> 1.1", github: "rails/solid_queue", branch: "main"
+gem "solid_queue", "~> 1.2", github: "rails/solid_queue", branch: "main"
 
 gem "mailersend-ruby", "~> 3.0"
 gem "base64"
